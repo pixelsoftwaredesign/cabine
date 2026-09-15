@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#10161a">
+<meta name="author" content="pixelsoftwaredesign">
+<!-- © pixelsoftwaredesign 2026 -->
+<title>Logistique & Cycle de vie — Track & Trace</title>
+<script src="/socket.io/socket.io.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<script src="/animations.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ambient),var(--bg);color:var(--text);font-family:var(--font-ui);min-height:100vh;padding-bottom:24px}
+  header{position:sticky;top:0;z-index:20;background:rgba(11,18,32,.65);backdrop-filter:blur(6px);padding:16px 16px 10px;border-bottom:1px solid var(--border)}
+  header h1{font-family:var(--font-display);font-size:1.3rem;font-weight:600}
+  header h1 span{color:var(--accent)}
+  header .sub{color:var(--muted);font-size:.8rem}
+  main{max-width:900px;margin:0 auto;padding:16px}
+  .card{background:var(--card);border:1px solid rgba(255,255,255,.03);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+  h2{font-size:1rem;margin-bottom:8px}
+  h3{font-size:.82rem;margin:10px 0 6px;color:var(--muted)}
+  label{display:block;color:var(--muted);font-size:.8rem;margin-bottom:4px}
+  .input{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:12px;margin-bottom:10px;font-size:1rem}
+  textarea.input{resize:vertical;font-family:var(--font-ui)}
+  .btn{display:block;width:100%;border:none;border-radius:14px;padding:13px;font-size:.95rem;font-weight:600;background:linear-gradient(155deg,var(--ember),var(--ember-dim));box-shadow:0 4px 16px rgba(242,166,90,.28);color:#241202;cursor:pointer;margin-top:8px}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:var(--card2);color:var(--text);box-shadow:none}
+  .btn.ok{background:linear-gradient(155deg,#5fb27f,#3d8b5e);color:#fff}
+  .btn.danger{background:#7f1d1d;color:var(--danger);box-shadow:none}
+  .btn.small{padding:8px 14px;font-size:.78rem;width:auto;margin-top:0;border-radius:9px}
+  .hidden{display:none!important}
+  .meta{color:var(--muted);font-size:.8rem;line-height:1.5}
+  .muted{color:var(--muted)}
+  .badge{font-size:.66rem;padding:3px 8px;border-radius:99px;font-weight:600;display:inline-block}
+  .badge.ok{background:#14532d;color:var(--ok)}
+  .badge.warn{background:#451a03;color:var(--warn)}
+  .badge.red{background:#7f1d1d;color:var(--danger)}
+  .badge.blue{background:#0c4a6e;color:var(--accent)}
+  .badge.muted{background:#1e293b;color:var(--muted)}
+  .tabs{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto}
+  .tab{background:var(--card2);border:1px solid transparent;color:var(--muted);padding:8px 14px;border-radius:10px;font-size:.85rem;cursor:pointer;white-space:nowrap}
+  .tab.active{background:linear-gradient(155deg,var(--ember),var(--ember-dim));color:#241202;font-weight:600}
+  .unit{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px}
+  .unit .top{display:flex;gap:10px;align-items:flex-start}
+  .unit b{font-size:.95rem}
+  .unit .meta{font-size:.72rem}
+  .unit .actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .check{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:.85rem;cursor:pointer}
+  .check:last-child{border:none}
+  .check input{width:18px;height:18px;accent-color:var(--pine)}
+  .check.done span{text-decoration:line-through;color:var(--muted)}
+  .timeline{border-left:2px solid var(--border);margin-left:6px;padding-left:16px}
+  .tl{position:relative;padding:8px 0 16px}
+  .tl::before{content:'';position:absolute;left:-21px;top:12px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+  .tl b{font-size:.82rem}
+  .tl .meta{font-size:.72rem}
+  .row{display:flex;gap:10px}
+  .row>*{flex:1}
+  .invent{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+  .qr-wrap{text-align:center;margin:12px 0}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);padding:12px 18px;border-radius:12px;font-weight:600;z-index:50;display:none;max-width:90vw}
+  .toast.show{display:block}
+  .filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .chip{background:var(--card2);border:1px solid var(--border);color:var(--muted);padding:6px 12px;border-radius:99px;font-size:.78rem;cursor:pointer}
+  .chip.active{background:linear-gradient(155deg,var(--ember),var(--ember-dim));color:#241202;font-weight:600;border-color:transparent}
+</style>
+</head>
+<body>
+<header><h1>🚚 Logistique & <span>Cycle de vie</span> <a href="/plan.html" style="font-size:.66rem;font-weight:600;color:var(--accent);text-decoration:none;vertical-align:middle;margin-left:8px;border:1px solid var(--border);padding:3px 9px;border-radius:99px;">🧭 Plan intérieur ↗</a></h1><div class="sub">Track & Trace · bordereaux · QR colisage · démontage & transfert</div></header>
+
+<main>
+  <div id="authCard" class="card">
+    <h2>Connexion</h2>
+    <label>Email</label><input class="input" id="email" type="email" placeholder="admin@cabine.com">
+    <label>Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
+    <button class="btn" id="loginBtn">Se connecter</button>
+    <p class="meta" style="margin-top:8px;text-align:center">Accès : admin · partenaire · manager · technicien</p>
+  </div>
+
+  <div id="appView" class="hidden">
+    <div class="tabs" id="mainTabs">
+      <button class="tab active" data-v="track">🗂️ Tracking</button>
+      <button class="tab" data-v="demount">🔧 Démontage</button>
+    </div>
+
+    <!-- TRACKING -->
+    <div id="tabTrack">
+      <div class="filter" id="lifeFilter">
+        <button class="chip active" data-f="">Toutes</button>
+        <button class="chip" data-f="READY_FOR_SHIPPING">Prêtes envoi</button>
+        <button class="chip" data-f="IN_TRANSIT">En transit</button>
+        <button class="chip" data-f="ASSEMBLY_IN_PROGRESS">Assemblage</button>
+        <button class="chip" data-f="OPERATIONAL">En service</button>
+        <button class="chip" data-f="DECOMPOSITION_REQUESTED">Décomposition</button>
+        <button class="chip" data-f="DECOMPOSED_IN_STORAGE">Stockées</button>
+      </div>
+      <div id="trackList" class="stagger-in"></div>
+    </div>
+
+    <!-- DECOMPOSITION -->
+    <div id="tabDemount" class="hidden">
+      <div class="card">
+        <h2>➕ Demander une décomposition / relocation</h2>
+        <label>Numéro de série de la cabine</label><input class="input" id="dmSerial" placeholder="CAB-…">
+        <div class="row">
+          <div><label>Motif</label><select class="input" id="dmReason"><option value="RELOCATION">Relocation</option><option value="RETURN_TO_FACTORY">Retour usine</option><option value="SALE_RESALE">Vente / revente</option><option value="END_OF_USE">Fin d'usage</option><option value="OTHER">Autre</option></select></div>
+          <div><label>Destination cible (transfert)</label><input class="input" id="dmTarget" placeholder="Adresse du nouveau site"></div>
+        </div>
+        <button class="btn" id="dmRequest">🚨 Mettre hors-service & demander le démontage</button>
+      </div>
+      <div class="card">
+        <h2>📋 Ordres de démontage actifs</h2>
+        <div id="dmList"></div>
+      </div>
+      <div class="card" id="guideCard" class="hidden">
+        <h2 id="guideTitle">🔧 Guide de démontage inversé</h2>
+        <p class="meta" id="guideMeta"></p>
+        <h3>Étapes (inverse de l'assemblage P4→P1)</h3>
+        <div id="guideSteps"></div>
+        <h3>🧾 Inventaire des composants (scan QR)</h3>
+        <div id="guideInventory"></div>
+        <h3>📷 Photos des éléments emballés</h3>
+        <div class="row">
+          <div class="photo-wrap" id="dmPhotoWrap" style="text-align:center;background:var(--card2);border:1px dashed var(--border);border-radius:12px;padding:12px">
+            <input class="input" type="file" accept="image/*" id="dmPhoto" style="font-size:.8rem;padding:8px">
+            <div id="dmPhotoPreview"></div>
+          </div>
+        </div>
+        <label style="margin-top:8px">Notes du technicien</label>
+        <textarea class="input" id="dmNotes" rows="2" placeholder="Palettes bâchées, étiquettes posées…"></textarea>
+        <div class="row">
+          <button class="btn ok" id="dmCompleteStore">☑ Clôturer → stockage</button>
+          <button class="btn ok" id="dmCompleteTransfer">🚚 Clôturer → transfert site</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="modal" id="traceModal" style="position:fixed;inset:0;z-index:70;background:rgba(8,12,16,.72);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:520px;width:100%;padding:18px;max-height:86vh;overflow-y:auto">
+    <h2 id="trTitle">Fiche de vie</h2>
+    <div id="trBody"></div>
+    <button class="btn ghost" id="trClose">Fermer</button>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+(function(){
+  if(window.CabinMotion) CabinMotion.init(document);
+  const API=location.origin;
+  const $=id=>document.getElementById(id);
+  let TOKEN=localStorage.getItem('logi_token')||'';
+  const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2800);};
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  async function api(path,opt){
+    const r=await fetch(API+path,Object.assign({headers:{'Content-Type':'application/json',Authorization:'Bearer '+TOKEN}},opt||{}));
+    const j=await r.json().catch(()=>({success:false,message:'Erreur réseau'}));
+    if(r.status===401){localStorage.removeItem('logi_token');TOKEN='';location.reload();}
+    return j;
+  }
+  const LC={FACTORY_PURCHASED:['Achetée usine','warn'],READY_FOR_SHIPPING:['Prête envoi','blue'],IN_TRANSIT:['En transit','blue'],ASSEMBLY_IN_PROGRESS:['Assemblage site','warn'],OPERATIONAL:['En service','ok'],DECOMPOSITION_REQUESTED:['Décomposition','red'],DECOMPOSED_IN_STORAGE:['Stockée','muted']};
+
+  function tabs(){
+    document.querySelectorAll('#mainTabs .tab').forEach(t=>t.onclick=()=>{
+      document.querySelectorAll('#mainTabs .tab').forEach(x=>x.classList.remove('active')); t.classList.add('active');
+      const v=t.dataset.v;
+      $('tabTrack').classList.toggle('hidden',v!=='track'); $('tabDemount').classList.toggle('hidden',v!=='demount');
+      if(v==='track') loadTrack($('lifeFilter .chip.active')?.dataset.f||'');
+      if(v==='demount') loadDemounts();
+    });
+  }
+  document.querySelectorAll('#lifeFilter .chip').forEach(c=>c.onclick=()=>{
+    document.querySelectorAll('#lifeFilter .chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');loadTrack(c.dataset.f);
+  });
+
+  // ============ TRACKING ============
+  async function loadTrack(f){
+    const j=await api('/api/lifecycle/units').catch(()=>null); if(!j)return;
+    const units=f?j.units.filter(u=>u.lifecycle===f):j.units;
+    $('trackList').innerHTML=units.length?units.map(u=>{
+      const st=LC[u.lifecycle]||[u.lifecycle,'muted'];
+      return `<div class="unit">
+        <div class="top">
+          <b>${esc(u.serialNumber)}</b>
+          <span class="badge ${st[1]}">${st[0]}</span>
+          <span class="meta" style="margin-left:auto">${esc(u.city||u.address||'—')}</span>
+        </div>
+        <div class="meta">${esc(u.name)}${u.shipping&&u.shipping.trackingNumber?(' · tracking <b>'+esc(u.shipping.trackingNumber)+'</b>'+u.shipping.carrierName?(' · '+esc(u.shipping.carrierName)):''):''}</div>
+        <div class="actions">
+          <button class="btn ghost small" data-trace="${u._id}">🧭 Trace</button>
+          ${u.shipping&&u.shipping.trackingNumber?`<button class="btn ghost small" data-bord="${u._id}">📄 Bordereau</button><button class="btn ghost small" data-qr="${u._id}">⬛ QR colisage</button>`:''}
+          <button class="btn ghost small" data-ship="${u._id}" data-name="${esc(u.serialNumber)}">🚚 Expédier</button>
+          <button class="btn ghost small" data-arr="${u._id}">📍 Arrivée site</button>
+        </div>
+      </div>`;
+    }).join(''):'<p class="meta">Aucune cabine dans cet état.</p>';
+    document.querySelectorAll('[data-trace]').forEach(b=>b.onclick=()=>showTrace(b.dataset.trace));
+    document.querySelectorAll('[data-bord]').forEach(b=>b.onclick=()=>window.open(API+'/api/lifecycle/report/bordereau/'+b.dataset.bord,'_blank'));
+    document.querySelectorAll('[data-qr]').forEach(b=>b.onclick=()=>openQR(b.dataset.qr));
+    document.querySelectorAll('[data-ship]').forEach(b=>b.onclick=()=>shipModal(b.dataset.ship,b.dataset.name));
+    document.querySelectorAll('[data-arr]').forEach(b=>b.onclick=async()=>{
+      const j=await api('/api/lifecycle/cabins/'+b.dataset.arr+'/site-arrival',{method:'POST',body:JSON.stringify({})});
+      toast(j.message||(j.success?'Arrivée enregistrée':'Erreur')); loadTrack($('lifeFilter .chip.active')?.dataset.f||'');
+    });
+    if(window.CabinMotion) window.CabinMotion.observeReveals($('trackList'));
+  }
+
+  async function showTrace(id){
+    const j=await api('/api/lifecycle/cabins/'+id+'/trace'); if(!j.success){toast(j.message);return;}
+    const st=LC[j.lifecycle]||[j.lifecycle,'muted'];
+    $('trTitle').textContent='Fiche de vie — '+j.serialNumber;
+    const events=j.events.slice().reverse().map(e=>`<div class="tl"><b>${esc(e.action)}</b> <span class="badge muted">${esc(e.from||'—')} → ${esc(e.to||'—')}</span><div class="meta">${new Date(e.at).toLocaleString('fr-FR')} · ${esc(e.by)}${e.details?'<br>'+esc(e.details):''}</div></div>`).join('');
+    $('trBody').innerHTML=`
+      <p><b>${esc(j.name)}</b> <span class="badge ${st[1]}">${st[0]}</span></p>
+      <div class="meta">Offre : ${(j.shippingDetails&&j.shippingDetails.carrierName)||'—'} · tracking ${(j.shippingDetails&&j.shippingDetails.trackingNumber)||'—'}</div>
+      <div class="meta">Destination : ${esc((j.shippingDetails&&j.shippingDetails.destinationAddress)||j.location?.city||'—')}</div>
+      ${j.logistics&&j.logistics.lastLat?`<div class="meta">Dernier point GPS : ${j.logistics.lastLat.toFixed(4)}, ${j.logistics.lastLng.toFixed(4)} · ${new Date(j.logistics.lastUpdate).toLocaleTimeString('fr-FR')}</div>`:''}
+      <h3 style="margin-top:10px">📦 Dernier états et événements</h3>
+      <div class="timeline">${events||'<div class="meta">Aucun événement</div>'}</div>`;
+    $('traceModal').style.display='flex';
+  }
+  $('trClose').onclick=()=>$('traceModal').style.display='none';
+
+  function openQR(id){
+    api('/api/lifecycle/cabins/'+id+'/packing-qr').then(j=>{
+      if(!j.success)return toast(j.message);
+      toast('QR colisage : '+j.qr);
+    });
+  }
+  async function shipModal(id,name){
+    const serial=prompt('Numéro de tracking (ou vide pour génération auto)');
+    if(serial===null)return;
+    const carrier=prompt('Transporteur (DHL, COLLISSIMO, TRANS, OCTROI…)')||'';
+    const dest=prompt('Adresse de destination')||'';
+    const j=await api('/api/lifecycle/cabins/'+id+'/shipping',{method:'PATCH',body:JSON.stringify({trackingNumber:serial,carrierName:carrier,destinationAddress:dest})});
+    toast(j.message||(j.success?'Expédiée — '+j.trackingNumber:'Erreur'));
+    loadTrack($('lifeFilter .chip.active')?.dataset.f||'');
+  }
+
+  // ============ DÉMONTAGE ============
+  $('dmRequest').onclick=async()=>{
+    const serial=$('dmSerial').value.trim();
+    if(!serial)return toast('Numéro de série requis');
+    const cabins=(await api('/api/lifecycle/units')).units;
+    const c=cabins.find(u=>u.serialNumber===serial.toUpperCase());
+    if(!c)return toast('Cabine introuvable');
+    const j=await api('/api/lifecycle/cabins/'+c._id+'/decompose',{method:'POST',body:JSON.stringify({reason:$('dmReason').value,targetDestination:$('dmTarget').value.trim()})});
+    toast(j.message||(j.success?'Ordre créé : '+j.orderId:'Erreur'));
+    if(j.success){$('dmSerial').value='';loadDemounts();loadTrack();}
+  };
+
+  let INV_META=[], STEPS=[];
+  async function loadConfig(){
+    const j=await api('/api/lifecycle/config');
+    if(j.success){INV_META=j.inventory;STEPS=j.steps;}
+  }
+  async function loadDemounts(){
+    const j=await api('/api/lifecycle/decompositions').catch(()=>null); if(!j)return;
+    $('dmList').innerHTML=j.decompositions.length?j.decompositions.map(d=>`
+      <div class="unit">
+        <div class="top"><b>${esc(d.serialNumber)}</b><span class="badge red">Décomposition</span>
+        <span class="meta" style="margin-left:auto">${esc(d.decomposition.orderId)}</span></div>
+        <div class="meta">Motif : <b>${esc(d.decomposition.reason||'—')}</b> · demandé le ${new Date(d.decomposition.requestedAt).toLocaleDateString('fr-FR')}${d.decomposition.technician?(' · technicien <b>'+esc(d.decomposition.technician.name)+'</b>'):''}${d.decomposition.targetDestination?(' → '+esc(d.decomposition.targetDestination)):''}</div>
+        <div class="actions">
+          <button class="btn ghost small" data-assign="${d._id}">👷 Affecter</button>
+          <button class="btn ok small" data-guide="${d._id}">🔧 Guide & inventaire</button>
+        </div>
+      </div>`).join(''):'<p class="meta">Aucun ordre de démontage actif.</p>';
+    document.querySelectorAll('[data-assign]').forEach(b=>b.onclick=async()=>{
+      const tech=prompt('Email du technicien (utilisateur existant — ex: technician@exemple.com)');
+      if(!tech)return;
+      // résolution du user par id est attendue ; on transmet l'email pour traçage only si absent : on garde vide
+      const users=(await api('/api/workforce')).agents||[];
+      const u=users.find(x=>x.email===tech.trim().toLowerCase());
+      if(!u){toast('Technicien introuvable dans Workforce');return;}
+      const j=await api('/api/lifecycle/decompositions/'+b.dataset.assign+'/assign',{method:'POST',body:JSON.stringify({technicianId:u.id,associate:''})});
+      toast(j.message||'Technicien affecté'); loadDemounts();
+    });
+    document.querySelectorAll('[data-guide]').forEach(b=>b.onclick=()=>openGuide(b.dataset.guide));
+  }
+
+  let guideId=null; let curSerial='';
+  async function openGuide(id){
+    guideId=id;
+    $('guideCard').style.display='block'; $('guideCard').scrollIntoView({behavior:'smooth',block:'start'});
+    const j=await api('/api/lifecycle/decompositions/'+id+'/guide');
+    if(!j.success)return toast(j.message);
+    curSerial=j.serialNumber.toUpperCase();
+    $('guideTitle').textContent='🔧 Guide inversé — '+j.serialNumber+' ('+j.orderId+')';
+    $('guideMeta').innerHTML=j.technician?('Technicien : <b>'+esc(j.technician.name)+'</b>'+(j.associate?' · aide '+esc(j.associate):'')):'Technicien non affecté';
+    renderSteps(j.steps);
+    renderInventory();
+  }
+  function renderSteps(steps){
+    $('guideSteps').innerHTML=steps.map(s=>`<label class="check ${s.done?'done':''}"><input type="checkbox" data-k="${s.key}" ${s.done?'checked disabled':''}> <span>${esc(s.label)}</span></label>`).join('');
+    document.querySelectorAll('#guideSteps input').forEach(i=>i.onchange=()=>{
+      api('/api/lifecycle/decompositions/'+guideId+'/steps/'+i.dataset.key,{method:'PATCH',body:JSON.stringify({})});
+      i.disabled=true; i.closest('label').classList.add('done');
+    });
+  }
+  function renderInventory(){
+    $('guideInventory').innerHTML=INV_META.map(c=>`
+      <div class="invent">
+        <div style="flex:1"><b>${esc(c.label)}</b><div class="meta" style="font-family:monospace">QR attendu : ${esc(c.qrPrefix+curSerial)}</div></div>
+        <input class="input" placeholder="Scanner le QR…" style="width:auto;flex:1;padding:8px;margin:0" id="scan-${c.key}">
+        <button class="btn ghost small" data-scan="${c.key}">📷</button>
+        <span class="meta" id="st-${c.key}"></span>
+      </div>`).join('');
+    document.querySelectorAll('[data-scan]').forEach(b=>b.onclick=async()=>{
+      const inp=$('scan-'+b.dataset.scan); const val=inp.value.trim();
+      const j=await api('/api/lifecycle/decompositions/'+guideId+'/inventory',{method:'POST',body:JSON.stringify({key:b.dataset.scan,scanValue:val})});
+      if(j.success){($('st-'+b.dataset.scan)).textContent='✓ scanné'; inp.disabled=true; toast(j.message);}
+      else toast(j.message||'QR invalide');
+    });
+  }
+  async function closeDemount(result){
+    const photos=[];
+    const f=$('dmPhoto').files[0];
+    if(f){ const rd=new FileReader(); rd.onload=async()=>{
+        photos.push(rd.result);
+        const j=await api('/api/lifecycle/decompositions/'+guideId+'/complete',{method:'POST',body:JSON.stringify({photos,notes:$('dmNotes').value.trim(),result})});
+        toast(j.message||(j.success?'Décomposition clôturée — '+j.lifecycle:'Erreur'));
+        if(j.success){$('guideCard').style.display='none';loadDemounts();loadTrack();}
+      }; rd.readAsDataURL(f); }
+    else {
+      const j=await api('/api/lifecycle/decompositions/'+guideId+'/complete',{method:'POST',body:JSON.stringify({photos:[],notes:$('dmNotes').value.trim(),result})});
+      toast(j.message||(j.success?'Décomposition clôturée — '+j.lifecycle:'Erreur'));
+      if(j.success){$('guideCard').style.display='none';loadDemounts();loadTrack();}
+    }
+  }
+  $('dmCompleteStore').onclick=()=>{ if(confirm('Clôturer et stocker les pièces ?')) closeDemount('STORAGE'); };
+  $('dmCompleteTransfer').onclick=()=>{ if(confirm('Clôturer et lancer le transfert vers le nouveau site ?')) closeDemount('TRANSFER'); };
+
+  $('loginBtn').onclick=async()=>{
+    const j=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email:$('email').value,password:$('password').value})}).catch(()=>({success:false}));
+    if(!j.success){toast('Identifiants invalides');return;}
+    TOKEN=j.token;localStorage.setItem('logi_token',TOKEN);
+    $('authCard').classList.add('hidden');$('appView').classList.remove('hidden');
+    await loadConfig(); tabs(); loadTrack();
+  };
+
+  (async()=>{ if(TOKEN){ $('authCard').classList.add('hidden');$('appView').classList.remove('hidden'); await loadConfig(); tabs(); loadTrack(); } })();
+})();
+</script>
+</body>
+</html>

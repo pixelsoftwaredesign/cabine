@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Pixel Software Design — Viewer 3D</title>
+  <style>
+    :root{--p:#6c5ce7;--a:#00cec9;--bg:#0a0a1a;--card:#12122a;--hover:#1a1a3e;--t:#e0e0ff;--tm:#8888aa;--b:#2a2a4a;--ok:#00b894;--d:#e17055}
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%;overflow:hidden}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--t);display:flex;flex-direction:column}
+    header{background:var(--card);border-bottom:1px solid var(--b);padding:.45rem 1rem;display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+    .logo{font-size:1.05rem;font-weight:800;background:linear-gradient(135deg,#6c5ce7,#00cec9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;white-space:nowrap}
+    .logo small{font-size:.6rem;font-weight:400;opacity:.75;letter-spacing:.06em}
+    nav{display:flex;gap:.4rem;align-items:center}
+    nav a{color:var(--tm);text-decoration:none;font-size:.78rem;padding:.3rem .6rem;border-radius:8px;transition:all .2s;white-space:nowrap}
+    nav a:hover{color:var(--a);background:var(--hover)}
+    .spacer{flex:1}
+    .field{display:flex;align-items:center;gap:.4rem}
+    .field label{font-size:.68rem;color:var(--tm)}
+    .field input{width:190px;padding:.3rem .5rem;background:var(--bg);border:1px solid var(--b);border-radius:8px;color:var(--t);font-size:.76rem;outline:none;font-family:inherit}
+    .field input:focus{border-color:var(--p)}
+    .hdr-btn{background:var(--card);color:var(--t);border:1px solid var(--b);border-radius:8px;padding:.3rem .7rem;cursor:pointer;font-size:.76rem;transition:all .2s}
+    .hdr-btn:hover{color:var(--a);border-color:var(--a)}
+    .badge{padding:.22rem .6rem;border-radius:20px;font-size:.66rem;font-weight:600}
+    .badge.online{background:rgba(0,184,148,.18);color:var(--ok);border:1px solid rgba(0,184,148,.35)}
+    .badge.warn{background:rgba(225,112,85,.18);color:var(--d);border:1px solid rgba(225,112,85,.4)}
+    .stats{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+    .stat{background:var(--bg);border:1px solid var(--b);border-radius:8px;padding:.22rem .55rem;font-size:.68rem;color:var(--tm);white-space:nowrap}
+    .stat b{color:var(--t)}
+    .stat.alert{border-color:rgba(225,112,85,.5)}.stat.alert b{color:var(--d)}
+    #wrap{flex:1;position:relative;min-height:0}
+    #gl{position:absolute;inset:0;width:100%;height:100%;cursor:grab;display:block}
+    #gl.grabbing{cursor:grabbing}
+    #labels{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+    #labels .lab{position:absolute;transform:translate(-50%,-140%);font-size:11px;font-weight:700;color:#fff;background:rgba(10,10,26,.72);border:1px solid rgba(255,255,255,.28);border-radius:6px;padding:1px 6px;white-space:nowrap;letter-spacing:.02em;text-shadow:0 1px 2px rgba(0,0,0,.7)}
+    .note{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:50;background:#3c1d1a;border:1px solid #e17055;color:#ffd9d2;padding:8px 16px;border-radius:99px;font-size:.74rem;font-weight:600;box-shadow:0 6px 22px rgba(0,0,0,.5);display:none}
+    .note.show{display:block}
+    .note.warn{background:#3a2c12;border-color:#fdcb6e;color:#ffe9b0}
+    .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--ok);color:var(--t);padding:.55rem 1rem;border-radius:10px;font-size:.8rem;opacity:0;transition:all .3s;z-index:60;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .toast.err{border-color:var(--d)}
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">Pixel Software Design <small>VIEWER 3D · LECTURE SEULE</small></div>
+    <nav>
+      <a href="/map.html">🗺️ Carte</a>
+      <a href="/editor.html">📐 Éditeur Indoor</a>
+    </nav>
+    <span class="badge online" id="apiBadge">API · en ligne</span>
+    <div class="spacer"></div>
+    <div class="field">
+      <label>Niveau</label>
+      <input type="text" id="inFloor" value="NIVEAU_1_SOUSSE">
+      <button class="hdr-btn" id="loadBtn">⟳ Charger</button>
+    </div>
+    <div class="stats">
+      <span class="stat">Cabines <b id="stCabins">0</b></span>
+      <span class="stat" id="stCollCard">Collisions <b id="stColl">0</b></span>
+      <span class="stat">m² <b id="stSqm">0</b></span>
+    </div>
+  </header>
+
+  <div id="wrap">
+    <canvas id="gl"></canvas>
+    <div id="labels"></div>
+  </div>
+
+  <div class="note" id="glNote">⚠️ Viewer 3D indisponible — WebGL est désactivé par votre navigateur.</div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var BOX_H = 2.4, BORNE_H = 1.1, WALL_H = 2.6;
+    var STATUS_RGB = { AVAILABLE: hexRgb('#10b981'), DIRTY: hexRgb('#f59e0b'), MAINTENANCE: hexRgb('#ef4444') };
+    function hexRgb(hex) { var n = parseInt(hex.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; }
+    function $ (id) { return document.getElementById(id); }
+
+    var glShown = (function () {
+      try { var c = document.createElement('canvas'); return !!(c.getContext('webgl') || c.getContext('experimental-webgl') || c.getContext('webgl2')); }
+      catch (e) { return false; }
+    })();
+
+    function toast(msg, err) {
+      var t = $('toast');
+      t.textContent = msg;
+      t.className = 'toast show' + (err ? ' err' : '');
+      clearTimeout(toast._t);
+      toast._t = setTimeout(function () { t.className = 'toast'; }, 2600);
+    }
+
+    /* ── matrices ── */
+    function mat4Projection(fovy, aspect, near, far) {
+      var f = 1 / Math.tan(fovy / 2), nf = 1 / (near - far);
+      return new Float32Array([f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, (far + near) * nf, -1, 0, 0, 2 * far * near * nf, 0]);
+    }
+    function mat4LookAt(eye, c, up) {
+      var zx = eye[0] - c[0], zy = eye[1] - c[1], zz = eye[2] - c[2];
+      var l = Math.sqrt(zx * zx + zy * zy + zz * zz); zx /= l; zy /= l; zz /= l;
+      var ux = up[0], uy = up[1], uz = up[2];
+      var xx = uy * zz - uz * zy, xy = uz * zx - ux * zz, xz = ux * zy - uy * zx;
+      l = Math.sqrt(xx * xx + xy * xy + xz * xz); xx /= l; xy /= l; xz /= l;
+      var yx = zy * xz - zz * xy, yy = zz * xx - zx * xz, yz = zx * xy - zy * xx;
+      return new Float32Array([xx, yx, zx, 0, xy, yy, zy, 0, xz, yz, zz, 0,
+        -(xx * eye[0] + xy * eye[1] + xz * eye[2]), -(yx * eye[0] + yy * eye[1] + yz * eye[2]),
+        -(zx * eye[0] + zy * eye[1] + zz * eye[2]), 1]);
+    }
+    function mat4Mul(a, b) {
+      var o = new Float32Array(16);
+      for (var c = 0; c < 4; c++) for (var r = 0; r < 4; r++) {
+        var t = 0;
+        for (var k = 0; k < 4; k++) t += a[k * 4 + r] * b[c * 4 + k];
+        o[c * 4 + r] = t;
+      }
+      return o;
+    }
+
+    /* ── géométrie ── */
+    function Geometry() { this.verts = []; this.tri = []; this.lines = []; }
+    Geometry.prototype.add = function (positions, col) {
+      var base = this.verts.length / 7;
+      for (var i = 0; i < positions.length; i++) {
+        this.verts.push(positions[i][0], positions[i][1], positions[i][2], col[0], col[1], col[2], col[3] == null ? 1 : col[3]);
+      }
+      for (var j = 1; j + 1 < positions.length; j++) this.tri.push(base, base + j, base + j + 1);
+    };
+    Geometry.prototype.line = function (a, b, col) {
+      var base = this.verts.length / 7;
+      this.verts.push(a[0], a[1], a[2], col[0] == null ? 1 : col[0], col[1] == null ? 1 : col[1], col[2] == null ? 1 : col[2], col[3] == null ? 1 : col[3]);
+      this.verts.push(b[0], b[1], b[2], col[0] == null ? 1 : col[0], col[1] == null ? 1 : col[1], col[2] == null ? 1 : col[2], col[3] == null ? 1 : col[3]);
+      this.lines.push(base, base + 1);
+    };
+
+    function compile(gl, vsSrc, fsSrc) {
+      var mk = function (type, src) {
+        var s = gl.createShader(type);
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+        return s;
+      };
+      var p = gl.createProgram();
+      gl.attachShader(p, mk(gl.VERTEX_SHADER, vsSrc));
+      gl.attachShader(p, mk(gl.FRAGMENT_SHADER, fsSrc));
+      gl.linkProgram(p);
+      if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+      return p;
+    }
+
+    function pushBox(g, cx, cy, rotDeg, w, h, hZ, col) {
+      var a = rotDeg * Math.PI / 180, s = Math.sin(a), c = Math.cos(a);
+      var hw = w / 2, hh = h / 2;
+      function rot(px, py) { return [cx + px * c - py * s, cy + px * s + py * c]; }
+      var p0 = rot(-hw, -hh), p1 = rot(hw, -hh), p2 = rot(hw, hh), p3 = rot(-hw, hh);
+      var low = [[p0[0], 0, p0[1]], [p1[0], 0, p1[1]], [p2[0], 0, p2[1]], [p3[0], 0, p3[1]]];
+      var top = [[p0[0], hZ, p0[1]], [p1[0], hZ, p1[1]], [p2[0], hZ, p2[1]], [p3[0], hZ, p3[1]]];
+      g.add(low, [col[0] * 0.8, col[1] * 0.8, col[2] * 0.8]);
+      g.add(top, [Math.min(1, col[0] * 1.25), Math.min(1, col[1] * 1.25), Math.min(1, col[2] * 1.25)]);
+      for (var e = 0; e < 4; e++) g.add([low[e], low[(e + 1) % 4], top[(e + 1) % 4], top[e]], [0.94, 0.94, 0.94]);
+    }
+
+    /* ── collisions SAT ── */
+    function rotatePoint(px, py, cx, cy, deg) { var a = deg * Math.PI / 180, s = Math.sin(a), c = Math.cos(a); var dx = px - cx, dy = py - cy; return { x: cx + dx * c - dy * s, y: cy + dx * s + dy * c }; }
+    function cornerRects(cab) {
+      var hw = cab.dimension.w / 2, hh = cab.dimension.h / 2;
+      return [[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]].map(function (p) {
+        return rotatePoint(cab.position.x + p[0], cab.position.y + p[1], cab.position.x, cab.position.y, cab.position.rotation || 0);
+      });
+    }
+    function overlap(A, B) {
+      var axes = [];
+      [A, B].forEach(function (P) {
+        for (var i = 0; i < P.length; i++) {
+          var j = (i + 1) % P.length;
+          axes.push([-(P[j].y - P[i].y), P[j].x - P[i].x]);
+        }
+      });
+      for (var k = 0; k < axes.length; k++) {
+        var ax = axes[k][0], ay = axes[k][1];
+        var amin = Infinity, amax = -Infinity, bmin = Infinity, bmax = -Infinity;
+        A.forEach(function (p) { var t = p.x * ax + p.y * ay; if (t < amin) amin = t; if (t > amax) amax = t; });
+        B.forEach(function (p) { var t = p.x * ax + p.y * ay; if (t < bmin) bmin = t; if (t > bmax) bmax = t; });
+        if (amax < bmin || bmax < amin) return false;
+      }
+      return true;
+    }
+
+    /* ── Viewer ── */
+    function Viewer(canvas, labelsEl) {
+      this.cv = canvas;
+      this.labelsEl = labelsEl;
+      this.data = { plans: null, walls: [], cabins: [] };
+      this._yaw = -0.7;
+      this._pitch = 1.05;
+      this._radius = 80;
+      this._drag = null;
+      var gl = null;
+      try { gl = canvas.getContext('webgl', { antialias: true }) || canvas.getContext('experimental-webgl', { antialias: true }) || canvas.getContext('webgl2', { antialias: true }); } catch (e) { gl = null; }
+      this._soft = false;
+      if (gl) {
+        this.gl = gl;
+        gl.disable(gl.DEPTH_TEST);
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        var vs = 'attribute vec3 aPos;attribute vec4 aColor;uniform mat4 uMVP;varying vec4 vColor;void main(){vColor=aColor;gl_Position=uMVP*vec4(aPos,1.0);}';
+        var fs = 'precision mediump float;varying vec4 vColor;void main(){gl_FragColor=vColor;}';
+        this._prog = compile(gl, vs, fs);
+        this._aPos = gl.getAttribLocation(this._prog, 'aPos');
+        this._aColor = gl.getAttribLocation(this._prog, 'aColor');
+        this._uMVP = gl.getUniformLocation(this._prog, 'uMVP');
+        this._bufPos = gl.createBuffer();
+        this._bufCol = gl.createBuffer();
+        this._bufIdx = gl.createBuffer();
+      } else {
+        // Repli logiciel : projection + painter's algorithm sur Canvas 2D
+        this.ctx = canvas.getContext('2d');
+        if (!this.ctx) throw new Error('Canvas 2D indisponible');
+        this._soft = true;
+      }
+      this._bindPointer();
+      this._labels = [];
+    }
+
+    Viewer.prototype.setData = function (layout) {
+      var d = layout || {};
+      var cabArr = Array.isArray(d.cabins) ? d.cabins : [];
+      var pairs = {};
+      cabArr.forEach(function (c) { c._col = false; });
+      for (var i = 0; i < cabArr.length; i++) for (var j = i + 1; j < cabArr.length; j++) {
+        if (overlap(cornerRects(cabArr[i]), cornerRects(cabArr[j]))) {
+          cabArr[i]._col = true; cabArr[j]._col = true;
+          pairs[i + '|' + j] = true;
+        }
+      }
+      this.data = {
+        plan: d.plan || { width: 40, height: 30 },
+        walls: Array.isArray(d.walls) ? d.walls : [],
+        cabins: cabArr
+      };
+      this._labels = cabArr.map(function (c, idx) {
+        var el = document.createElement('div');
+        el.className = 'lab';
+        el.textContent = c.code || 'CAB';
+        el.style.display = 'none';
+        el.dataset.i = idx;
+        labelsEl.appendChild(el);
+        return el;
+      });
+      $('stCabins').textContent = cabArr.length;
+      var nCol = Object.keys(pairs).length;
+      $('stColl').textContent = nCol;
+      var card = $('stCollCard');
+      card.className = 'stat' + (nCol ? ' alert' : '');
+      $('stSqm').textContent = Math.round(cabArr.reduce(function (a, c) { return a + c.dimension.w * c.dimension.h; }, 0) * 100) / 100;
+      var pw = this.data.plan.width, ph = this.data.plan.height;
+      this._radius = Math.min(120, Math.max(40, Math.hypot(pw, ph) * 1.4));
+      this._yaw = -0.7; this._pitch = 1.05;
+    };
+
+    Viewer.prototype.start = function () {
+      var self = this;
+      (function loop() {
+        self._render(self.data);
+        requestAnimationFrame(loop);
+      })();
+    };
+
+    Viewer.prototype._render = function (st) {
+      var cv = this.cv;
+      var wr = document.getElementById('wrap');
+      var W = wr.clientWidth, H = wr.clientHeight;
+      if (cv.width !== W || cv.height !== H) { cv.width = Math.max(1, W); cv.height = Math.max(1, H); }
+      if (W === 0 || H === 0) { this._hideLabels(); return; }
+
+      var g = new Geometry();
+      var pw = st.plan.width, ph = st.plan.height;
+      g.add([[0, 0, 0], [pw, 0, 0], [pw, 0, ph], [0, 0, ph]], [0.10, 0.14, 0.23, 1]);
+      var gridCol = [0.16, 0.16, 0.30, 0.75];
+      for (var x = 0; x <= pw; x += 2) g.line([x, 0.004, 0], [x, 0.004, ph], gridCol);
+      for (var z = 0; z <= ph; z += 2) g.line([0, 0.004, z], [pw, 0.004, z], gridCol);
+
+      st.walls.forEach(function (wl) {
+        g.add([[wl.start.x, WALL_H, wl.start.y], [wl.end.x, WALL_H, wl.end.y], [wl.end.x, 0, wl.end.y], [wl.start.x, 0, wl.start.y]], [0.94, 0.27, 0.27, 0.92]);
+        g.line([wl.start.x, WALL_H, wl.start.y], [wl.end.x, WALL_H, wl.end.y], [0.35, 0.05, 0.05, 1]);
+        g.line([wl.start.x, 0, wl.start.y], [wl.end.x, 0, wl.end.y], [0.35, 0.05, 0.05, 1]);
+      });
+
+      st.cabins.forEach(function (cab) {
+        var rgb = STATUS_RGB[cab.status] || STATUS_RGB.AVAILABLE;
+        var hZ = cab.iot ? BORNE_H : BOX_H;
+        pushBox(g, cab.position.x, cab.position.y, cab.position.rotation || 0, cab.dimension.w, cab.dimension.h, hZ, rgb);
+        if (cab._col) {
+          g.add([
+            [cab.position.x - cab.dimension.w / 2, 0, cab.position.y - cab.dimension.h / 2],
+            [cab.position.x + cab.dimension.w / 2, 0, cab.position.y - cab.dimension.h / 2],
+            [cab.position.x + cab.dimension.w / 2, 0, cab.position.y + cab.dimension.h / 2],
+            [cab.position.x - cab.dimension.w / 2, 0, cab.position.y + cab.dimension.h / 2]
+          ], [0.98, 0.3, 0.3, 0.8]);
+        }
+      });
+
+      var cx = pw / 2, cy = ph / 2;
+      var eye = [cx + this._radius * Math.cos(this._pitch) * Math.sin(this._yaw),
+                 2 + this._radius * Math.sin(this._pitch),
+                 cy + this._radius * Math.cos(this._pitch) * Math.cos(this._yaw)];
+      var proj = mat4Projection(Math.PI / 4, W / H, 1, 2000);
+      var view = mat4LookAt(eye, [cx, 1, cy], [0, 1, 0]);
+      var mvp = mat4Mul(proj, view);
+
+      if (this._soft) this._renderSoft(g, mvp, view, W, H);
+      else this._renderGL(g, mvp, W, H);
+
+      this._updateLabels(st, mvp, W, H);
+    };
+
+    Viewer.prototype._renderSoft = function (g, mvp, view, W, H) {
+      var ctx = this.ctx;
+      var GRAD = ctx.createLinearGradient(0, 0, 0, H);
+      GRAD.addColorStop(0, '#0d1526');
+      GRAD.addColorStop(1, '#0a0e1a');
+      ctx.fillStyle = GRAD;
+      ctx.fillRect(0, 0, W, H);
+
+      var verts = g.verts;
+      var t = [];
+      function clip(p) {
+        var i = p * 7;
+        return [
+          mvp[0] * verts[i] + mvp[4] * verts[i + 1] + mvp[8] * verts[i + 2] + mvp[12],
+          mvp[1] * verts[i] + mvp[5] * verts[i + 1] + mvp[9] * verts[i + 2] + mvp[13],
+          mvp[2] * verts[i] + mvp[6] * verts[i + 1] + mvp[10] * verts[i + 2] + mvp[14],
+          mvp[3] * verts[i] + mvp[7] * verts[i + 1] + mvp[11] * verts[i + 2] + mvp[15]
+        ];
+      }
+      function vz(p) {
+        var i = p * 7;
+        return view[2] * verts[i] + view[6] * verts[i + 1] + view[10] * verts[i + 2] + view[14];
+      }
+      function toXY(c) {
+        return [((c[0] / c[3]) * 0.5 + 0.5) * W, (1 - ((c[1] / c[3]) * 0.5 + 0.5)) * H];
+      }
+
+      for (var ti = 0; ti < g.tri.length; ti += 3) {
+        var a = g.tri[ti], b = g.tri[ti + 1], c = g.tri[ti + 2];
+        var ca = clip(a), cb = clip(b), cc = clip(c);
+        if (ca[3] <= 0 || cb[3] <= 0 || cc[3] <= 0) continue;
+        var r = (verts[a * 7 + 3] + verts[b * 7 + 3] + verts[c * 7 + 3]) / 3;
+        var gg = (verts[a * 7 + 4] + verts[b * 7 + 4] + verts[c * 7 + 4]) / 3;
+        var bl = (verts[a * 7 + 5] + verts[b * 7 + 5] + verts[c * 7 + 5]) / 3;
+        var A = toXY(ca), B = toXY(cb), C2 = toXY(cc);
+        var depth = (vz(a) + vz(b) + vz(c)) / 3;
+        t.push({ pts: [A, B, C2], depth: depth, fill: 'rgb(' + Math.round(r * 255) + ',' + Math.round(gg * 255) + ',' + Math.round(bl * 255) + ')' });
+      }
+      t.sort(function (p, q) { return p.depth - q.depth; });
+
+      for (var i = 0; i < t.length; i++) {
+        var poly = t[i].pts;
+        ctx.beginPath();
+        ctx.moveTo(poly[0][0], poly[0][1]);
+        ctx.lineTo(poly[1][0], poly[1][1]);
+        ctx.lineTo(poly[2][0], poly[2][1]);
+        ctx.closePath();
+        ctx.fillStyle = poly.fill;
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(0,0,0,0.22)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      // lignes (grille + arêtes)
+      for (var li = 0; li < g.lines.length; li += 2) {
+        var va = g.lines[li], vb = g.lines[li + 1];
+        var da = clip(va), db = clip(vb);
+        if (da[3] <= 0 || db[3] <= 0) continue;
+        var pa = toXY(da), pb = toXY(db);
+        var lr = (verts[va * 7 + 3] + verts[vb * 7 + 3]) / 2;
+        var lg = (verts[va * 7 + 4] + verts[vb * 7 + 4]) / 2;
+        var lb = (verts[va * 7 + 5] + verts[vb * 7 + 5]) / 2;
+        ctx.beginPath();
+        ctx.moveTo(pa[0], pa[1]);
+        ctx.lineTo(pb[0], pb[1]);
+        ctx.strokeStyle = 'rgba(' + Math.round(lr * 255) + ',' + Math.round(lg * 255) + ',' + Math.round(lb * 255) + ',0.8)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    };
+
+    Viewer.prototype._renderGL = function (g, mvp, W, H) {
+      var gl = this.gl;
+      gl.viewport(0, 0, W, H);
+      gl.clearColor(0.043, 0.067, 0.125, 1);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      gl.useProgram(this._prog);
+      gl.uniformMatrix4fv(this._uMVP, false, mvp);
+
+      var arr = new Float32Array(g.verts);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this._bufPos); gl.bufferData(gl.ARRAY_BUFFER, arr, gl.DYNAMIC_DRAW);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this._bufCol); gl.bufferData(gl.ARRAY_BUFFER, arr, gl.DYNAMIC_DRAW);
+      gl.enableVertexAttribArray(this._aPos); gl.vertexAttribPointer(this._aPos, 3, gl.FLOAT, false, 28, 0);
+      gl.enableVertexAttribArray(this._aColor); gl.vertexAttribPointer(this._aColor, 4, gl.FLOAT, false, 28, 12);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._bufIdx);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(g.tri.concat(g.lines)), gl.DYNAMIC_DRAW);
+      if (g.tri.length) gl.drawElements(gl.TRIANGLES, g.tri.length, gl.UNSIGNED_SHORT, 0);
+      if (g.lines.length) gl.drawElements(gl.LINES, g.lines.length, gl.UNSIGNED_SHORT, g.tri.length * 2);
+    };
+
+    Viewer.prototype._hideLabels = function () {
+      this._labels.forEach(function (el) { el.style.display = 'none'; });
+    };
+
+    Viewer.prototype._updateLabels = function (st, mvp, W, H) {
+      var self = this;
+      st.cabins.forEach(function (cab, i) {
+        var el = self._labels[i];
+        if (!el) return;
+        var hZ = cab.iot ? BORNE_H : BOX_H;
+        var p = [cab.position.x, hZ, cab.position.y, 1];
+        var nx = mvp[0] * p[0] + mvp[4] * p[1] + mvp[8] * p[2] + mvp[12] * p[3];
+        var ny = mvp[1] * p[0] + mvp[5] * p[1] + mvp[9] * p[2] + mvp[13] * p[3];
+        var nw = mvp[3] * p[0] + mvp[7] * p[1] + mvp[11] * p[2] + mvp[15] * p[3];
+        var nz = mvp[2] * p[0] + mvp[6] * p[1] + mvp[10] * p[2] + mvp[14] * p[3];
+        if (nw <= 0 || nz < -1 || nz > 1) { el.style.display = 'none'; return; }
+        var sx = (nx / nw * 0.5 + 0.5) * W;
+        var sy = (1 - (ny / nw * 0.5 + 0.5)) * H;
+        if (sx < -80 || sx > W + 80 || sy < -80 || sy > H + 80) { el.style.display = 'none'; return; }
+        el.style.display = 'block';
+        el.style.left = Math.round(sx) + 'px';
+        el.style.top = Math.round(sy) + 'px';
+      });
+    };
+
+    Viewer.prototype._bindPointer = function () {
+      var self = this;
+      var cv = this.cv;
+      cv.addEventListener('mousedown', function (e) { self._drag = { x: e.clientX, y: e.clientY }; cv.classList.add('grabbing'); });
+      window.addEventListener('mousemove', function (e) {
+        if (!self._drag) return;
+        self._yaw += (e.clientX - self._drag.x) * 0.006;
+        self._pitch = Math.max(0.12, Math.min(1.5, self._pitch + (e.clientY - self._drag.y) * 0.006));
+        self._drag = { x: e.clientX, y: e.clientY };
+      });
+      window.addEventListener('mouseup', function () { self._drag = null; cv.classList.remove('grabbing'); });
+      cv.addEventListener('wheel', function (e) { e.preventDefault(); self._radius = Math.max(12, Math.min(400, self._radius * Math.exp(e.deltaY * 0.0012))); }, { passive: false });
+      cv.addEventListener('touchstart', function (e) {
+        e.preventDefault();
+        if (e.touches.length === 1) self._drag = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        else if (e.touches.length === 2) self._pinch = dist2(e.touches);
+      }, { passive: false });
+      cv.addEventListener('touchmove', function (e) {
+        e.preventDefault();
+        if (e.touches.length === 2 && self._pinch) {
+          var d = dist2(e.touches);
+          self._radius = Math.max(12, Math.min(400, self._radius * (self._pinch / d)));
+          self._pinch = d;
+        } else if (e.touches.length === 1 && self._drag) {
+          self._yaw += (e.touches[0].clientX - self._drag.x) * 0.006;
+          self._pitch = Math.max(0.12, Math.min(1.5, self._pitch + (e.touches[0].clientY - self._drag.y) * 0.006));
+          self._drag = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+      }, { passive: false });
+      cv.addEventListener('touchend', function () { self._drag = null; self._pinch = 0; });
+      function dist2(t) { return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
+    };
+
+    /* ── chargement ── */
+    var viewer = null;
+    function load() {
+      var floorId = $('inFloor').value.trim() || 'NIVEAU_1_SOUSSE';
+      fetch('/api/map/editor/layout?floorId=' + encodeURIComponent(floorId))
+        .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || ('HTTP ' + r.status)); return j; }); })
+        .then(function (res) {
+          applyLayout(res.layout);
+          toast('Plan chargé : ' + floorId + ' (' + (res.layout.cabins || []).length + ' cabines)');
+        })
+        .catch(function (e) {
+          var fallback = localStorage.getItem('psd_editor_' + floorId);
+          if (fallback) { try { applyLayout(JSON.parse(fallback)); toast('Serveur indisponible — plan restauré du navigateur'); return; } catch (err) {} }
+          toast('Échec : ' + e.message, true);
+        });
+    }
+
+    function applyLayout(layout) {
+      if (!viewer) return;
+      viewer.labelsEl.innerHTML = '';
+      viewer.setData(layout);
+    }
+
+    function init() {
+      try {
+        viewer = new Viewer($('gl'), $('labels'));
+      } catch (e) {
+        $('glNote').classList.add('show');
+        return;
+      }
+      if (viewer._soft) {
+        $('glNote').classList.add('show', 'warn');
+        $('glNote').textContent = '🔧 Rendu 3D logiciel actif (WebGL indisponible) — qualité visuelle réduite.';
+      }
+      viewer.start();
+      $('loadBtn').addEventListener('click', load);
+      $('inFloor').addEventListener('keydown', function (e) { if (e.key === 'Enter') load(); });
+      var q = new URLSearchParams(location.search);
+      if (q.get('floorId')) $('inFloor').value = q.get('floorId');
+      load();
+    }
+
+    init();
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#10161a">
+<meta name="author" content="pixelsoftwaredesign">
+<!-- © pixelsoftwaredesign 2026 -->
+<title>Cabines Intelligentes — Carte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
+<script src="/vendor/leaflet/leaflet.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/vendor/pixmaps/divisions-data.js"></script>
+<script src="/vendor/pixmaps/world-countries.js"></script>
+<script src="/vendor/pixmaps/maghreb-data.js"></script>
+<script src="/vendor/pixmaps/pix3d.js"></script>
+<script src="/animations.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-ui);overflow:hidden}
+
+  /* --- Top bar --- */
+  .topbar{
+    position:fixed;top:0;left:0;right:0;z-index:1000;
+    background:rgba(16,22,26,.92);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);padding:10px 14px;
+    display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  }
+  .topbar .brand{font-family:var(--font-display);font-size:1.05rem;font-weight:600;white-space:nowrap}
+  .topbar .brand span{color:var(--accent)}
+  .filter{display:flex;gap:6px;flex:1;min-width:0;flex-wrap:wrap}
+  .filter select,.filter input{
+    background:var(--surface-2);border:1px solid var(--border);color:var(--text);
+    border-radius:10px;padding:7px 10px;font-size:.82rem;min-width:0;flex:1;max-width:180px;
+  }
+  .filter input.num{max-width:86px}
+  .filter input[type=date]{max-width:150px}
+  .filter select:focus,.filter input:focus{outline:2px solid var(--accent)}
+  .login-chip{display:flex;align-items:center;gap:6px}
+  .login-chip button{
+    background:var(--surface-2);border:1px solid var(--border);color:var(--text);
+    border-radius:10px;padding:7px 12px;font-size:.78rem;cursor:pointer;white-space:nowrap;font-weight:600;
+  }
+  .login-chip button.logged{background:linear-gradient(155deg,#3d8b5e,#2f6b49);border-color:transparent;color:#fff}
+  .login-chip .u{font-size:.68rem;color:var(--muted);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .chips{display:flex;gap:5px;align-items:center}
+  .capchip{font-size:.62rem;padding:2px 8px;border-radius:99px;color:#0b1114;font-weight:700;white-space:nowrap}
+  .capchip.g{background:#6bbf9c}.capchip.o{background:#f2a65a}.capchip.r{background:#e8735f}.capchip.b{background:#5aa9f2}
+  .btn-search{
+    background:linear-gradient(155deg,var(--ember),var(--ember-dim));color:#241202;
+    border:none;border-radius:10px;padding:8px 16px;font-weight:600;font-size:.85rem;
+    cursor:pointer;white-space:nowrap;
+  }
+  .btn-link{color:var(--accent);font-size:.78rem;text-decoration:none;white-space:nowrap;cursor:pointer}
+  .btn-link:hover{text-decoration:underline}
+  .login-chip button:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(1)}
+
+  .webgl-note{
+    position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:450;
+    background:#3c1d1a;border:1px solid var(--danger);color:#ffd9d2;
+    padding:7px 14px;border-radius:99px;font-size:.74rem;font-weight:600;
+    box-shadow:0 6px 22px rgba(0,0,0,.5);display:none;
+  }
+  .webgl-note.show{display:block}
+
+  /* --- Map --- */
+  #map{position:fixed;top:0;left:0;right:0;bottom:0;z-index:1}
+  .leaflet-popup-content-wrapper{
+    background:var(--surface)!important;border:1px solid var(--border)!important;
+    border-radius:14px!important;box-shadow:0 8px 28px rgba(0,0,0,.55)!important;
+    color:var(--text)!important;font-family:var(--font-ui)!important;
+  }
+  .leaflet-popup-tip{background:var(--surface)!important;border:1px solid var(--border)!important}
+
+  /* --- Popup card --- */
+  .pop{min-width:220px;max-width:260px}
+  .pop h3{font-family:var(--font-display);font-size:1rem;margin-bottom:4px}
+  .pop .city{color:var(--muted);font-size:.78rem;margin-bottom:8px}
+  .pop .price{font-size:1.1rem;font-weight:700;color:var(--accent);margin-bottom:2px}
+  .pop .orig{font-size:.75rem;color:var(--muted);margin-bottom:6px}
+  .pop .badge{display:inline-block;font-size:.65rem;padding:2px 8px;border-radius:99px;font-weight:600;background:#14532d;color:var(--ok)}
+  .pop .live{font-size:.75rem;color:var(--muted);margin:6px 0;display:flex;align-items:center;gap:4px}
+  .pop .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .pop .dot.ok{background:var(--ok);box-shadow:0 0 6px rgba(107,191,156,.7)}
+  .pop .dot.bad{background:var(--danger);box-shadow:0 0 6px rgba(232,115,95,.7)}
+  .pop .dot.online{background:var(--ok)}
+  .pop .dot.offline{background:var(--border)}
+  .btn-book.blocked{background:var(--danger);color:#fff;opacity:.85}
+  .pop .meta{font-size:.75rem;color:var(--muted);margin:6px 0}
+  .pop .btn-book{
+    display:block;width:100%;border:none;border-radius:10px;padding:10px;
+    font-size:.85rem;font-weight:600;color:#241202;cursor:pointer;
+    background:linear-gradient(155deg,var(--ember),var(--ember-dim));
+    box-shadow:0 3px 10px rgba(242,166,90,.28);transition:transform .12s
+  }
+  .pop .btn-book:active{transform:scale(.96)}
+
+  /* --- Side panel (mobile search) --- */
+  .panel-close{
+    display:none;background:none;border:none;color:var(--muted);font-size:1.4rem;
+    cursor:pointer;margin-left:auto
+  }
+  @media(max-width:640px){
+    .topbar{padding:8px 10px}
+    .filter{gap:4px}
+    .filter select,.filter input{font-size:.75rem;padding:6px 8px}
+    .btn-search{padding:7px 12px;font-size:.8rem}
+    .topbar .brand{font-size:.95rem}
+  }
+
+  /* --- Bottom result count --- */
+  .result-count{
+    position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:1000;
+    background:rgba(16,22,26,.9);backdrop-filter:blur(8px);
+    border:1px solid var(--border);border-radius:12px;
+    padding:8px 18px;font-size:.82rem;font-weight:600;
+    white-space:nowrap;pointer-events:none;
+  }
+  .result-count span{color:var(--accent)}
+
+  /* --- Currency badge --- */
+  .curr-badge{
+    position:fixed;top:56px;right:14px;z-index:1000;
+    background:rgba(16,22,26,.85);backdrop-filter:blur(8px);
+    border:1px solid var(--border);border-radius:10px;
+    padding:6px 12px;font-size:.75rem;color:var(--muted);pointer-events:none;
+  }
+  .curr-badge b{color:var(--accent)}
+
+  /* --- Legend chips (overlay en direct) --- */
+  .legend-chips{
+    position:fixed;top:104px;left:14px;z-index:1000;
+    background:rgba(16,22,26,.82);backdrop-filter:blur(8px);
+    border:1px solid var(--border);border-radius:12px;padding:8px 12px;
+    display:flex;gap:8px;font-size:.66rem;color:var(--muted);align-items:center;flex-wrap:wrap;
+  }
+  .legend-chips .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .legend-chips .it{display:flex;align-items:center;gap:5px}
+  .legend-chips .live{color:var(--ok);font-weight:600}
+  .live-count{color:var(--accent);font-weight:700}
+
+  /* Marker pin color states (overlay IoT) */
+  .mpin{min-width:30px;text-align:center;font-weight:700;font-size:.72rem;padding:5px 9px;border-radius:9px;color:#0b1114;box-shadow:0 3px 10px rgba(0,0,0,.45);cursor:pointer;border:2px solid rgba(255,255,255,.85);white-space:nowrap;font-family:Inter,system-ui,sans-serif}
+  .mpin.ms-ok{background:#6bbf9c}.mpin.ms-dirty{background:#f2a65a}.mpin.ms-down{background:#e8735f}.mpin.ms-guest{background:#5aa9f2}.mpin.ms-off{background:#3a4a54;color:#cdd9df}
+
+  /* Leaflet marker fix for dark bg */
+  .leaflet-marker-icon{filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))!important}
+
+  /* Modal (connexion opérations + actions) */
+  .modal{position:fixed;inset:0;z-index:1500;background:rgba(8,12,16,.72);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px}
+  .modal.open{display:flex}
+  .modal .box{background:var(--surface);border:1px solid var(--border);border-radius:16px;max-width:400px;width:100%;padding:18px}
+  .modal h3{font-family:var(--font-display);font-size:1.05rem;margin-bottom:8px}
+  .modal label{display:block;color:var(--muted);font-size:.76rem;margin:10px 0 4px}
+  .modal input{width:100%;background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 12px;font-size:.9rem;margin-bottom:4px}
+  .modal .row{display:flex;gap:8px}
+  .modal .btn{flex:1;border:none;border-radius:10px;padding:11px;font-size:.85rem;font-weight:600;background:linear-gradient(155deg,var(--ember),var(--ember-dim));color:#241202;cursor:pointer;margin-top:10px}
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar" id="topbar">
+  <div class="brand">🏠 Cabine <span>Carte</span></div>
+  <div class="filter">
+    <input type="text" id="fQ" placeholder="🔍 Cabine..." autocomplete="off">
+    <input type="text" id="fCity" placeholder="Ville (ex: Tunis)" autocomplete="off">
+    <select id="fCountry"><option value="">Tous les pays</option></select>
+    <select id="fCurrency"></select>
+    <input type="number" id="fMin" class="num" placeholder="Prix min" min="0" step="0.5">
+    <input type="number" id="fMax" class="num" placeholder="Prix max" min="0" step="0.5">
+    <input type="date" id="fDate">
+    <button class="btn-search" id="btnSearch">Rechercher</button>
+  </div>
+  <div class="chips" id="legendChips">
+    <span class="capchip g">Prête</span><span class="capchip o">Nettoyage</span>
+    <span class="capchip r">Maintenance / hors-ligne</span><span class="capchip b">Occupée</span>
+  </div>
+  <div class="login-chip">
+    <button class="btn-search" id="p3dBtn" title="Vue 3D du Maghreb (WebGL)">🌍 3D</button>
+    <button class="btn-search" id="satBtn" title="Fond vectoriel ↔ Imagerie satellite">🛰️ Satellite</button>
+    <button class="btn-search" style="background:linear-gradient(155deg,#5b7cfa,#4c63d8);color:#fff" onclick="window.open('/viewer.html','_blank')" title="Viewer 3D du plan d'étage">🧊 Viewer</button>
+    <button id="btnLogin">🔐 Opérations</button>
+  </div>
+  <a class="btn-link" href="/book.html">Réserver →</a>
+</div>
+
+<!-- Legend live -->
+<div class="legend-chips">
+  <span class="it"><span class="dot" style="background:#6bbf9c"></span>Disponible</span>
+  <span class="it"><span class="dot" style="background:#f2a65a"></span>Nettoyage</span>
+  <span class="it"><span class="dot" style="background:#e8735f"></span>Panne</span>
+  <span class="it"><span class="dot" style="background:#5aa9f2"></span>Occupée</span>
+  <span class="live">● Temps réel <b class="live-count" id="liveCount">0</b>/<span id="liveTot">0</span></span>
+</div>
+
+<div class="curr-badge" id="currBadge">Devise : <b id="currCode">TND</b> <a class="btn-link" id="toBook" href="/book.html" style="margin-left:6px">réserver en TND →</a></div>
+
+<!-- Bandeau WebGL indisponible -->
+<div class="webgl-note" id="webglNote">⚠️ Vue 3D indisponible — WebGL est désactivé par votre navigateur. Le fond vectoriel reste affiché.</div>
+
+<!-- Modal login ops -->
+<div class="modal" id="loginModal">
+  <div class="box">
+    <h3>🔐 Connexion opérations</h3>
+    <p class="meta" style="font-size:.74rem;color:var(--muted)">Accès superviseurs / housekeeping / techniciens : actions rapides sur les marqueurs (accès, nettoyage, diagnostic).</p>
+    <label>Email</label><input type="email" id="mEmail" placeholder="admin@cabine.com">
+    <label>Mot de passe</label><input type="password" id="mPass" placeholder="••••••">
+    <button class="btn" id="mLogin">Se connecter</button>
+    <div id="mWrap" style="display:flex">
+      <button class="btn ghost" data-close style="background:var(--surface-2);color:var(--text);box-shadow:none;flex:1">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Map -->
+<div id="map"></div>
+
+<!-- Result count -->
+<div class="result-count" id="resultCount"></div>
+
+<script>
+(function(){
+  'use strict';
+
+  const API = location.origin;
+  const MAP_DEFAULT_CENTER = [35.8256, 10.6369];
+  const MAP_DEFAULT_ZOOM = 7;
+
+  // --- Session opérations (superviseur / housekeeping / technicien) ---
+  let TOKEN = localStorage.getItem('map_token') || '';
+  let USER = null;
+  try { USER = JSON.parse(localStorage.getItem('map_user') || 'null'); } catch (e) { USER = null; }
+
+  async function api(path, opts = {}) {
+    const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+    if (TOKEN) headers['Authorization'] = 'Bearer ' + TOKEN;
+    const res = await fetch(API + path, { ...opts, headers });
+    const j = await res.json().catch(() => ({ success: false, message: 'Erreur réseau' }));
+    if (res.status === 401 && TOKEN) { logoutOps(); throw new Error('Session expirée'); }
+    return j;
+  }
+  function toast(m, d) {
+    if (window.CabinMotion && CabinMotion.toast) return CabinMotion.toast(m, { duration: d || 3200 });
+    alert(m);
+  }
+  function logoutOps() {
+    TOKEN = ''; USER = null;
+    localStorage.removeItem('map_token'); localStorage.removeItem('map_user');
+    uiOplog(false);
+  }
+  function uiOplog(on) {
+    const b = document.getElementById('btnLogin');
+    b.textContent = on ? ('👤 ' + (USER?.name || USER?.email || 'Opérateur')) : '🔐 Opérations';
+    b.classList.toggle('logged', !!on);
+  }
+
+  // --- Socket réel : overlay dynamique ---
+  const socket = (typeof io !== 'undefined') ? io() : null;
+  const liveSeen = {};
+  let liveRenderTimer = null;
+  function arrowStatusMarker(c) {
+    if (c.status === 'MAINTENANCE' || c.status === 'DECOMPOSITION_REQUESTED') return 'ms-down';
+    if (c.status === 'CLEANING_REQUIRED' || c.housekeepingState === 'DIRTY') return 'ms-dirty';
+    if (c.status === 'OCCUPIED_BY_GUEST') return 'ms-guest';
+    return 'ms-ok';
+  }
+  function applyLiveUpdate(topic, data) {
+    if (!topic || !data) return;
+    const parts = topic.split('/');
+    const serial = (parts[1] || '').toUpperCase();
+    const device = parts[2] || '';
+    if (!serial) return;
+    const c = currentCabins.find(x => String(x.serialNumber).toUpperCase() === serial);
+    if (!c) return;
+    if (!c.telemetry) c.telemetry = {};
+    ['temperature', 'humidity'].forEach(k => { if (data[k] != null) c.telemetry[k] = data[k]; });
+    if (data.presence != null) c.telemetry.presence = !!data.presence;
+    if (data.lockStatus != null) c.telemetry.lockStatus = data.lockStatus;
+    if (data.status) c.status = data.status;
+    if (data.housekeepingState) c.housekeepingState = data.housekeepingState;
+    c.telemetry.lastUpdate = new Date().toISOString();
+    c.isOnline = true;
+    liveSeen[serial] = Date.now();
+    clearTimeout(liveRenderTimer);
+    liveRenderTimer = setTimeout(() => {
+      document.getElementById('liveCount').textContent = Object.keys(liveSeen).length;
+      renderMarkers(currentCabins, true);
+    }, 600);
+  }
+  if (socket) {
+    socket.on('iot:telemetry', (m) => applyLiveUpdate(m && m.topic, m && m.data));
+  }
+
+  // --- Currency symbols ---
+  const CURRENCY_SYMBOLS = { EUR:'€', TND:'TND', USD:'$', GBP:'£', MAD:'MAD', DZD:'DA' };
+  const CURRENCY_LABELS  = { EUR:'Euro', TND:'Dinar tunisien', USD:'Dollar US', GBP:'Livre sterling', MAD:'Dirham marocain', DZD:'Dinar algérien' };
+  const STATUS_LABELS = { AVAILABLE:'Prête', OCCUPIED_BY_GUEST:'Occupée', OCCUPIED_BY_OWNER:'Usage perso.', CLEANING_REQUIRED:'À nettoyer', MAINTENANCE:'Maintenance' };
+
+  // --- Init Leaflet map ---
+  const map = L.map('map', {
+    center: MAP_DEFAULT_CENTER,
+    zoom: MAP_DEFAULT_ZOOM,
+    zoomControl: false
+  });
+
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+  // Fond vectoriel local : AUCUNE tuile réseau (ni OSM, ni CARTO) — module 100% autonome
+  const mapCss = document.createElement('style');
+  mapCss.textContent = '#map{background:radial-gradient(circle at 50% 42%, #14142e 0%, #0b0b1c 70%, #060611 100%)}';
+  document.head.appendChild(mapCss);
+
+  const GraticuleLayer = L.GridLayer.extend({
+    createTile(coords) {
+      const size = this.getTileSize();
+      const tile = document.createElement('canvas');
+      tile.width = size.x;
+      tile.height = size.y;
+      const ctx = tile.getContext('2d');
+      tile.style.pointerEvents = 'none';
+      const bounds = this._tileCoordsToBounds(coords);
+      const step = coords.z < 4 ? 10 : coords.z < 6 ? 5 : coords.z < 8 ? 1 : 0.5;
+      const px = (w) => w.x - coords.x * size.x;
+      const py = (w) => w.y - coords.y * size.y;
+      ctx.strokeStyle = 'rgba(140,150,210,0.16)';
+      ctx.fillStyle = 'rgba(165,175,228,0.55)';
+      ctx.lineWidth = 1;
+      ctx.font = '9px system-ui, sans-serif';
+      for (let lng = Math.floor(bounds.getWest() / step) * step; lng <= bounds.getEast(); lng += step) {
+        const x = px(this._map.project([bounds.getCenter().lat, lng], coords.z));
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, size.y); ctx.stroke();
+        if (x >= 2 && x <= size.x - 26) ctx.fillText(Number.isInteger(lng) ? lng : lng.toFixed(1), x + 2, 10);
+      }
+      for (let lat = Math.floor(bounds.getNorth() / step) * step; lat >= bounds.getSouth(); lat -= step) {
+        const y = py(this._map.project([lat, bounds.getCenter().lng], coords.z));
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(size.x, y); ctx.stroke();
+        if (y >= 12 && y <= size.y - 4) ctx.fillText(Number.isInteger(lat) ? lat : lat.toFixed(1), 4, y - 3);
+      }
+      return tile;
+    }
+  });
+
+  (new GraticuleLayer({ tileSize: 256, keepBuffer: 1, noWrap: true })).addTo(map);
+  map.attributionControl.setPrefix('');
+  map.attributionControl.addAttribution('&copy; Pixel Software Design 2026 — Cabines intelligentes');
+
+  // ── Bascule Satellite (imagerie Esri World Imagery, gratuite, sans clé) ──
+  const satCss = document.createElement('style');
+  satCss.textContent = '#satBtn.ok{background:linear-gradient(155deg,#3d8b5e,#2f6b49)}';
+  document.head.appendChild(satCss);
+  const satBtn = document.getElementById('satBtn');
+  let satLayer = null, satOn = false;
+  satBtn.onclick = () => {
+    satOn = !satOn;
+    if (satOn) {
+      if (!satLayer) {
+        satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          maxZoom: 19,
+          attribution: '&copy; Esri — World Imagery'
+        });
+      }
+      map.addLayer(satLayer);
+      map.removeLayer(pxWorld);
+      map.removeLayer(pxProv);
+      satBtn.classList.add('ok');
+      satBtn.textContent = '🛰️ Satellite ON';
+    } else {
+      map.removeLayer(satLayer);
+      map.addLayer(pxWorld);
+      map.addLayer(pxProv);
+      satBtn.classList.remove('ok');
+      satBtn.textContent = '🛰️ Satellite';
+    }
+  };
+
+  // ── Vue 3D WebGL (moteur Pix3D maison, zéro ressource externe) ──
+  const p3dBtn = document.getElementById('p3dBtn');
+  let pix3d = null, p3dOn = false;
+  const webglOk = (() => {
+    try {
+      const c = document.createElement('canvas');
+      return !!(c.getContext('webgl') || c.getContext('experimental-webgl') || c.getContext('webgl2'));
+    } catch (e) { return false; }
+  })();
+  if (!webglOk) {
+    p3dBtn.disabled = true;
+    p3dBtn.title = 'Vue 3D indisponible — WebGL désactivé';
+    const note = document.getElementById('webglNote');
+    if (note) note.classList.add('show');
+  }
+  const buildPix3dData = () => {
+    const mag = window.MAGHREB || {};
+    const div = window.DIVISIONS || {};
+    return { countries: mag.countries || [], provinces: div.provinces || [], roads: mag.roads || [], cities: mag.cities || [] };
+  };
+  const syncPix3dView = () => { if (pix3d && pix3d.isActive()) pix3d.setView(map.getCenter().lat, map.getCenter().lng, map.getZoom()); };
+  map.on('moveend', syncPix3dView);
+  p3dBtn.onclick = () => {
+    if (!webglOk) { p3dBtn.disabled = true; return; }
+    p3dOn = !p3dOn;
+    if (p3dOn) {
+      if (!pix3d && window.Pix3D) {
+        pix3d = Pix3D.create(document.getElementById('map'), buildPix3dData(), { lat: map.getCenter().lat, lng: map.getCenter().lng, zoom: map.getZoom() });
+      }
+      if (!pix3d) { p3dOn = false; return; }
+      if (satOn) { satOn = false; satBtn.classList.remove('ok'); satBtn.textContent = '🛰️ Satellite'; map.removeLayer(satLayer); }
+      const lc = document.querySelector('.leaflet-container');
+      if (lc) lc.style.opacity = '0';
+      pix3d.setView(map.getCenter().lat, map.getCenter().lng, map.getZoom());
+      pix3d.enable();
+      p3dBtn.classList.add('ok');
+      p3dBtn.textContent = '🌍 3D ON';
+    } else {
+      if (pix3d) pix3d.disable();
+      const lc = document.querySelector('.leaflet-container');
+      if (lc) lc.style.opacity = '';
+      p3dBtn.classList.remove('ok');
+      p3dBtn.textContent = '🌍 3D';
+      map.invalidateSize();
+    }
+  };
+
+  // ── Fond vectoriel local : monde (Natural Earth) + découpes Maghreb (PixMaps) ──
+  const pxPalette = ['#1b2c52', '#212a5c', '#1e3550', '#172a47', '#243461', '#1d3357', '#202f54', '#183052'];
+  function pxHash(s) {
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return Math.abs(h);
+  }
+  const pxWorld = L.layerGroup().addTo(map);
+  const pxProv = L.layerGroup().addTo(map);
+
+  const MAGHREB_LABEL = {
+    'MA': [30.6, -7.4, 'MAROC'],
+    'DZ': [27.5, 2.4, 'ALG\u00c9RIE'],
+    'TN': [34.3, 9.3, 'TUNISIE'],
+    'LY': [28.2, 16.2, 'LIBYE'],
+    'MR': [21.0, -10.5, 'MAURITANIE']
+  };
+  const geogToRings = (g) => {
+    if (g.type === 'Polygon') return [g.coordinates.map(r => r.map(p => [p[1], p[0]]))];
+    if (g.type === 'MultiPolygon') return g.coordinates.map(poly => poly.map(r => r.map(p => [p[1], p[0]])));
+    return null;
+  };
+
+  if (window.WORLD_COUNTRIES && window.WORLD_COUNTRIES.features) {
+    const lab = [];
+    window.WORLD_COUNTRIES.features.forEach(f => {
+      const code = f[0], name = f[1], g = f[2];
+      const ringSets = geogToRings(g);
+      if (!ringSets) return;
+      ringSets.forEach(rs => L.polygon(rs, {
+        color: 'rgba(110,130,200,0.15)',
+        weight: 0.6,
+        fillColor: pxHash(code + name) % 2 ? '#182441' : '#141e38',
+        fillOpacity: 0.6,
+        interactive: false
+      }).addTo(pxWorld));
+      let mnLa = 1e9, mxLa = -1e9, mnLn = 1e9, mxLn = -1e9;
+      ringSets.forEach(rs => rs.forEach(pt => {
+        const la = pt[0], ln = pt[1];
+        if (la < mnLa) mnLa = la; if (la > mxLa) mxLa = la;
+        if (ln < mnLn) mnLn = ln; if (ln > mxLn) mxLn = ln;
+      }));
+      const mlat = (mnLa + mxLa) / 2;
+      lab.push({ code, name, clat: mlat, clng: (mnLn + mxLn) / 2, area: (mxLa - mnLa) * Math.cos(mlat * Math.PI / 180) * (mxLn - mnLn) });
+    });
+    Object.keys(MAGHREB_LABEL).forEach(k => {
+      const c = MAGHREB_LABEL[k];
+      const ic = L.divIcon({
+        html: '<div style="font-size:1.25rem;font-weight:800;letter-spacing:.3em;color:rgba(160,175,230,.35);pointer-events:none;white-space:nowrap">' + c[2] + '</div>',
+        className: '', iconSize: [0, 0], iconAnchor: [0, 0]
+      });
+      L.marker([c[0], c[1]], { icon: ic, interactive: false }).addTo(pxWorld);
+    });
+    lab.sort((a, b) => b.area - a.area);
+    lab.slice(0, 20).forEach(l => {
+      if (MAGHREB_LABEL[l.code]) return;
+      const sz = l.area > 60 ? '.95rem' : '.68rem';
+      const ic = L.divIcon({
+        html: '<div style="font-size:' + sz + ';font-weight:700;color:rgba(150,165,220,.4);letter-spacing:.14em;pointer-events:none;white-space:nowrap;font-family:system-ui">' + l.name.toUpperCase() + '</div>',
+        className: '', iconSize: [0, 0], iconAnchor: [0, 0]
+      });
+      L.marker([l.clat, l.clng], { icon: ic, interactive: false }).addTo(pxWorld);
+    });
+  }
+
+  if (window.DIVISIONS && window.DIVISIONS.provinces) {
+    const rings = (g) => (Array.isArray(g) && g.length)
+      ? (Array.isArray(g[0]) ? g : [g]).map(r => r.map(pt => [pt[1], pt[0]]))
+      : [];
+    const labels = ['MA-14', 'MA-01', 'MA-03', 'MA-11', 'DZ-48', 'DZ-19', 'DZ-31', 'DZ-09', 'DZ-33', 'TN-31', 'TN-23', 'TN-11', 'TN-01'];
+    window.DIVISIONS.provinces.forEach(p => {
+      const latlngs = rings(p.geo);
+      if (!latlngs.length) return;
+      L.polygon(latlngs, {
+        color: 'rgba(140,160,225,0.28)',
+        weight: 0.8,
+        fillColor: pxPalette[pxHash(p.id) % pxPalette.length],
+        fillOpacity: 0.4,
+        interactive: false
+      }).addTo(pxProv);
+      if (labels.includes(p.id)) {
+        let cx = 0, cy = 0, n = 0;
+        latlngs.flat().forEach(pt => { cx += pt[0]; cy += pt[1]; n++; });
+        if (n) {
+          const ic = L.divIcon({
+            html: '<div style="font-size:.62rem;font-weight:700;color:rgba(175,185,235,.4);letter-spacing:.12em;pointer-events:none;white-space:nowrap;font-family:system-ui">' + p.name.toUpperCase() + '</div>',
+            className: '', iconSize: [0, 0], iconAnchor: [0, 0]
+          });
+          L.marker([cx / n, cy / n], { icon: ic, interactive: false }).addTo(pxProv);
+        }
+      }
+    });
+  }
+
+  let markers = [];
+  let currentCabins = [];
+  let selectedCurrency = 'TND';
+  let roomCatalog = [];
+
+  async function loadRoomCatalog(){
+    try{ const j=await fetch(API+'/api/factory/rooms').then(r=>r.json()); roomCatalog=(j&&j.rooms)||[]; }catch(e){ roomCatalog=[]; }
+  }
+  const roomInfo=(code)=>roomCatalog.find(r=>r.code===code)||{code,label:code,icon:'🚪'};
+  const roomTags=(codes)=>(codes||[]).length
+    ? '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">'+codes.slice(0,4).map(c=>`<span style="font-size:.68rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:99px;padding:2px 8px;color:#ccc">${roomInfo(c).icon} ${roomInfo(c).label}</span>`).join('')+'</div>'
+    : '';
+
+  // --- Populate filters ---
+  async function loadFilters() {
+    try {
+      const [countryRes, currRes] = await Promise.all([
+        fetch(API + '/api/cabins/countries').then(r => r.json()),
+        fetch(API + '/api/cabins/currencies').then(r => r.json())
+      ]);
+
+      if (countryRes.success) {
+        const sel = document.getElementById('fCountry');
+        countryRes.countries.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.code;
+          opt.textContent = c.name;
+          sel.appendChild(opt);
+        });
+      }
+
+      if (currRes.success) {
+        const sel = document.getElementById('fCurrency');
+        currRes.currencies.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.code;
+          opt.textContent = c.code + ' (' + c.symbol + ')';
+          sel.appendChild(opt);
+        });
+        // Default to TND
+        sel.value = 'TND';
+      }
+    } catch (e) {
+      console.warn('Filtres non chargés', e);
+    }
+  }
+
+  // --- Search + render ---
+  async function search() {
+    const q = document.getElementById('fQ').value.trim().toLowerCase();
+    const city = document.getElementById('fCity').value.trim();
+    const country = document.getElementById('fCountry').value;
+    const currency = document.getElementById('fCurrency').value || 'TND';
+    const minPrice = document.getElementById('fMin').value;
+    const maxPrice = document.getElementById('fMax').value;
+    const date = document.getElementById('fDate').value;
+    selectedCurrency = currency;
+    document.getElementById('currCode').textContent = currency;
+    document.getElementById('toBook').textContent = 'réserver en ' + (CURRENCY_SYMBOLS[currency] || currency) + ' →';
+
+    const params = new URLSearchParams();
+    if (country) params.set('country', country);
+    if (city) params.set('city', city);
+    if (minPrice !== '') params.set('minPrice', minPrice);
+    if (maxPrice !== '') params.set('maxPrice', maxPrice);
+    params.set('targetCurrency', currency);
+    if (date) params.set('date', date);
+
+    try {
+      const json = await fetch(API + '/api/cabins/search?' + params).then(r => r.json());
+      if (!json.success) throw new Error(json.message);
+
+      let list = json.data;
+      if (q) {
+        list = list.filter(c => {
+          const hay = ((c.title||'') + ' ' + (c.location?.city||'') + ' ' + (c.location?.countryName||'')).toLowerCase();
+          return hay.includes(q);
+        });
+      }
+
+      currentCabins = list;
+      renderMarkers(currentCabins);
+      updateCount(currentCabins.length, currency, date);
+      document.getElementById('liveTot').textContent = currentCabins.length;
+    } catch (e) {
+      currentCabins = [];
+      renderMarkers([]);
+      updateCount(0, currency, date);
+      document.getElementById('liveTot').textContent = 0;
+    }
+  }
+
+  function renderMarkers(cabins) {
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
+
+    if (!cabins.length) {
+      map.setView(MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM);
+      return;
+    }
+
+    const group = L.featureGroup();
+
+    cabins.forEach(cabin => {
+      const { lat, lng } = cabin.location.coordinates || {};
+      if (!lat || !lng) return;
+
+const sym = CURRENCY_SYMBOLS[cabin.pricing.displayCurrency] || '';
+      const priceLabel = cabin.pricing.displayPrice + ' ' + sym + '/h';
+
+      const mcl = arrowStatusMarker(cabin);
+      const icon = L.divIcon({
+        className: 'custom-marker',
+        html: '<div class="mpin ' + mcl + '"><span>' + priceLabel + '</span></div>',
+        iconAnchor: [40, 14],
+        iconSize: [80, 28]
+      });
+
+      const marker = L.marker([lat, lng], { icon });
+
+      const origPrice = cabin.pricing.originalPrice;
+      const origCurr  = cabin.pricing.originalCurrency;
+      const origLabel = origCurr === cabin.pricing.displayCurrency ? '' :
+        '<div class="orig">Prix d\'origine : ' + origPrice + ' ' + (CURRENCY_SYMBOLS[origCurr]||origCurr) + '/h</div>';
+
+      const statusDot  = cabin.status === 'AVAILABLE' ? 'Prête' : STATUS_LABELS[cabin.status] || cabin.status;
+      const statusCls  = mcl === 'ms-guest' || mcl === 'ms-ok' ? 'ok' : (mcl === 'ms-down' ? 'bad' : 'warn');
+      const onlineCls  = cabin.isOnline ? 'online' : 'offline';
+      const onlineTxt  = cabin.isOnline ? '● En ligne' : '○ Hors ligne';
+      const tempTxt    = cabin.telemetry?.temperature != null ? cabin.telemetry.temperature.toFixed(1) + '°C' : '--';
+      const guestTxt   = cabin.guestState === 'INSIDE' ? '<div class="meta">🧍 Client à l’intérieur · éclairage allumé</div>' :
+                         cabin.guestState === 'OUTSIDE' ? '<div class="meta">🧍 Client sorti · éclairage éteint</div>' : '';
+      const _role = USER?.role || '';
+      const isAdmin = _role === 'ADMIN';
+      const canClean = isAdmin || _role === 'HOUSEKEEPER' || _role === 'HOUSEKEEPER_GOVERNANT';
+      const canMaint = isAdmin || _role === 'TECHNICIAN' || _role === 'MAINTENANCE_CONTROLLER';
+      const canQC = isAdmin || _role === 'MAINTENANCE_CONTROLLER' || _role === 'MANAGER';
+      const canOcc = isAdmin || _role === 'MANAGER';
+      const canReview = isAdmin || _role === 'HOUSEKEEPER_GOVERNANT' || _role === 'MANAGER';
+      const actions = TOKEN
+        ? '<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">' +
+          '<button class="btn-book qa" data-action="access" data-id="' + cabin.id + '" data-lock="' + (cabin.telemetry?.lockStatus || 'LOCKED') + '">🔓 Accès</button>' +
+          (canClean
+            ? '<button class="btn-book qa" data-action="clean" data-id="' + cabin.id + '">🧹 Nettoyer</button>'
+            : '') +
+          (canReview
+            ? '<button class="btn-book qa" data-action="review" data-id="' + cabin.id + '">⭐ Qualité</button>'
+            : '') +
+          (canMaint
+            ? '<button class="btn-book qa" data-action="panne" data-serial="' + cabin.serialNumber + '">🔧 Panne</button>' +
+              '<button class="btn-book qa" data-action="fix" data-serial="' + cabin.serialNumber + '">✅ Fixée</button>'
+            : '') +
+          (canQC
+            ? '<button class="btn-book qa" data-action="qc" data-serial="' + cabin.serialNumber + '">🩺 Réception</button>'
+            : '') +
+          (canOcc
+            ? '<button class="btn-book qa" data-action="occ" data-id="' + cabin.id + '">👤 Client</button>' +
+              '<button class="btn-book qa" data-action="ready" data-id="' + cabin.id + '">✅ Prête</button>'
+            : '') +
+          '<button class="btn-book qa" data-action="diag" data-serial="' + cabin.serialNumber + '">🔌 Diagnostic</button>' +
+          '</div>'
+        : '';
+
+      marker.bindPopup(
+        '<div class="pop">' +
+          '<h3>' + cabin.title + '</h3>' +
+          '<div class="city">📍 ' + (cabin.location.city || '') + ', ' + (cabin.location.countryName || cabin.location.country) + '</div>' +
+          '<div class="price">' + priceLabel + '</div>' +
+          origLabel +
+          '<div class="live"><span class="dot ' + statusCls + '"></span> ' + statusDot +
+          ' &nbsp;<span class="dot ' + onlineCls + '"></span> ' + onlineTxt + '</div>' +
+          '<div class="meta">🌡️ ' + tempTxt + ' · ' + (cabin.telemetry?.humidity != null ? cabin.telemetry.humidity.toFixed(0) + '%' : '--%') + '</div>' +
+          roomTags(cabin.rooms) +
+          guestTxt +
+          actions +
+          '<button class="btn-book" data-cabin-id="' + cabin.id + '">Réserver cette cabine</button>' +
+        '</div>',
+        { maxWidth: 280, className: 'dark-popup' }
+      );
+
+      markers.push(marker);
+      group.addLayer(marker);
+    });
+
+    group.addTo(map);
+    if (markers.length > 1) {
+      map.fitBounds(group.getBounds().pad(0.15));
+    } else if (markers.length === 1) {
+      map.setView(group.getBounds().getCenter(), 13);
+    }
+  }
+
+  function updateCount(n, curr, date) {
+    const el = document.getElementById('resultCount');
+    const sym = CURRENCY_SYMBOLS[curr] || curr;
+    let txt = '<span>' + n + '</span> cabine' + (n>1?'s':'' ) + ' trouvée' + (n>1?'s':'') + (curr ? ' · prix en ' + sym : '');
+    if (date) txt += ' · ' + new Date(date + 'T00:00:00').toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+    el.innerHTML = txt;
+  }
+
+  // --- Verification before booking ---
+  async function verifyAndBook(cabinId, btn) {
+    const original = btn.textContent;
+    if (btn.disabled) return;
+    btn.disabled = true;
+    btn.textContent = '⏳ Vérification...';
+
+    try {
+      const json = await fetch(API + '/api/cabins/' + cabinId + '/status').then(r => r.json());
+      if (!json.success || !json.cabin) throw new Error(json.message || 'Cabine introuvable');
+
+      const c = json.cabin;
+      if (!c.bookable) {
+        btn.disabled = false;
+        btn.textContent = original;
+        const reason = !c.verification.checks.mode ? 'Cabine hors location'
+          : !c.verification.checks.listed ? 'Cabine non publiée'
+          : !c.verification.checks.available ? 'Cabine ' + (c.verification.statusText || 'indisponible')
+          : 'Créneau déjà réservé';
+        if (window.CabinMotion && CabinMotion.toast) {
+          CabinMotion.toast('⚠️ ' + reason, { duration: 4000 });
+        }
+        btn.classList.add('blocked');
+        btn.textContent = 'Indisponible';
+        setTimeout(() => { btn.classList.remove('blocked'); btn.textContent = original; }, 4000);
+        return;
+      }
+
+      if (!c.isOnline) {
+        btn.disabled = false;
+        btn.textContent = original;
+        if (window.CabinMotion && CabinMotion.toast) {
+          CabinMotion.toast('Cabine réservable mais hors ligne — accès possible sur place', { duration: 4000 });
+        }
+      }
+
+      window.location.href = '/book.html?cabin=' + cabinId + '&currency=' + encodeURIComponent(selectedCurrency);
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = original;
+      if (window.CabinMotion && CabinMotion.toast) CabinMotion.toast('Erreur de vérification : ' + err.message, { duration: 4000 });
+    }
+  }
+
+  // --- Global: verify + redirect (used by marker buttons) ---
+  window.selectCabin = function(cabinId) {
+    window.location.href = '/book.html?cabin=' + cabinId + '&currency=' + encodeURIComponent(selectedCurrency);
+  };
+
+  // --- Quick actions opérations (accès / nettoyage / diagnostic) ---
+  async function opsAccess(cabinId) {
+    const c = currentCabins.find(x => x.id === cabinId);
+    const current = c && c.telemetry && c.telemetry.lockStatus;
+    const value = current === 'UNLOCKED' ? 'LOCK' : 'UNLOCK';
+    try {
+      const j = await api('/api/control/' + cabinId + '/control', { method: 'POST', body: JSON.stringify({ device: 'lock', value }) });
+      toast(j.message || (j.success ? 'Commande envoyée' : 'Erreur'));
+    } catch (e) { toast(e.message); }
+  }
+  async function opsClean(cabinId) {
+    try {
+      const j = await api('/api/housekeeping/tasks', { method: 'POST', body: JSON.stringify({ cabinId, assignedAgent: 'Carte temps réel' }) });
+      if (!j.success) throw new Error(j.message);
+      toast('Mission créée — ' + (j.task?.cabinSerial || ''));
+    } catch (e) { toast(e.message); }
+  }
+  async function opsDiag(serial) {
+    try {
+      const j = await api('/api/installer/self-test', { method: 'POST', body: JSON.stringify({ serialNumber: serial, component: 'lock' }) });
+      toast(j.message || (j.success ? 'Self-test envoyé' : 'Erreur'));
+    } catch (e) { toast(e.message); }
+  }
+  async function opsPanne(serial) {
+    try {
+      const j = await api('/api/tickets', { method: 'POST', body: JSON.stringify({ serialNumber: serial, title: 'Cabine en panne (carte temps réel)', priority: 'HIGH' }) });
+      if (!j.success) throw new Error(j.message);
+      toast('Ticket panne créé — ' + (j.ticket?._id || ''));
+    } catch (e) { toast(e.message); }
+  }
+  async function opsFix(serial) {
+    try {
+      const j = await api('/api/tickets/cabin/' + encodeURIComponent(serial)).catch(() => ({ success: false, tickets: [] }));
+      const open = (j.tickets || []).filter(t => t.status !== 'RESOLVED' && t.status !== 'COMPLETED')[0];
+      if (!open) { toast('Aucune panne ouverte pour cette cabine'); return; }
+      const r = await api('/api/tickets/' + open._id, { method: 'PATCH', body: JSON.stringify({ status: 'RESOLVED', resolution: 'Réparée (carte temps réel)' }) });
+      if (!r.success) throw new Error(r.message);
+      toast('Panne fixée — cabine de nouveau ' + (r.cabinStatus || 'disponible'));
+    } catch (e) { toast(e.message); }
+  }
+  async function opsReview(cabinId) {
+    try {
+      const list = await api('/api/housekeeping/tasks?cabinId=' + encodeURIComponent(cabinId));
+      const done = (list.tasks || []).find(t => t.status === 'COMPLETED' && !t.reviewedBy);
+      if (!done) { toast('Aucun nettoyage complété à relire pour cette cabine'); return; }
+      const scoreRaw = prompt('Note qualité (0-5) pour ' + (done.cabinSerial || 'tâche') + ' :');
+      const score = Number(scoreRaw);
+      if (scoreRaw === null || Number.isNaN(score) || score < 0 || score > 5) { toast('Note annulée ou invalide'); return; }
+      const approved = confirm('Approuver ce nettoyage ?  (OK = approuver / Annuler = refuser)');
+      const r = await api('/api/housekeeping/tasks/' + done._id + '/review', { method: 'POST', body: JSON.stringify({ qualityScore: score, approved }) });
+      if (!r.success) throw new Error(r.message);
+      toast(r.message);
+    } catch (e) { toast(e.message); }
+  }
+  async function opsStatus(cabinId, status) {
+    try {
+      const j = await api('/api/control/' + cabinId + '/status', { method: 'POST', body: JSON.stringify({ status }) });
+      if (!j.success) throw new Error(j.message);
+      toast(j.message || 'Statut mis à jour');
+    } catch (e) { toast(e.message); }
+  }
+  document.addEventListener('click', function(e) {
+    const q = e.target.closest('.qa[data-action]');
+    if (q) {
+      const a = q.dataset.action;
+      if (a === 'access') opsAccess(q.dataset.id);
+      else if (a === 'clean') opsClean(q.dataset.id);
+      else if (a === 'panne') opsPanne(q.dataset.serial);
+      else if (a === 'fix') opsFix(q.dataset.serial);
+      else if (a === 'occ') opsStatus(q.dataset.id, 'OCCUPIED_BY_GUEST');
+      else if (a === 'ready') opsStatus(q.dataset.id, 'AVAILABLE');
+      else if (a === 'review') opsReview(q.dataset.id);
+      else if (a === 'diag') opsDiag(q.dataset.serial);
+    }
+  });
+
+  // --- Login opérations ---
+  const loginModal = document.getElementById('loginModal');
+  function openLogin() {
+    if (TOKEN) { logoutOps(); toast('Déconnecté'); return; }
+    loginModal.classList.add('open');
+  }
+  document.getElementById('btnLogin').onclick = openLogin;
+  loginModal.querySelectorAll('[data-close]').forEach(b => b.onclick = () => loginModal.classList.remove('open'));
+  document.getElementById('mLogin').onclick = async () => {
+    const email = document.getElementById('mEmail').value.trim();
+    const password = document.getElementById('mPass').value;
+    try {
+      const j = await api('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+      if (!j.success || !j.token) throw new Error(j.message || 'Identifiants invalides');
+      TOKEN = j.token; USER = j.user || null;
+      localStorage.setItem('map_token', TOKEN);
+      if (USER) localStorage.setItem('map_user', JSON.stringify(USER));
+      uiOplog(true);
+      loginModal.classList.remove('open');
+      renderMarkers(currentCabins, true);
+      toast('Connecté — actions rapides actives');
+    } catch (e) { toast(e.message); }
+  };
+
+  // --- Bind verification on popup buttons ---
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.btn-book[data-cabin-id]');
+    if (btn) verifyAndBook(btn.dataset.cabinId, btn);
+  });
+
+  // --- Event listeners ---
+  document.getElementById('btnSearch').addEventListener('click', search);
+  document.getElementById('fCountry').addEventListener('change', search);
+  document.getElementById('fCurrency').addEventListener('change', search);
+  document.getElementById('fCity').addEventListener('input', debounce(search, 350));
+  document.getElementById('fMin').addEventListener('input', debounce(search, 350));
+  document.getElementById('fMax').addEventListener('input', debounce(search, 350));
+  document.getElementById('fDate').addEventListener('change', search);
+  let debounceTimer;
+  document.getElementById('fQ').addEventListener('input', function() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(search, 350);
+  });
+  document.getElementById('fQ').addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') search();
+  });
+  function debounce(fn, ms) {
+    let t;
+    return function() { clearTimeout(t); t = setTimeout(fn, ms); };
+  }
+  document.getElementById('fCity').addEventListener('keyup', function(e) { if (e.key === 'Enter') search(); });
+  document.getElementById('fMin').addEventListener('keyup', function(e) { if (e.key === 'Enter') search(); });
+  document.getElementById('fMax').addEventListener('keyup', function(e) { if (e.key === 'Enter') search(); });
+  document.getElementById('toBook').addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = '/book.html';
+  });
+
+  // --- Init ---
+  uiOplog(!!TOKEN);
+  loadRoomCatalog();
+  loadFilters().then(search);
+
+})();
+</script>
+<footer class="app-footer">© pixelsoftwaredesign 2026 · Carte — Cabines Intelligentes</footer>
+</body>
+</html>

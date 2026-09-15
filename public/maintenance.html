@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#10161a">
+<meta name="author" content="pixelsoftwaredesign">
+<!-- © pixelsoftwaredesign 2026 -->
+<title>Management & Housekeeping</title>
+<script src="/socket.io/socket.io.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<script src="/animations.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ambient),var(--bg);color:var(--text);font-family:var(--font-ui);min-height:100vh;padding-bottom:24px}
+  header{position:sticky;top:0;z-index:20;background:rgba(11,18,32,.65);backdrop-filter:blur(6px);padding:16px 16px 10px;border-bottom:1px solid var(--border)}
+  header h1{font-family:var(--font-display);font-size:1.3rem;font-weight:600}
+  header h1 span{color:var(--accent)}
+  header .sub{color:var(--muted);font-size:.8rem}
+  main{max-width:600px;margin:0 auto;padding:16px}
+  .card{background:var(--card);border:1px solid rgba(255,255,255,.03);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+  h2{font-size:1rem;margin-bottom:8px}
+  h3{font-size:.85rem;margin:10px 0 6px;color:var(--muted)}
+  label{display:block;color:var(--muted);font-size:.8rem;margin-bottom:4px}
+  .input{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:12px;margin-bottom:10px;font-size:1rem}
+  textarea.input{resize:vertical;font-family:var(--font-ui)}
+  .btn{display:block;width:100%;border:none;border-radius:14px;padding:13px;font-size:.95rem;font-weight:600;background:linear-gradient(155deg,var(--ember),var(--ember-dim));box-shadow:0 4px 16px rgba(242,166,90,.28);color:#241202;cursor:pointer;margin-top:8px}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:var(--card2);color:var(--text);box-shadow:none}
+  .btn.danger{background:#7f1d1d;color:var(--danger);box-shadow:none}
+  .btn.ok{background:linear-gradient(155deg,#5fb27f,#3d8b5e);color:#fff}
+  .btn.small{padding:9px 14px;font-size:.8rem;width:auto;margin-top:0;border-radius:10px}
+  .hidden{display:none!important}
+  .meta{color:var(--muted);font-size:.8rem;line-height:1.5}
+  .muted{color:var(--muted)}
+  .badge{font-size:.68rem;padding:3px 8px;border-radius:99px;font-weight:600}
+  .badge.ok{background:#14532d;color:var(--ok)}
+  .badge.warn{background:#451a03;color:var(--warn)}
+  .badge.red{background:#7f1d1d;color:var(--danger)}
+  .badge.blue{background:#0c4a6e;color:var(--accent)}
+  .tabs{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto}
+  .tab{background:var(--card2);border:1px solid transparent;color:var(--muted);padding:8px 14px;border-radius:10px;font-size:.85rem;cursor:pointer;white-space:nowrap}
+  .tab.active{background:linear-gradient(155deg,var(--ember),var(--ember-dim));color:#241202;font-weight:600}
+  .item{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px}
+  .item .top{display:flex;gap:10px;align-items:flex-start}
+  .item b{font-size:.95rem}
+  .item .meta{font-size:.75rem}
+  .check{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.85rem;cursor:pointer}
+  .check:last-child{border:none}
+  .check input{width:18px;height:18px;accent-color:var(--pine)}
+  .check.done span{text-decoration:line-through;color:var(--muted)}
+  .pin{font-family:var(--font-display);font-size:1.8rem;letter-spacing:8px;color:var(--accent);text-align:center;margin:10px 0;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);padding:12px 18px;border-radius:12px;font-weight:600;z-index:50;display:none;max-width:90vw}
+  .toast.show{display:block}
+  .filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .chip{background:var(--card2);border:1px solid var(--border);color:var(--muted);padding:6px 12px;border-radius:99px;font-size:.78rem;cursor:pointer}
+  .chip.active{background:linear-gradient(155deg,var(--ember),var(--ember-dim));color:#241202;font-weight:600;border-color:transparent}
+</style>
+</head>
+<body>
+<header><h1>🧼 Management & <span>Housekeeping</span> <a href="/plan.html" style="font-size:.66rem;font-weight:600;color:var(--accent);text-decoration:none;vertical-align:middle;margin-left:8px;border:1px solid var(--border);padding:3px 9px;border-radius:99px;">🧭 Plan intérieur ↗</a></h1><div class="sub">Propreté, maintenance et état de préparation des cabines</div></header>
+
+<main>
+  <div id="authCard" class="card">
+    <h2>Connexion</h2>
+    <label>Email</label><input class="input" id="email" type="email" placeholder="agent@exemple.com">
+    <label>Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
+    <button class="btn" id="loginBtn">Se connecter</button>
+  </div>
+
+  <div id="appView" class="hidden">
+    <div class="tabs" id="mainTabs">
+      <button class="tab active" data-v="parc">🗂️ Parc</button>
+      <button class="tab" data-v="tasks">🧽 Missions</button>
+      <button class="tab" data-v="tickets">🛠️ Tickets</button>
+    </div>
+
+    <div id="tabParc"><div id="parcList" class="stagger-in"></div></div>
+
+    <div id="tabTasks" class="hidden">
+      <div class="filter" id="taskFilter">
+        <button class="chip" data-f="">Toutes</button>
+        <button class="chip" data-f="PENDING">À faire</button>
+        <button class="chip" data-f="IN_PROGRESS">En cours</button>
+        <button class="chip" data-f="COMPLETED">Terminées</button>
+      </div>
+      <div id="taskList" class="stagger-in"></div>
+    </div>
+
+    <div id="tabTickets" class="hidden">
+      <div class="card">
+        <h2>➕ Déclarer un incident</h2>
+        <label>Cabine (numéro de série)</label><input class="input" id="tkSerial" placeholder="CAB-…">
+        <label>Titre</label><input class="input" id="tkTitle" placeholder="Relais défaillant / ampoule grillée…">
+        <label>Priorité</label>
+        <select class="input" id="tkPriority"><option value="MEDIUM">Moyenne</option><option value="LOW">Basse</option><option value="HIGH">Haute</option><option value="URGENT">Urgente</option></select>
+        <label>Description</label><textarea class="input" id="tkDesc" rows="2" placeholder="Détails du problème…"></textarea>
+        <button class="btn" id="tkCreate">Créer le ticket</button>
+      </div>
+      <div class="filter" id="ticketFilter">
+        <button class="chip" data-f="">Tous</button>
+        <button class="chip" data-f="OPEN">Ouverts</button>
+        <button class="chip" data-f="IN_PROGRESS">En cours</button>
+        <button class="chip" data-f="MAINTENANCE">En maintenance</button>
+        <button class="chip" data-f="RESOLVED">Résolus</button>
+      </div>
+      <div id="ticketList" class="stagger-in"></div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  if(window.CabinMotion) CabinMotion.init(document);
+  const API=location.origin;
+  const $=(id)=>document.getElementById(id);
+  let token=localStorage.getItem('hk_token')||'';
+  const HS={CLEAN:{t:'Propre',c:'ok'},DIRTY:{t:'À nettoyer',c:'warn'},IN_PROGRESS:{t:'En cours',c:'blue'}};
+  const ST={AVAILABLE:'Prête',OCCUPIED_BY_GUEST:'Occupée',OCCUPIED_BY_OWNER:'Usage perso',CLEANING_REQUIRED:'À nettoyer',MAINTENANCE:'Maintenance'};
+  const TW={PENDING:{t:'À faire',c:'warn'},IN_PROGRESS:{t:'En cours',c:'blue'},COMPLETED:{t:'Terminée',c:'ok'}};
+  const KT={OPEN:{t:'Ouvert',c:'warn'},IN_PROGRESS:{t:'En cours',c:'blue'},MAINTENANCE:{t:'En maintenance',c:'red'},RESOLVED:{t:'Résolu',c:'ok'}};
+  const auth=(h={})=>({'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{}),...h});
+  async function api(path,opts={}){const res=await fetch(API+path,{...opts,headers:auth(opts.headers)});const json=await res.json().catch(()=>({success:false,message:'Réponse invalide'}));if(!res.ok&&!json.success)throw new Error(json.message||('Erreur '+res.status));return json;}
+  function toast(m){ if(window.CabinMotion&&CabinMotion.toast) return CabinMotion.toast(m,{duration:3200}); const el=$('toast'); el.textContent=m; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3200); }
+  let taskFilter=''; let ticketFilter='';
+  function skeleton(n=3,h=100){return Array.from({length:n},()=>`<div class="card skeleton" style="height:${h}px"></div>`).join('');}
+  function obs(w){ if(window.CabinMotion) window.CabinMotion.observeReveals(w); }
+
+  $('loginBtn').onclick=async()=>{
+    const email=$('email').value.trim(),password=$('password').value;
+    if(!email||!password) return toast('Email et mot de passe requis');
+    try{const j=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email,password})});token=j.token;localStorage.setItem('hk_token',token);$('authCard').classList.add('hidden');$('appView').classList.remove('hidden');loadAll();}catch(e){toast(e.message);}
+  };
+
+  document.querySelectorAll('#mainTabs .tab').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#mainTabs .tab').forEach(x=>x.classList.toggle('active',x===b));
+    ['parc','tasks','tickets'].forEach(v=>$('tab'+v[0].toUpperCase()+v.slice(1)).classList.toggle('hidden',v!==b.dataset.v));
+    if(b.dataset.v==='parc')loadParc();
+    if(b.dataset.v==='tasks')loadTasks();
+    if(b.dataset.v==='tickets')loadTickets();
+  });
+  document.querySelectorAll('#taskFilter .chip').forEach(ch=>ch.onclick=()=>{taskFilter=ch.dataset.f;document.querySelectorAll('#taskFilter .chip').forEach(x=>x.classList.toggle('active',x===ch));loadTasks();});
+  document.querySelectorAll('#ticketFilter .chip').forEach(ch=>ch.onclick=()=>{ticketFilter=ch.dataset.f;document.querySelectorAll('#ticketFilter .chip').forEach(x=>x.classList.toggle('active',x===ch));loadTickets();});
+
+  // ============ PARC ============
+  async function loadParc(){
+    const wrap=$('parcList'); wrap.innerHTML=skeleton(4,84);
+    try{
+      const j=await api('/api/housekeeping/parc');
+      wrap.innerHTML='';
+      if(!j.cabins.length){wrap.innerHTML='<p class="muted">Aucune cabine.</p>';return;}
+      j.cabins.forEach(c=>{
+        const h=HS[c.housekeepingState]||{t:c.housekeepingState,c:''};
+        const el=document.createElement('div'); el.className='item';
+        el.innerHTML=`<div class="top">
+          <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(155deg,rgba(242,166,90,.32),rgba(242,166,90,.05));border:1px solid rgba(242,166,90,.22);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">🏠</div>
+          <div style="flex:1;min-width:0">
+            <b>${c.name}</b>
+            <div class="meta">${c.serialNumber} · <span class="badge ${h.c}">${h.t}</span> · <span class="badge ${c.status==='MAINTENANCE'?'red':c.status==='AVAILABLE'?'ok':c.status==='CLEANING_REQUIRED'?'warn':'blue'}">${ST[c.status]||c.status}</span></div>
+            <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+              <button class="btn ghost small" data-task="${c._id}">🧽 Mission nettoyage</button>
+              <button class="btn ghost small" data-tick="${c.serialNumber}">🛠️ Déclarer panne</button>
+            </div>
+          </div></div>`;
+        wrap.appendChild(el);
+      });
+      wrap.querySelectorAll('[data-task]').forEach(b=>b.onclick=async()=>{
+        try{ const r=await api('/api/housekeeping/tasks',{method:'POST',body:JSON.stringify({cabinId:b.dataset.task})}); toast('Mission créée pour '+r.task.cabinSerial); loadParc(); loadTasks(); }catch(e){ toast(e.message); }
+      });
+      wrap.querySelectorAll('[data-tick]').forEach(b=>b.onclick=()=>{ $('tkSerial').value=b.dataset.tick; switchTab('tickets'); });
+      obs(wrap);
+    }catch(e){wrap.innerHTML='<p class="muted">'+e.message+'</p>';}
+  }
+
+  function switchTab(v){
+    document.querySelectorAll('#mainTabs .tab').forEach(x=>x.classList.toggle('active',x.dataset.v===v));
+    ['parc','tasks','tickets'].forEach(x=>$('tab'+x[0].toUpperCase()+x.slice(1)).classList.toggle('hidden',x!==v));
+    if(v==='parc')loadParc(); if(v==='tasks')loadTasks(); if(v==='tickets')loadTickets();
+  }
+
+  // ============ MISSIONS ============
+  async function loadTasks(){
+    const wrap=$('taskList'); wrap.innerHTML=skeleton(3,110);
+    try{
+      const q=taskFilter?('?status='+taskFilter):'';
+      const j=await api('/api/housekeeping/tasks'+q);
+      wrap.innerHTML='';
+      if(!j.tasks.length){wrap.innerHTML='<p class="muted">Aucune mission.</p>';return;}
+      j.tasks.forEach(t=>{
+        const el=document.createElement('div'); el.className='item';
+        const stt=TW[t.status]||{t:t.status,c:''};
+        const agent=t.assignedAgent?('<span class="badge blue">👤 '+t.assignedAgent+'</span>'):'';
+        el.innerHTML=`<div class="top">
+          <div style="flex:1;min-width:0">
+            <b>${t.cabinSerial} <span class="badge ${stt.c}">${stt.t}</span> ${agent}</b>
+            <div class="meta">créée ${new Date(t.createdAt).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+          </div></div>
+          <div id="task-${t._id}-body"></div>`;
+        wrap.appendChild(el);
+        renderTaskBody(t,el.querySelector('#task-'+t._id+'-body'));
+      });
+      obs(wrap);
+    }catch(e){wrap.innerHTML='<p class="muted">'+e.message+'</p>';}
+  }
+
+  function renderTaskBody(t,body){
+    body.innerHTML='';
+    if(t.status==='PENDING'){
+      const b=document.createElement('button'); b.className='btn'; b.textContent='▶ Démarrer (mode service)';
+      b.onclick=async()=>{
+        try{ const r=await api('/api/housekeeping/tasks/'+t._id+'/start',{method:'POST',body:JSON.stringify({})}); toast('Porte ouverte — éclairage travail'); renderTaskBody(r.task,body); loadTasks(); }catch(e){ toast(e.message); }
+      };
+      body.appendChild(b);
+    } else if(t.status==='IN_PROGRESS'){
+      const pin=document.createElement('div'); pin.className='pin'; pin.textContent=t.accessCode;
+      const lbl=document.createElement('div'); lbl.className='meta'; lbl.textContent='Code PIN temporaire — agent service'; lbl.style.textAlign='center'; lbl.style.marginBottom='8px';
+      body.appendChild(lbl); body.appendChild(pin);
+      t.checklist.forEach(c=>{
+        const row=document.createElement('label'); row.className='check'+(c.done?' done':'');
+        const cb=document.createElement('input'); cb.type='checkbox'; cb.checked=!!c.done;
+        cb.onchange=async()=>{ try{ await api('/api/housekeeping/tasks/'+t._id+'/step',{method:'POST',body:JSON.stringify({key:c.key,done:cb.checked})}); row.classList.toggle('done',cb.checked); }catch(e){ toast(e.message); cb.checked=!cb.checked; } };
+        row.appendChild(cb);
+        const sp=document.createElement('span'); sp.textContent=c.label; row.appendChild(sp);
+        body.appendChild(row);
+      });
+      const ph=document.createElement('input'); ph.type='file'; ph.accept='image/*'; ph.multiple=true; ph.className='input'; ph.style.fontSize='.8rem';
+      ph.onchange=async()=>{
+        try{
+          const files=[...ph.files];
+          const photos=[];
+          for(const f of files.slice(0,2)){
+            photos.push(await new Promise(res=>{ const rd=new FileReader(); rd.onload=()=>res(rd.result); rd.readAsDataURL(f); }));
+          }
+          const r=await api('/api/housekeeping/tasks/'+t._id+'/complete',{method:'POST',body:JSON.stringify({proofPhotos:photos,notes:''})});
+          toast(r.message); loadTasks(); loadParc();
+        }catch(e){ toast(e.message); }
+      };
+      const phlbl=document.createElement('label'); phlbl.className='meta'; phlbl.textContent='📸 Photos de preuve (2) — requis pour terminer'; body.appendChild(phlbl); body.appendChild(ph);
+      const doneBtn=document.createElement('button'); doneBtn.className='btn ok'; doneBtn.textContent='✔ Terminer la mission';
+      doneBtn.onclick=()=>ph.click();
+      body.appendChild(doneBtn);
+    } else {
+      const meta=document.createElement('div'); meta.className='meta'; meta.textContent='✅ Terminée le '+new Date(t.completedAt).toLocaleString('fr-FR')+' · '+(t.photos||[]).length+' photo(s) de preuve'+(t.notes?' · '+t.notes:'');
+      body.appendChild(meta);
+    }
+  }
+
+  // ============ TICKETS ============
+  $('tkCreate').onclick=async()=>{
+    const serial=$('tkSerial').value.trim(),title=$('tkTitle').value.trim();
+    if(!serial||!title) return toast('Série et titre requis');
+    try{
+      const r=await api('/api/tickets',{method:'POST',body:JSON.stringify({serialNumber:serial,title,description:$('tkDesc').value.trim(),priority:$('tkPriority').value})});
+      toast('Ticket créé ('+r.ticket.priority+')');
+      $('tkTitle').value=''; $('tkDesc').value='';
+      loadTickets();
+    }catch(e){ toast(e.message); }
+  };
+  async function loadTickets(){
+    const wrap=$('ticketList'); wrap.innerHTML=skeleton(3,90);
+    try{
+      const q=ticketFilter?('?status='+ticketFilter):'';
+      const j=await api('/api/tickets'+q);
+      wrap.innerHTML='';
+      if(!j.tickets.length){wrap.innerHTML='<p class="muted">Aucun ticket.</p>';return;}
+      j.tickets.forEach(t=>{
+        const kt=KT[t.status]||{t:t.status,c:''};
+        const pr={LOW:'Basse',MEDIUM:'Moyenne',HIGH:'Haute',URGENT:'Urgente'}[t.priority];
+        const el=document.createElement('div'); el.className='item';
+        el.innerHTML=`<div class="top"><div style="flex:1;min-width:0">
+          <b>${t.title} <span class="badge ${kt.c}">${kt.t}</span> <span class="badge ${t.priority==='URGENT'?'red':t.priority==='HIGH'?'warn':'blue'}">${pr}</span></b>
+          <div class="meta">${t.cabinId?.serialNumber||t.cabinSerial} · signalé par ${t.reportedBy?.name||t.reporterName||'—'} le ${new Date(t.createdAt).toLocaleDateString('fr-FR')}</div>
+          ${t.description?`<div class="meta">${t.description}</div>`:''}
+          ${t.resolution?`<div class="meta" style="color:var(--ok)">✔ Résolution : ${t.resolution}</div>`:''}
+          <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+            ${t.status==='OPEN'?`<button class="btn ghost small" data-patch="${t._id}|IN_PROGRESS">En cours</button><button class="btn danger small" data-patch="${t._id}|MAINTENANCE">Mettre en maintenance</button>`:''}
+            ${t.status==='IN_PROGRESS'?`<button class="btn danger small" data-patch="${t._id}|MAINTENANCE">Mettre en maintenance</button>`:''}
+            ${t.status!=='RESOLVED'?`<button class="btn ok small" data-patch="${t._id}|RESOLVED">Résoudre</button>`:''}
+          </div></div></div>`;
+        wrap.appendChild(el);
+      });
+      wrap.querySelectorAll('[data-patch]').forEach(b=>b.onclick=async()=>{
+        try{
+          const [id,st]=b.dataset.patch.split('|');
+          let body={status:st};
+          if(st==='RESOLVED'){ const res=prompt('Note de résolution :',''); if(!res) return; body.resolution=res; }
+          const r=await api('/api/tickets/'+id,{method:'PATCH',body:JSON.stringify(body)});
+          toast(r.message+(r.cabinStatus?' · statut cabine : '+ST[r.cabinStatus]:'')); loadTickets(); loadParc();
+        }catch(e){ toast(e.message); }
+      });
+      obs(wrap);
+    }catch(e){wrap.innerHTML='<p class="muted">'+e.message+'</p>';}
+  }
+
+  function loadAll(){ loadParc(); loadTasks(); loadTickets(); }
+  (async()=>{ if(token){ $('authCard').classList.add('hidden'); $('appView').classList.remove('hidden'); loadAll(); } })();
+})();
+</script>
+<footer class="app-footer">© pixelsoftwaredesign 2026 · Management & Housekeeping — Cabines Intelligentes</footer>
+</body>
+</html>

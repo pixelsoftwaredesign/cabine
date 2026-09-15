@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#10161a">
+<meta name="author" content="pixelsoftwaredesign">
+<!-- © pixelsoftwaredesign 2026 -->
+<title>Usine de Cabines — Portail</title>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<script src="/animations.js"></script>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--ambient), var(--bg); color:var(--text); font-family:var(--font-ui); min-height:100vh; padding-bottom:24px; user-select:none; -webkit-user-select:none; }
+  .hidden{ display:none!important; }
+  header { position:sticky; top:0; z-index:20; background:rgba(11,18,32,.65); backdrop-filter:blur(6px); padding:16px 16px 10px; border-bottom:1px solid var(--border); }
+  header h1{ font-family:var(--font-display); font-size:1.3rem; font-weight:600; color:var(--accent); }
+  header h1 em{ color:var(--text); font-style:normal; }
+  header .sub{ color:var(--muted); font-size:.8rem; }
+  main{ max-width:820px; margin:0 auto; padding:16px; }
+  .card{ background:var(--card); border:1px solid rgba(255,255,255,.03); border-radius:16px; padding:16px; margin-bottom:14px; box-shadow:0 6px 18px rgba(0,0,0,.3); }
+  .row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .kpi{ flex:1; min-width:110px; text-align:center; background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:10px 6px; }
+  .kpi b{ display:block; font-family:var(--font-display); font-size:1.3rem; font-variant-numeric:tabular-nums; color:var(--accent); }
+  .kpi span{ color:var(--muted); font-size:.66rem; text-transform:uppercase; letter-spacing:.4px; }
+  h2{ font-size:1rem; margin-bottom:10px; }
+  h3{ font-size:.85rem; margin:10px 0 6px; color:var(--muted); }
+  .input, textarea.input{ width:100%; background:var(--card2); border:1px solid var(--border); color:var(--text); border-radius:12px; padding:12px; margin-bottom:10px; font-size:1rem; font-family:var(--font-ui); resize:vertical; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  label{ display:block; color:var(--muted); font-size:.8rem; margin-bottom:4px; }
+  .btn { display:block; width:100%; border:none; border-radius:14px; padding:13px; font-size:.95rem; font-weight:600; background:linear-gradient(155deg, var(--ember), var(--ember-dim)); box-shadow:0 4px 16px rgba(242,166,90,.28); color:#241202; cursor:pointer; margin-top:8px; }
+  .btn:active{ transform:scale(.98); }
+  .btn.ghost{ background:var(--card2); color:var(--text); box-shadow:none; }
+  .btn.danger{ background:#7f1d1d; color:var(--danger); box-shadow:none; }
+  .btn.small{ padding:7px 12px; font-size:.78rem; margin-top:0; width:auto; display:inline-block; border-radius:9px; }
+  .room-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+  .room-chip{ background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:8px 4px; text-align:center; font-size:.72rem; cursor:pointer; transition:all .2s var(--ease-out); }
+  .room-chip .ico{ display:block; font-size:1.15rem; margin-bottom:2px; }
+  .room-chip.sel{ background:linear-gradient(155deg, var(--ember), var(--ember-dim)); border-color:transparent; color:#241202; font-weight:600; }
+  .unit{ border:1px solid var(--border); background:var(--card2); border-radius:12px; padding:12px; margin-bottom:10px; }
+  .unit .top{ display:flex; gap:10px; align-items:flex-start; }
+  .unit b{ font-size:.95rem; }
+  .unit .meta{ color:var(--muted); font-size:.72rem; }
+  .unit .actions{ display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+  .badge{ font-size:.68rem; padding:3px 8px; border-radius:99px; font-weight:600; }
+  .badge.ok{ background:#14532d; color:var(--ok); }
+  .badge.warn{ background:#451a03; color:var(--warn); }
+  .badge.blue{ background:#0c4a6e; color:var(--accent); }
+  .badge.red{ background:#7f1d1d; color:var(--danger); }
+  .tabs{ display:flex; gap:8px; margin-bottom:12px; overflow-x:auto; }
+  .tab{ background:var(--card2); border:1px solid transparent; color:var(--muted); padding:8px 14px; border-radius:10px; font-size:.85rem; cursor:pointer; white-space:nowrap; }
+  .tab.active{ background:linear-gradient(155deg, var(--ember), var(--ember-dim)); color:#241202; font-weight:600; }
+  .comp{ display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); gap:8px; }
+  .comp:last-child{ border:none; }
+  .comp .label{ flex:1; }
+  .comp .label b{ font-size:.88rem; }
+  .comp .label small{ color:var(--muted); display:block; }
+  .comp .cnt{ font-family:var(--font-display); font-size:1.2rem; min-width:46px; text-align:center; }
+  .comp .cnt.warn{ color:var(--danger); }
+  .price{ color:var(--accent); font-weight:700; }
+  .muted{ color:var(--muted); }
+  .toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--card); border:1px solid var(--border); padding:12px 18px; border-radius:12px; font-weight:600; z-index:60; display:none; max-width:90vw; }
+  .toast.show{ display:block; }
+  .switch{ position:relative; width:52px; height:30px; }
+  .switch input{ opacity:0; width:0; height:0; }
+  .slider{ position:absolute; inset:0; background:#475569; border-radius:30px; transition:background-color .25s var(--ease-out); cursor:pointer; }
+  .slider::before{ content:''; position:absolute; height:24px; width:24px; left:3px; top:3px; background:#fff; border-radius:50%; transition:transform .35s var(--ease-spring); }
+  .switch input:checked + .slider{ background:var(--accent); }
+  .switch input:checked + .slider::before{ transform:translateX(22px); }
+  .modal{ position:fixed; inset:0; z-index:70; background:rgba(8,12,16,.72); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; padding:16px; }
+  .modal.show{ display:flex; }
+  .modal .box{ background:var(--card); border:1px solid var(--border); border-radius:16px; max-width:420px; width:100%; padding:18px; max-height:86vh; overflow-y:auto; }
+  .qr-wrap{ text-align:center; margin:12px 0; }
+  .qr-wrap canvas{ border-radius:8px; border:2px solid var(--border); }
+  .tt{ font-size:.95rem; color:var(--ok); font-weight:600; }
+  .ff{ font-size:.95rem; color:var(--danger); font-weight:600; }
+  @media(max-width:560px){ .room-grid{ grid-template-columns:repeat(2,1fr); } .grid2{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<header id="authHeader" class="hidden"><h1>🏭 Usine de <em>Cabines</em></h1><div class="sub">Assemblage · Banc de test · QR livraison · FOTA</div></header>
+
+<main>
+  <div id="authView">
+    <div class="card" style="max-width:440px;margin:24px auto">
+      <h2>Accès fabriquant</h2>
+      <label>Email</label><input class="input" id="email" type="email" placeholder="usine@exemple.com">
+      <label>Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
+      <button class="btn" id="loginBtn">Se connecter</button>
+    </div>
+  </div>
+
+  <div id="appView" class="hidden">
+    <div class="tabs" id="mainTabs">
+      <button class="tab active" data-v="prod">🔧 Production</button>
+      <button class="tab" data-v="asm">🔩 Assemblage</button>
+      <button class="tab" data-v="models">📐 Modèles</button>
+      <button class="tab" data-v="comps">🧰 Composants</button>
+      <button class="tab" data-v="ships">🚚 Livraisons</button>
+      <button class="tab" data-v="fota">📡 FOTA</button>
+    </div>
+
+    <!-- ============ PRODUCTION ============ -->
+    <div id="tabProd">
+      <div class="card"><h2>Production</h2>
+        <div class="row">
+          <div class="kpi"><b id="kUnits">--</b><span>Unités</span></div>
+          <div class="kpi"><b id="kAssem">--</b><span>Montage</span></div>
+          <div class="kpi"><b id="kTested">--</b><span>Testées</span></div>
+          <div class="kpi"><b id="kReady">--</b><span>Prêtes envoi</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>➕ Enregistrer une unité (assemblage)</h2>
+        <p class="muted" style="font-size:.8rem;margin-bottom:10px">Enregistrez le matériel : série, version carte, MAC ESP32, certificat MQTT généré automatiquement.</p>
+        <div class="grid2">
+          <div><label>Numéro de série (optionnel — auto généré)</label><input class="input" id="uSerial" placeholder="CAB-2026-TN-XXXX"></div>
+          <div><label>Nom / modèle</label><input class="input" id="uName" placeholder="Cabane Maison 45m²"></div>
+        </div>
+        <div class="grid2">
+          <div><label>Version carte / armoire</label><input class="input" id="uHw" placeholder="v2.4-PRO"></div>
+          <div><label>Adresse MAC ESP32</label><input class="input" id="uMac" placeholder="24:0A:C4:9B:12:34"></div>
+        </div>
+        <h3>🏠 Pièces de la cabine (construction)</h3>
+        <div class="room-grid" id="uRoomGrid"></div>
+        <button class="btn" id="uSave">Enregistrer le matériel</button>
+      </div>
+
+      <div class="card"><h2>📦 Unités en production</h2><div id="unitList" class="stagger-in"></div></div>
+    </div>
+
+    <!-- ============ ASSEMBLAGE P1 → P4 ============ -->
+    <div id="tabAsm" class="hidden">
+      <div class="card">
+        <h2>🔩 Ligne d'assemblage P1 → P4</h2>
+        <p class="muted" style="font-size:.8rem;margin-bottom:10px">Validez chaque poste, opération par opération. Le banc de test QC reste accessible depuis l'onglet Production.</p>
+        <label>Unité en production</label>
+        <select class="input" id="asmUnit"></select>
+        <button class="btn ghost" id="asmLoad">Charger la cadence</button>
+      </div>
+      <div id="asmBoard"></div>
+    </div>
+
+    <!-- ============ MODÈLES ============ -->
+    <div id="tabModels" class="hidden">
+      <div class="card">
+        <h2 id="formTitle">➕ Nouveau modèle de cabine</h2>
+        <p class="muted" style="font-size:.8rem;margin-bottom:10px">Définissez le plan du modèle : nom, prix, stock et pièces (toilette, chambre, bureau, cuisine, salon…).</p>
+        <label>Titre du modèle</label><input class="input" id="fTitle" placeholder="Cabane Maison 45m²">
+        <label>Description</label><textarea class="input" id="fDesc" rows="2" placeholder="Cabine connectée, livrée appairée…"></textarea>
+        <label>Image (URL)</label><input class="input" id="fImage" placeholder="https://…/image.jpg">
+        <div class="grid2">
+          <div><label>Prix d'achat (€)</label><input class="input" id="fPrice" type="number" min="0"></div>
+          <div><label>Stock</label><input class="input" id="fStock" type="number" min="0" value="999"></div>
+        </div>
+        <div class="grid2">
+          <div><label>Location par défaut (€/h)</label><input class="input" id="fRent" type="number" min="0" value="12"></div>
+          <div><label>Capacité (personnes)</label><input class="input" id="fCap" type="number" min="1" value="2"></div>
+        </div>
+        <div class="grid2">
+          <div><label>Surface (m²)</label><input class="input" id="fSurf" type="number" min="0"></div>
+          <div><label>Disponible à la vente</label><label class="switch" style="margin-top:14px"><input type="checkbox" id="fAvail" checked><span class="slider"></span></label></div>
+        </div>
+        <h3>🏠 Pièces du modèle</h3>
+        <div class="room-grid" id="roomGrid"></div>
+        <button class="btn" id="saveBtn">Construire le modèle</button>
+        <button class="btn ghost hidden" id="cancelBtn" style="margin-top:6px">Annuler la modification</button>
+      </div>
+      <div class="card"><h2>📦 Modèles en catalogue</h2><div id="prodList" class="stagger-in"></div></div>
+    </div>
+
+    <!-- ============ COMPOSANTS ============ -->
+    <div id="tabComps" class="hidden">
+      <div class="card"><h2>🧰 Stock de composants</h2>
+        <p class="muted" style="font-size:.8rem;margin-bottom:8px">ESP32, relais, serrures, écrans, compteurs…</p>
+        <div id="compList"></div>
+      </div>
+    </div>
+
+    <!-- ============ LIVRAISONS ============ -->
+    <div id="tabShips" class="hidden">
+      <div class="card"><h2>🚚 Cabines livrées (unités construites)</h2><div id="orderList" class="stagger-in"><p class="muted">Chargement…</p></div></div>
+    </div>
+
+    <!-- ============ FOTA ============ -->
+    <div id="tabFota" class="hidden">
+      <div class="card">
+        <h2>📡 Mise à jour firmware (FOTA)</h2>
+        <label>Numéro de série</label><input class="input" id="fuSerial" placeholder="CAB-2026-TN-XXXX">
+        <label>Version cible</label><input class="input" id="fuVersion" placeholder="v2.4.1">
+        <p class="meta muted" id="fuStatus">Déployez une version stable avant expédition.</p>
+        <button class="btn" id="fuSend">Déployer la version</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="modal" id="traceModal"><div class="box">
+  <h2 id="traceTitle">Fiche de fabrication</h2>
+  <div id="traceBody"></div>
+  <button class="btn ghost" id="traceClose">Fermer</button>
+</div></div>
+<div class="modal" id="qrModal"><div class="box">
+  <h2>QR d’appairage</h2>
+  <div class="qr-wrap" id="qrWrap"></div>
+  <p class="muted" id="qrInfo" style="font-size:.8rem;text-align:center"></p>
+  <button class="btn ghost" id="qrClose">Fermer</button>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  if (window.CabinMotion) CabinMotion.init(document);
+  const API = location.origin;
+  const $ = (id)=>document.getElementById(id);
+  const FB = { IN_ASSEMBLY:{t:'Montage',c:'warn'}, TESTED:{t:'Testée',c:'blue'}, READY_FOR_SHIPPING:{t:'Prête envoi',c:'ok'}, SHIPPED:{t:'Expédiée',c:'blue'}, INSTALLED:{t:'Installée',c:'blue'}, DELIVERED_AND_COMMISSIONED:{t:'Livrée & prête',c:'ok'} };
+  let token = localStorage.getItem('usine_token') || '';
+  const auth=(h={})=>({ 'Content-Type':'application/json', ...(token?{Authorization:'Bearer '+token}:{}), ...h });
+  async function api(path, opts={}){
+    const res=await fetch(API+path, {...opts, headers: auth(opts.headers)});
+    const json=await res.json().catch(()=>({success:false,message:'Réponse invalide'}));
+    if(!res.ok && !json.success) throw new Error(json.message||('Erreur '+res.status));
+    return json;
+  }
+  function toast(m){
+    if (window.CabinMotion && CabinMotion.toast) return CabinMotion.toast(m, { duration: 3200 });
+    const el=$('toast'); el.textContent=m; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3500);
+  }
+  const fmt=(n)=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(n);
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const escAttr=s=>esc(s);
+
+  let rooms=[]; let products=[]; let selectedRooms=new Set();
+  const roomInfo=(code)=>rooms.find(r=>r.code===code)||{code,label:code,icon:'🚪'};
+  const LC={FACTORY_PURCHASED:['Achetée usine','warn'],READY_FOR_SHIPPING:['Prête envoi','blue'],IN_TRANSIT:['En transit','blue'],ASSEMBLY_IN_PROGRESS:['Assemblage','warn'],OPERATIONAL:['En service','ok'],DECOMPOSITION_REQUESTED:['Décomposition','red'],DECOMPOSED_IN_STORAGE:['Stockée','muted']};
+
+  function renderRoomGrid(wrapId){
+    const wrap=$(wrapId); if(!wrap) return; wrap.innerHTML='';
+    rooms.forEach(r=>{
+      const el=document.createElement('div');
+      el.className='room-chip'+(selectedRooms.has(r.code)?' sel':'');
+      el.innerHTML=`<span class="ico">${r.icon}</span>${r.label}`;
+      el.onclick=()=>{ selectedRooms.has(r.code)?selectedRooms.delete(r.code):selectedRooms.add(r.code); renderRoomGrid(wrapId); };
+      wrap.appendChild(el);
+    });
+  }
+
+  // ============ TABS ============
+  const TAB_LOAD = { prod: loadAll, asm: loadAsmSel, models: loadProducts, comps: loadComps, ships: loadOrders, fota: ()=>{} };
+  document.querySelectorAll('#mainTabs .tab').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#mainTabs .tab').forEach(x=>x.classList.toggle('active',x===b));
+    ['prod','asm','models','comps','ships','fota'].forEach(v=>$('tab'+v[0].toUpperCase()+v.slice(1)).classList.toggle('hidden', v!==b.dataset.v));
+    (TAB_LOAD[b.dataset.v] || function(){})();
+  });
+
+  // ============ AUTH ============
+  $('loginBtn').onclick=async()=>{
+    const email=$('email').value.trim(), password=$('password').value;
+    if(!email||!password) return toast('Email et mot de passe requis');
+    try{
+      const json=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email,password})});
+      if(json.user?.role!=='ADMIN') return toast('Compte sans accès usine');
+      token=json.token; localStorage.setItem('usine_token',token);
+      $('authView').classList.add('hidden'); $('appView').classList.remove('hidden');
+      renderRoomGrid('uRoomGrid'); renderRoomGrid('roomGrid'); loadAll();
+    }catch(e){ toast(e.message); }
+  };
+
+  // ============ PRODUCTION ============
+  async function loadMetrics(){
+    try{ const j=await api('/api/factory/metrics'); const m=j.metrics;
+      $('kUnits').textContent=m.units||0;
+      const by=m.unitsByStatus||{};
+      $('kAssem').textContent=by.IN_ASSEMBLY||0;
+      $('kTested').textContent=by.TESTED||0;
+      $('kReady').textContent=by.READY_FOR_SHIPPING||0;
+    }catch(e){}
+  }
+  async function loadUnits(){
+    const wrap=$('unitList'); wrap.innerHTML=skeleton(3,110);
+    try{
+      const j=await api('/api/factory/units');
+      wrap.innerHTML='';
+      if(!j.units.length){ wrap.innerHTML='<p class="muted">Aucune unité enregistrée. Enregistrez du matériel ci-dessus.</p>'; return; }
+      j.units.forEach(u=>{
+        const el=document.createElement('div'); el.className='unit';
+        const st=FB[u.factoryStatus]||{t:u.factoryStatus,c:''};
+        const lcs=LC[u.lifecycle]||[u.lifecycle||'—','muted'];
+        const mac=u.hardware?.esp32MacAddress||'--';
+        el.innerHTML=`
+          <div class="top">
+            <div style="width:42px;height:42px;border-radius:11px;background:linear-gradient(155deg,rgba(242,166,90,.32),rgba(242,166,90,.05));border:1px solid rgba(242,166,90,.22);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">🏠</div>
+            <div style="flex:1;min-width:0">
+              <b>${u.serialNumber} <span class="badge ${st.c}">${st.t}</span> <span class="badge ${lcs[1]}">${lcs[0]}</span></b>
+              <div class="meta">${u.name} · carte ${u.hardware?.hardwareVersion||'--'} · MAC ${mac}${u.hasToken?' · QR appairé':''}</div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn ghost small" data-qc="${u._id}">🔬 Banc de test</button>
+            <button class="btn ghost small" data-qr="${u._id}">🏷️ QR livraison</button>
+            <button class="btn ghost small" data-fiche="${u.serialNumber}">📋 Fiche</button>
+          </div>`;
+        wrap.appendChild(el);
+      });
+      wrap.querySelectorAll('[data-qc]').forEach(b=>b.onclick=()=>runQC(b.dataset.qc,b));
+      wrap.querySelectorAll('[data-qr]').forEach(b=>b.onclick=()=>genQR(b.dataset.qr));
+      wrap.querySelectorAll('[data-fiche]').forEach(b=>b.onclick=()=>showTrace(b.dataset.fiche));
+      if(window.CabinMotion) window.CabinMotion.observeReveals(wrap);
+    }catch(e){ wrap.innerHTML='<p class="muted">'+e.message+'</p>'; }
+  }
+  function skeleton(n=3,h=90){ return Array.from({length:n},()=>`<div class="card skeleton" style="height:${h}px"></div>`).join(''); }
+  async function runQC(id,btn){
+    btn.disabled=true; const orig=btn.textContent; btn.textContent='⏳ Test en cours…';
+    try{
+      const j=await api('/api/factory/units/'+id+'/qc',{method:'POST',body:JSON.stringify({})});
+      toast(j.message);
+      if(window.CabinMotion) CabinMotion.toast(j.tests.filter(t=>t.result==='PASS').length+'/5 tests OK');
+      loadUnits(); loadMetrics();
+    }catch(e){ toast(e.message); btn.disabled=false; btn.textContent=orig; }
+  }
+  async function genQR(id){
+    try{
+      const j=await api('/api/factory/units/'+id+'/shipping-qr',{method:'POST',body:JSON.stringify({})});
+      toast('QR généré — '+j.factoryStatus);
+      $('qrInfo').textContent='Série : '+j.serialNumber+' · Token : '+j.token;
+      $('qrWrap').innerHTML='';
+      new QRCode($('qrWrap'),{text:j.qr,width:180,height:180,colorDark:'#eef3f1',colorLight:'#1a2228',correctLevel:QRCode.CorrectLevel.M});
+      $('qrModal').classList.add('show');
+      loadUnits(); loadMetrics();
+    }catch(e){ toast(e.message); }
+  }
+  async function showTrace(serial){
+    try{
+      const j=await api('/api/factory/units/'+encodeURIComponent(serial)+'/trace');
+      const t=j.trace;
+      $('traceTitle').textContent='Fiche — '+t.serialNumber;
+      const qc=t.qcTests.map(q=>`<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:.85rem"><span class="${q.result==='PASS'?'tt':'ff'}">${q.result==='PASS'?'✓':'✗'} ${q.result}</span> — ${q.test} <span class="muted">· ${q.details}</span></div>`).join('')||'<p class="muted">Aucun test QC</p>';
+      $('traceBody').innerHTML=`
+        <p class="muted" style="font-size:.85rem">${t.name} · ${t.factoryStatus}</p>
+        <div class="meta" style="margin:6px 0">Carte ${t.hardware?.hardwareVersion||'--'} · MAC ${t.hardware?.esp32MacAddress||'--'} · MQTT ${t.hardware?.mqttUsername||'--'}</div>
+        <h3>🔬 Tests QC</h3>${qc}
+        <h3>🧾 Commande</h3><p class="muted" style="font-size:.85rem">${t.order?t.order.productId?.title+' · '+fmt(t.order.price)+' · livraison '+new Date(t.order.createdAt).toLocaleDateString('fr-FR'):'Cabine non vendue (stock usine)'}</p>
+        <h3>🛠️ Tickets</h3><p class="muted" style="font-size:.85rem">${t.tickets.length?t.tickets.map(x=>x.title+' ('+x.status+')').join(' · '):'Aucun'}</p>
+        <h3>🧹 Nettoyages</h3><p class="muted" style="font-size:.85rem">${t.tasks.length?t.tasks.length+' intervention(s)':'Aucune'}</p>`;
+      $('traceModal').classList.add('show');
+    }catch(e){ toast(e.message); }
+  }
+  $('traceClose').onclick=()=>$('traceModal').classList.remove('show');
+  $('qrClose').onclick=()=>$('qrModal').classList.remove('show');
+
+  $('uSave').onclick=async()=>{
+    try{
+      const j=await api('/api/factory/units',{method:'POST',body:JSON.stringify({
+        serialNumber:$('uSerial').value.trim()||undefined,
+        name:$('uName').value.trim(),
+        hardwareVersion:$('uHw').value.trim(),
+        esp32MacAddress:$('uMac').value.trim(),
+        rooms:[...selectedRooms]
+      })});
+      toast('Unité enregistrée : '+j.unit.serialNumber+' ('+j.unit.factoryStatus+')');
+      ['uSerial','uName','uHw','uMac'].forEach(id=>$(id).value='');
+      selectedRooms.clear(); renderRoomGrid('uRoomGrid');
+      loadUnits(); loadMetrics(); loadAsmSel();
+    }catch(e){ toast(e.message); }
+  };
+
+  // ============ ASSEMBLAGE ============
+  let asmUnitId=null;
+  async function loadAsmSel(){
+    try{
+      const j=await api('/api/factory/units');
+      const candidates=j.units.filter(u=>['IN_ASSEMBLY','TESTED'].includes(u.factoryStatus));
+      $('asmUnit').innerHTML=candidates.length?candidates.map(u=>`<option value="${u._id}">${u.serialNumber} — ${FB[u.factoryStatus]?.t||u.factoryStatus}</option>`).join(''):'<option value="">Aucune unité en montage</option>';
+      if(asmUnitId && candidates.some(u=>u._id===asmUnitId)) showAsm();
+    }catch(e){}
+  }
+  $('asmLoad').onclick=()=>{ asmUnitId=$('asmUnit').value; asmUnitId&&showAsm(); };
+  async function showAsm(){
+    if(!asmUnitId) return toast('Choisissez une unité');
+    $('asmBoard').innerHTML='<p class="muted">Chargement…</p>';
+    try{
+      const j=await api('/api/factory/units/'+asmUnitId+'/assembly');
+      const done=j.assembly.filter(a=>a.status==='DONE').length;
+      $('asmBoard').innerHTML=`
+        <div class="card">
+          <h2>🏠 ${j.serialNumber} <span class="badge ${done===4?'ok':'warn'}">${done}/4 postes validés</span></h2>
+          <div style="background:var(--card2);border:1px solid var(--border);border-radius:99px;height:10px;overflow:hidden;margin-top:8px"><div style="width:${(done/4*100)}%;height:100%;background:linear-gradient(90deg,var(--ember),var(--pine));transition:width .4s var(--ease-out)"></div></div>
+        </div>
+      `+j.assembly.map((a,idx)=>{
+        const ops=a.operations.map(o=>`<label style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.82rem;border-bottom:1px solid rgba(255,255,255,.04)">
+          <input type="checkbox" data-op="${escAttr(o.label)}" ${o.done?'checked disabled':''}> ${esc(o.label)}</label>`).join('');
+        return `<div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+            <h2 style="margin:0">${a.station} — ${esc(a.label)}</h2>
+            <span class="badge ${a.status==='DONE'?'ok':'warn'}">${a.status==='DONE'?'Terminé':'En attente'}</span>
+          </div>
+          <div class="meta" style="margin-top:6px">${a.doneBy?('Par '+esc(a.doneBy)):''}${a.startedAt?' · début '+new Date(a.startedAt).toLocaleTimeString('fr-FR').slice(0,5):''}${a.completedAt?' · fin '+new Date(a.completedAt).toLocaleTimeString('fr-FR').slice(0,5):''}</div>
+          <div style="margin:8px 0">${ops}</div>
+          <div class="actions" style="display:flex;gap:8px">
+            <button class="btn small" data-val="${a.station}" ${a.status==='DONE'?'disabled':''}>✔ Valider le poste</button>
+            <button class="btn ghost small" data-reset="${a.station}" ${a.status==='PENDING'?'disabled':''}>↺ Réinitialiser</button>
+            <span class="meta" style="align-self:center">⏱ prévu ${j.stations[idx]?.durationMin||''} min</span>
+          </div></div>`;
+      }).join('');
+      document.querySelectorAll('[data-val]').forEach(b=>b.onclick=async()=>{
+        const ops=[...$('asmBoard').querySelectorAll('[data-op]')].filter(i=>i.checked||i.disabled).map(i=>i.dataset.op);
+        try{ const r=await api('/api/factory/units/'+asmUnitId+'/assembly/'+b.dataset.val,{method:'POST',body:JSON.stringify({operations:ops})}); toast('Poste '+b.dataset.val+' validé'); showAsm(); }catch(e){ toast(e.message); }
+      });
+      document.querySelectorAll('[data-reset]').forEach(b=>b.onclick=async()=>{
+        if(!confirm('Réinitialiser ce poste ?')) return;
+        try{ await api('/api/factory/units/'+asmUnitId+'/assembly/'+b.dataset.reset+'/reset',{method:'POST',body:JSON.stringify({})}); toast('Poste réinitialisé'); showAsm(); }catch(e){ toast(e.message); }
+      });
+    }catch(e){ $('asmBoard').innerHTML='<p class="muted">'+e.message+'</p>'; }
+  }
+
+  // ============ MODELS ============
+  let editingId=null;
+  function resetForm(){
+    editingId=null; $('formTitle').textContent='➕ Nouveau modèle de cabine';
+    ['fTitle','fDesc','fImage','fPrice','fStock','fRent','fCap','fSurf'].forEach(id=>$(id).value='');
+    $('fStock').value=999; $('fRent').value=12; $('fCap').value=2; $('fAvail').checked=true;
+    selectedRooms.clear(); renderRoomGrid('roomGrid'); $('cancelBtn').classList.add('hidden');
+  }
+  function fillForm(p){
+    editingId=p._id; $('formTitle').textContent='✏️ Modifier : '+p.title;
+    $('fTitle').value=p.title||''; $('fDesc').value=p.description||''; $('fImage').value=p.image||'';
+    $('fPrice').value=p.price??''; $('fStock').value=p.stock??''; $('fRent').value=p.defaultRentalPricePerHour??'';
+    $('fCap').value=p.specs?.capacity??''; $('fSurf').value=p.specs?.surfaceM2??''; $('fAvail').checked=p.available!==false;
+    selectedRooms=new Set(p.specs?.rooms||[]); renderRoomGrid('roomGrid'); $('cancelBtn').classList.remove('hidden');
+  }
+  async function loadProducts(){
+    const wrap=$('prodList'); wrap.innerHTML=skeleton(3,96);
+    try{
+      const j=await api('/api/factory/products'); products=j.products;
+      wrap.innerHTML='';
+      if(!products.length){ wrap.innerHTML='<p class="muted">Aucun modèle.</p>'; return; }
+      products.forEach(p=>{
+        const el=document.createElement('div');
+        el.className='unit';
+        el.innerHTML=`
+          <b>${p.title} <span class="badge ${p.available?'ok':'warn'}">${p.available?'Vente':'Masqué'}</span></b>
+          <div class="meta">${fmt(p.price)} · stock <b>${p.stock}</b> · ${p.specs?.surfaceM2?p.specs.surfaceM2+' m²':''} · ${p.specs?.capacity||2} pers · location ${p.defaultRentalPricePerHour}€/h</div>
+          <div class="meta">🏠 ${(p.specs?.rooms||[]).map(c=>roomInfo(c).label).join(', ')||'aucune pièce'}</div>
+          <div class="actions"><button class="btn ghost small" data-edit="${p._id}">Modifier</button><button class="btn danger small" data-del="${p._id}">Supprimer</button></div>`;
+        wrap.appendChild(el);
+      });
+      wrap.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>fillForm(products.find(x=>x._id===b.dataset.edit)));
+      wrap.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
+        if(!confirm('Supprimer ce modèle ?')) return;
+        try{ await api('/api/factory/products/'+b.dataset.del,{method:'DELETE'}); toast('Modèle supprimé'); loadProducts(); loadMetrics(); resetForm(); }catch(e){ toast(e.message); }
+      });
+      if(window.CabinMotion) window.CabinMotion.observeReveals(wrap);
+    }catch(e){ wrap.innerHTML='<p class="muted">'+e.message+'</p>'; }
+  }
+  $('saveBtn').onclick=async()=>{
+    try{
+      const title=$('fTitle').value.trim(); const price=Number($('fPrice').value);
+      if(!title||!(price>=0)) return toast('Titre et prix requis');
+      const body={title,description:$('fDesc').value.trim(),image:$('fImage').value.trim(),price,stock:Number($('fStock').value)||0,defaultRentalPricePerHour:Number($('fRent').value)||0,available:$('fAvail').checked,specs:{capacity:Number($('fCap').value)||1,surfaceM2:$('fSurf').value?Number($('fSurf').value):undefined,rooms:[...selectedRooms]}};
+      if(editingId){ await api('/api/factory/products/'+editingId,{method:'PATCH',body:JSON.stringify(body)}); toast('Modèle mis à jour'); }
+      else { await api('/api/factory/products',{method:'POST',body:JSON.stringify(body)}); toast('Modèle construit'); }
+      resetForm(); loadProducts();
+    }catch(e){ toast(e.message); }
+  };
+  $('cancelBtn').onclick=resetForm;
+
+  // ============ COMPONENTS ============
+  async function loadComps(){
+    const wrap=$('compList'); wrap.innerHTML='<p class="muted">Chargement…</p>';
+    try{
+      const j=await api('/api/factory/components');
+      wrap.innerHTML='';
+      j.components.forEach(c=>{
+        const el=document.createElement('div'); el.className='comp';
+        const warn=c.stock<=c.minWarning;
+        el.innerHTML=`
+          <div class="label"><b>${c.label}</b><small>${c.code} · seuil ${c.minWarning}</small></div>
+          <div class="cnt${warn?' warn':''}">${c.stock}</div>
+          <div style="display:flex;gap:6px"><button class="btn ghost small" data-dec="${c.code}">−</button><button class="btn ghost small" data-inc="${c.code}">+</button></div>`;
+        wrap.appendChild(el);
+      });
+      wrap.querySelectorAll('[data-inc]').forEach(b=>b.onclick=()=>bump(b.dataset.inc,1));
+      wrap.querySelectorAll('[data-dec]').forEach(b=>b.onclick=()=>bump(b.dataset.dec,-1));
+    }catch(e){ wrap.innerHTML='<p class="muted">'+e.message+'</p>'; }
+  }
+  async function bump(code,delta){
+    try{ await api('/api/factory/components/'+code,{method:'PATCH',body:JSON.stringify({delta})}); loadComps(); }catch(e){ toast(e.message); }
+  }
+
+  // ============ ORDERS ============
+  async function loadOrders(){
+    const wrap=$('orderList');
+    try{
+      const j=await api('/api/factory/orders');
+      wrap.innerHTML='';
+      if(!j.orders.length){ wrap.innerHTML='<p class="muted">Aucune cabine livrée.</p>'; return; }
+      j.orders.forEach(o=>{
+        const el=document.createElement('div'); el.className='unit';
+        el.innerHTML=`<b>${o.serialNumber} <span class="badge ok">Livrée</span></b>
+          <div class="meta">${o.productTitle} · ${new Date(o.createdAt).toLocaleDateString('fr-FR')} · ${fmt(o.price)}</div>
+          <div class="meta">🏠 ${(o.rooms||[]).map(c=>roomInfo(c).label).join(', ')||'—'}</div>`;
+        wrap.appendChild(el);
+      });
+      if(window.CabinMotion) window.CabinMotion.observeReveals(wrap);
+    }catch(e){ wrap.innerHTML='<p class="muted">'+e.message+'</p>'; }
+  }
+
+  // ============ FOTA ============
+  $('fuSend').onclick=async()=>{
+    const serial=$('fuSerial').value.trim(), version=$('fuVersion').value.trim();
+    if(!serial||!version) return toast('Série et version requises');
+    try{
+      const j=await api('/api/factory/fota',{method:'POST',body:JSON.stringify({serialNumber:serial,version})});
+      $('fuStatus').textContent=j.message; toast(j.message);
+    }catch(e){ toast(e.message); }
+  };
+
+  function loadAll(){ loadMetrics(); loadUnits(); loadAsmSel(); }
+
+  (async()=>{
+    try{ const r=await api('/api/factory/rooms'); rooms=r.rooms||[]; renderRoomGrid('uRoomGrid'); renderRoomGrid('roomGrid'); }catch(e){ rooms=[]; }
+    if(token){
+      $('authView').classList.add('hidden'); $('appView').classList.remove('hidden');
+      loadAll();
+    }
+  })();
+})();
+</script>
+<footer class="app-footer">© pixelsoftwaredesign 2026 · Usine — Cabines Intelligentes</footer>
+</body>
+</html>

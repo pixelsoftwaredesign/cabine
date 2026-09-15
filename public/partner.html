@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#10161a">
+<meta name="author" content="pixelsoftwaredesign">
+<!-- © pixelsoftwaredesign 2026 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Cabine Partner</title>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/biometrics.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<script src="/animations.js"></script>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { height:100%; }
+  body {
+    background:var(--ambient), var(--bg); color:var(--text); font-family:var(--font-ui);
+    padding-bottom:88px; min-height:100vh; user-select:none; -webkit-user-select:none;
+  }
+  .hidden{ display:none!important; }
+  header {
+    position:sticky; top:0; z-index:20; background:rgba(11,18,32,.65); backdrop-filter:blur(6px); padding:16px 16px 10px;
+    border-bottom:1px solid var(--border);
+  }
+  header h1{ font-family:var(--font-display); font-size:1.3rem; font-weight:600; }
+  header .sub{ color:var(--muted); font-size:.8rem; }
+  main { padding:16px; max-width:440px; margin:0 auto; }
+  .card { background:var(--card); border:1px solid rgba(255,255,255,.03); border-radius:16px; padding:16px; margin-bottom:14px; box-shadow:0 6px 18px rgba(0,0,0,.3); }
+  .row { display:flex; gap:10px; }
+  .kpi { flex:1; text-align:center; }
+  .kpi b{ display:block; font-family:var(--font-display); font-size:1.4rem; font-variant-numeric:tabular-nums; }
+  .kpi span{ color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.5px; }
+  h2{ font-size:1rem; margin-bottom:10px; }
+  .cabin { display:flex; gap:12px; align-items:center; }
+  .cabin .dot{ width:42px; height:42px; border-radius:12px; background:linear-gradient(155deg, rgba(242,166,90,.32), rgba(242,166,90,.05)); border:1px solid rgba(242,166,90,.22); display:flex; align-items:center; justify-content:center; font-size:1.2rem; }
+  .cabin .info{ flex:1; }
+  .cabin .info b{ display:block; font-size:.98rem; }
+  .cabin .info small{ color:var(--muted); }
+  .badge{ font-size:.7rem; padding:3px 8px; border-radius:99px; font-weight:600; }
+  .badge.ok{ background:#14532d; color:var(--ok); }
+  .badge.warn{ background:#451a03; color:var(--warn); }
+  .badge.red{ background:#7f1d1d; color:var(--danger); }
+  .badge.blue{ background:#0c4a6e; color:var(--accent); }
+  .btn {
+    display:block; width:100%; border:none; border-radius:14px; padding:14px; font-size:1rem;
+    font-weight:600; background:linear-gradient(155deg, var(--ember), var(--ember-dim)); box-shadow:0 4px 16px rgba(242,166,90,.28); color:#241202; cursor:pointer; margin-top:8px;
+  }
+  .btn:active{ transform:scale(.98); }
+  .btn.ghost{ background:var(--card2); color:var(--text); box-shadow:none; }
+  .btn.danger{ background:#7f1d1d; color:var(--danger); box-shadow:none; }
+  .input {
+    width:100%; background:var(--card2); border:1px solid var(--border); color:var(--text);
+    border-radius:12px; padding:12px; margin-bottom:10px; font-size:1rem;
+  }
+  label{ display:block; color:var(--muted); font-size:.8rem; margin-bottom:4px; }
+  .switch { position:relative; width:52px; height:30px; }
+  .switch input{ opacity:0; width:0; height:0; }
+  .slider{ position:absolute; inset:0; background:#475569; border-radius:30px; transition:background-color .25s var(--ease-out); cursor:pointer; }
+  .slider::before{ content:''; position:absolute; height:24px; width:24px; left:3px; top:3px; background:#fff; border-radius:50%; transition:transform .35s var(--ease-spring); }
+  .switch input:checked + .slider{ background:var(--accent); }
+  .switch input:checked + .slider::before{ transform:translateX(22px); }
+  .nav {
+    position:fixed; left:16px; right:16px; bottom:calc(14px + env(safe-area-inset-bottom)); z-index:30;
+    background:rgba(20,28,34,.85); backdrop-filter:blur(10px);
+    border:1px solid var(--border); border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.4);
+    display:flex; justify-content:space-around; padding:8px 4px; max-width:440px; margin:0 auto;
+  }
+  .nav button{ position:relative; background:none; border:none; color:var(--muted); font-size:.65rem; text-align:center; padding:6px 16px; border-radius:14px; cursor:pointer; transition:color .2s, background-color .25s var(--ease-out); }
+  .nav button .ico{ display:block; font-size:1.3rem; margin-bottom:2px; }
+  .nav button.active{ color:#241202; background:linear-gradient(155deg, var(--ember), var(--ember-dim)); }
+  .toggle-row{ display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border); }
+  .toggle-row:last-child{ border-bottom:none; }
+  .device-list{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+  .device{ background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:12px; text-align:center; font-size:.85rem; cursor:pointer; }
+  .device.on{ background:linear-gradient(155deg, var(--ember), var(--ember-dim)); border-color:transparent; color:#241202; font-weight:600; }
+  .room-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:10px; }
+  .room-chip{ background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:8px 4px; text-align:center; font-size:.75rem; cursor:pointer; }
+  .room-chip .ico{ display:block; font-size:1.2rem; margin-bottom:2px; }
+  .room-chip.sel{ background:linear-gradient(155deg,var(--ember),var(--ember-dim)); border-color:transparent; color:#241202; font-weight:600; }
+  .room-tags{ display:flex; gap:4px; flex-wrap:wrap; margin-top:6px; }
+  .room-tags span{ font-size:.68rem; background:var(--surface-2); border:1px solid var(--border); border-radius:99px; padding:2px 8px; }
+  .product{ display:flex; gap:12px; }
+  .product img{ width:72px; height:72px; border-radius:12px; object-fit:cover; background:var(--card2); }
+  .product .info{ flex:1; }
+  .product .info b{ font-size:.95rem; }
+  .product .info small{ color:var(--muted); }
+  .price{ color:var(--accent); font-weight:700; }
+  .meta{ color:var(--muted); font-size:.78rem; line-height:1.5; }
+  .clickable{ cursor:pointer; }
+  .tabs{ display:flex; gap:8px; margin-bottom:12px; overflow-x:auto; }
+  .tab{ background:var(--card2); border:1px solid transparent; color:var(--muted); padding:8px 14px; border-radius:10px; font-size:.85rem; cursor:pointer; white-space:nowrap; }
+  .tab.active{ background:linear-gradient(155deg, var(--ember), var(--ember-dim)); color:#241202; font-weight:600; }
+  .muted{ color:var(--muted); }
+  .divider{ height:1px; background:var(--border); margin:12px 0; }
+  .toast{ position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:var(--card); border:1px solid var(--border); padding:12px 18px; border-radius:12px; font-weight:600; z-index:50; display:none; max-width:90vw; }
+  .toast.show{ display:block; }
+</style>
+</head>
+<body>
+
+<header id="authHeader" class="hidden"><h1>Cabine Partner</h1><div class="sub">Plateforme investisseurs & hôtes</div></header>
+<header id="appHeader" class="hidden">
+  <h1>Espace Partenaire</h1>
+  <div class="sub" id="headerSub"></div>
+</header>
+
+<main>
+  <!-- Auth -->
+  <div id="authView">
+    <div class="card">
+      <h2 id="authTitle">Connexion</h2>
+      <label>Email</label><input class="input" id="authEmail" type="email" placeholder="vous@exemple.com">
+      <label>Mot de passe</label><input class="input" id="authPassword" type="password" placeholder="••••••">
+      <button class="btn" id="authSubmit">Se connecter</button>
+      <button class="btn ghost" id="authToggle">Créer un compte partenaire</button>
+    </div>
+  </div>
+
+  <!-- App -->
+  <div id="appView" class="hidden">
+    <div id="viewHome">
+      <div class="tabs" id="homeTabs">
+        <button class="tab active" data-v="overview">Vue d'ensemble</button>
+        <button class="tab" data-v="cabins">Mes cabines</button>
+        <button class="tab" data-v="bookings">Réservations</button>
+      </div>
+      <div id="tabOverview">
+        <div class="card card-hero"><h2>Finances</h2>
+          <div class="row">
+            <div class="kpi"><b id="kGross">--</b><span>Chiffre d'affaires</span></div>
+            <div class="kpi"><b id="kNet">--</b><span>Net partenaire</span></div>
+            <div class="kpi"><b id="kBook">--</b><span>Réservations</span></div>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <div class="kpi"><b id="kOcc">--</b><span>Occupation</span></div>
+            <div class="kpi"><b id="kCabins">--</b><span>Cabines</span></div>
+            <div class="kpi"><b id="kHours">--</b><span>Heures louées</span></div>
+          </div>
+        </div>
+        <div class="card"><h2>Stripe Connect</h2>
+          <p class="meta" id="stripeStatus">Vérification du compte de paiement...</p>
+          <button class="btn ghost" id="btnOnboard">Configurer les paiements (Stripe)</button>
+        </div>
+      </div>
+      <div id="tabCabins" class="hidden">
+        <button class="btn" id="btnAddCabin">+ Associer une cabine (numéro de série)</button>
+        <div id="cabinList" class="stagger-in"></div>
+      </div>
+      <div id="tabBookings" class="hidden"><div id="bookingList" class="stagger-in"></div></div>
+    </div>
+
+    <div id="viewCabin" class="hidden">
+      <button class="btn ghost" id="btnBack">← Retour</button>
+      <div id="cabinDetail"></div>
+    </div>
+
+    <div id="viewShop">
+      <div class="card"><h2>Boutique & Partnership</h2>
+        <p class="meta">Achetez une cabine ou maison intelligente. Elle sera livrée pré-appairée à votre compte, utilisable en personnel ou à louer pour générer des revenus.</p>
+      </div>
+      <div id="shopList" class="stagger-in"></div>
+    </div>
+  <div id="viewProfile">
+      <div class="card">
+        <h2>Compte</h2>
+        <p class="meta" id="profileInfo"></p>
+        <div class="divider"></div>
+        <button class="btn ghost" id="btnOnboardProfile">Configurer les paiements (Stripe Connect)</button>
+        <button class="btn danger" id="btnLogout">Déconnexion</button>
+      </div>
+      <div class="card"><h2>Historique des achats</h2><div id="ordersList" class="meta"></div></div>
+    </div>
+  </div>
+</main>
+
+<div class="nav" id="appNav" class="hidden">
+  <button data-tab="home" class="active"><span class="ico">🏠</span>Accueil</button>
+  <button data-tab="shop"><span class="ico">🛒</span>Boutique</button>
+  <button data-tab="profile"><span class="ico">👤</span>Profil</button>
+  <a href="/map.html" style="text-decoration:none"><button type="button"><span class="ico">🗺️</span>Carte</button></a>
+  <a href="/usine.html" style="text-decoration:none"><button type="button"><span class="ico">🏭</span>Usine</button></a>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  if (window.CabinMotion) CabinMotion.init(document);
+  const API = location.origin;
+  const $ = (id) => document.getElementById(id);
+  let token = localStorage.getItem('token') || '';
+  let user = JSON.parse(localStorage.getItem('user') || 'null');
+  let socket = null;
+  let currentView = 'home';
+  let selectedCabinTab = 'overview';
+  let roomCatalog = [];
+  let addSelectedRooms = new Set();
+
+  async function loadRoomCatalog() {
+    if (roomCatalog.length) return roomCatalog;
+    try {
+      const j = await api('/api/factory/rooms');
+      roomCatalog = j.rooms || [];
+    } catch (e) { roomCatalog = []; }
+    return roomCatalog;
+  }
+  const roomInfo = (code) => roomCatalog.find(r => r.code === code) || { code, label: code, icon: '🚪' };
+  const roomTags = (codes) => (codes || []).length
+    ? codes.map(c => { const r = roomInfo(c); return '<span>' + r.icon + ' ' + r.label + '</span>'; }).join('')
+    : '<span class="muted">Aucune pièce définie</span>';
+
+  let roomPicksWrapId = null;
+  function renderRoomPicks() {
+    if (!roomPicksWrapId) return;
+    const wrap = $(roomPicksWrapId);
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    roomCatalog.forEach(r => {
+      const el = document.createElement('div');
+      el.className = 'room-chip' + (addSelectedRooms.has(r.code) ? ' sel' : '');
+      el.innerHTML = '<span class="ico">' + r.icon + '</span>' + r.label;
+      el.onclick = () => {
+        addSelectedRooms.has(r.code) ? addSelectedRooms.delete(r.code) : addSelectedRooms.add(r.code);
+        renderRoomPicks();
+      };
+      wrap.appendChild(el);
+    });
+  }
+  async function setupRoomPicks(wrapId, selected) {
+    roomPicksWrapId = wrapId;
+    addSelectedRooms = new Set(selected || []);
+    await loadRoomCatalog();
+    renderRoomPicks();
+  }
+
+  const auth = (headers = {}) => ({
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: 'Bearer ' + token } : {}),
+    ...headers
+  });
+
+  async function api(path, opts = {}) {
+    const res = await fetch(API + path, { ...opts, headers: auth(opts.headers) });
+    const json = await res.json().catch(() => ({ success: false, message: 'Réponse invalide' }));
+    if (!res.ok && !json.success) throw new Error(json.message || ('Erreur ' + res.status));
+    return json;
+  }
+
+  function toast(msg) {
+    if (window.CabinMotion && CabinMotion.toast) return CabinMotion.toast(msg, { duration: 3200 });
+    const el = $('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 3200);
+  }
+
+  const fmt = (n, cur='€') => new Intl.NumberFormat('fr-FR', { style:'currency', currency: cur === '€' ? 'EUR' : cur }).format(n);
+  const fmtDate = (d) => new Date(d).toLocaleString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+
+  function skeletonRows(n = 3, height = 76) {
+    return Array.from({ length: n }, () => `<div class="card skeleton" style="height:${height}px"></div>`).join('');
+  }
+
+  function countUp(el, target, { duration = 700, format = (n) => Math.round(n) } = {}) {
+    const startTime = performance.now();
+    function tick(now) {
+      const p = Math.min(1, (now - startTime) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = format(target * eased);
+      if (p < 1) requestAnimationFrame(tick);
+      else el.textContent = format(target);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ---------- Auth ----------
+  function setAuth(tok, usr) { token = tok; user = usr; localStorage.setItem('token', tok); localStorage.setItem('user', JSON.stringify(usr)); }
+  let loginMode = true;
+  $('authToggle').onclick = () => {
+    loginMode = !loginMode;
+    $('authTitle').textContent = loginMode ? 'Connexion' : 'Créer un compte partenaire';
+    $('authSubmit').textContent = loginMode ? 'Se connecter' : 'S\'inscrire';
+  };
+  $('authSubmit').onclick = async () => {
+    const email = $('authEmail').value.trim();
+    const password = $('authPassword').value;
+    if (!email || !password) return toast('Email et mot de passe requis');
+    try {
+      const json = await api('/api/auth/' + (loginMode ? 'login' : 'register'), {
+        method: 'POST',
+        body: JSON.stringify({ email, password, name: email.split('@')[0], role: 'PARTNER' })
+      });
+      setAuth(json.token, json.user);
+      bootstrap();
+    } catch (e) { toast(e.message); }
+  };
+
+  function logout() {
+    token = '';
+    user = null;
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    showAuth();
+  }
+
+  // ---------- Navigation ----------
+  function showAuth() {
+    $('authView').classList.remove('hidden');
+    $('appView').classList.add('hidden');
+    $('authHeader').classList.remove('hidden');
+    $('appHeader').classList.add('hidden');
+    $('appNav').classList.add('hidden');
+  }
+  function showApp() {
+    $('authView').classList.add('hidden');
+    $('appView').classList.remove('hidden');
+    $('authHeader').classList.add('hidden');
+    $('appHeader').classList.remove('hidden');
+    $('appNav').classList.remove('hidden');
+    $('headerSub').textContent = user.name;
+    navTo('home');
+  }
+  function navTo(view) {
+    currentView = view;
+    document.querySelectorAll('.nav button').forEach((b) => b.classList.toggle('active', b.dataset.tab === view));
+    $('viewHome').classList.toggle('hidden', view !== 'home' && view !== 'cabin');
+    $('viewCabin').classList.toggle('hidden', view !== 'cabin');
+    $('viewShop').classList.toggle('hidden', view !== 'shop');
+    $('viewProfile').classList.toggle('hidden', view !== 'profile');
+    if (view === 'home') renderHome();
+    if (view === 'shop') renderShop();
+    if (view === 'profile') renderProfile();
+    const activeEl = { home: $('viewHome'), shop: $('viewShop'), profile: $('viewProfile') }[view];
+    if (activeEl) { activeEl.classList.remove('view-enter'); void activeEl.offsetWidth; activeEl.classList.add('view-enter'); }
+  }
+  document.querySelectorAll('.nav button').forEach((b) => b.onclick = () => navTo(b.dataset.tab));
+
+  // ---------- Home ----------
+  function switchHomeTab(t) {
+    selectedCabinTab = t;
+    document.querySelectorAll('#homeTabs .tab').forEach((b) => b.classList.toggle('active', b.dataset.v === t));
+    $('tabOverview').classList.toggle('hidden', t !== 'overview');
+    $('tabCabins').classList.toggle('hidden', t !== 'cabins');
+    $('tabBookings').classList.toggle('hidden', t !== 'bookings');
+    if (t === 'cabins') renderCabins();
+    if (t === 'bookings') renderBookings();
+    const activeTab = { overview: $('tabOverview'), cabins: $('tabCabins'), bookings: $('tabBookings') }[t];
+    activeTab.classList.remove('view-enter');
+    void activeTab.offsetWidth;
+    activeTab.classList.add('view-enter');
+  }
+  document.querySelectorAll('#homeTabs .tab').forEach((b) => b.onclick = () => switchHomeTab(b.dataset.v));
+
+  async function renderHome() {
+    if (selectedCabinTab !== 'overview') switchHomeTab('overview');
+    try {
+      const [fin, occ] = await Promise.all([
+        api('/api/partner/dashboard/finances'),
+        api('/api/partner/dashboard/occupancy')
+      ]);
+      countUp($('kGross'), fin.finance.gross, { format: fmt });
+      countUp($('kNet'), fin.finance.net, { format: fmt });
+      countUp($('kBook'), fin.finance.bookings, { format: (n) => Math.round(n) });
+      countUp($('kOcc'), occ.occupancy.rate, { format: (n) => Math.round(n) + '%' });
+      countUp($('kCabins'), occ.occupancy.totalCabins, { format: (n) => Math.round(n) });
+      countUp($('kHours'), occ.occupancy.hoursBooked, { format: (n) => Math.round(n) });
+      $('stripeStatus').textContent = fin.finance.cabinCount === undefined ? '' : '';
+    } catch (e) {}
+    try {
+      const st = await api('/api/payments/partner/status');
+      $('stripeStatus').textContent = st.payoutsEnabled ? 'Paiements actifs ✓ Pour recevoir vos revenus.' : st.accountStatus === 'PENDING' ? 'Compte Stripe en cours de configuration.' : 'Compte de paiement non configuré.';
+      $('btnOnboard').classList.toggle('hidden', st.payoutsEnabled);
+    } catch (e) { $('stripeStatus').textContent = 'Compte de paiement non configuré.'; }
+  }
+
+  $('btnOnboard').onclick = async () => {
+    try {
+      const json = await api('/api/payments/partner/onboard', { method: 'POST', body: JSON.stringify({}) });
+      if (json.onboardingUrl) location.href = json.onboardingUrl;
+      else toast('Compte en cours de configuration');
+    } catch (e) { toast(e.message); }
+  };
+
+  $('btnAddCabin').onclick = () => {
+    $('cabinDetail').innerHTML = renderAddCabinForm();
+    $('viewHome').classList.add('hidden');
+    $('viewCabin').classList.remove('hidden');
+    $('viewCabin').classList.add('view-enter');
+    setupRoomPicks('addRoomGrid', []).then(() => {
+      const snBtn = $('snSubmit');
+      if (snBtn) snBtn.onclick = submitAddCabin;
+    });
+  };
+
+  async function submitAddCabin() {
+    try {
+      const r = await api('/api/partner/cabins', {
+        method: 'POST',
+        body: JSON.stringify({
+          serialNumber: $('snInput').value.trim(),
+          name: $('nameInput').value.trim(),
+          address: $('addrInput').value.trim(),
+          rooms: [...addSelectedRooms]
+        })
+      });
+      toast('Cabine appairée ✓');
+      currentCabin.action = 'add';
+      const doneCard = $('snSubmit').closest('.card');
+      doneCard.innerHTML = '<h2>Cabine appairée</h2><p class="meta">' + r.cabin.serialNumber + ' · ' + (r.cabin.rooms || []).length + ' pièce(s)</p><div class="room-tags">' + roomTags(r.cabin.rooms || []) + '</div>';
+      doneCard.classList.add('pop-in', 'glow-wash');
+    } catch (e) { toast(e.message); }
+  }
+
+  async function renderCabins() {
+    const wrap = $('cabinList');
+    wrap.innerHTML = skeletonRows(3, 84);
+    try {
+      const json = await api('/api/partner/cabins');
+      wrap.innerHTML = '';
+      if (!json.cabins.length) { wrap.innerHTML = '<p class="muted">Aucune cabine. Passez en mode "Boutique" pour en acheter une.</p>'; return; }
+      for (const c of json.cabins) {
+        const el = document.createElement('div');
+        el.className = 'card cabin clickable';
+        const statusBadge = statusOf(c.status);
+        el.innerHTML = `
+          <div class="cabin">
+            <div class="dot">🏠</div>
+            <div class="info">
+              <b>${c.name}</b>
+              <small>${c.serialNumber} · <span class="badge ${statusBadge.cls}">${statusBadge.txt}</span></small>
+              <small>${c.operatingMode === 'PERSONAL' ? 'Mode personnel' : 'Mode location'} · ${fmt(c.rentalSettings.pricePerHour)}/h</small>
+            </div>
+          </div>`;
+        el.onclick = () => openCabin(c._id);
+        wrap.appendChild(el);
+      }
+    } catch (e) { wrap.innerHTML = '<p class="muted">' + e.message + '</p>'; }
+  }
+
+  function statusOf(s) {
+    return { 'AVAILABLE': {txt:'Prête',cls:'ok'}, 'OCCUPIED_BY_GUEST':{txt:'Occupée',cls:'red'}, 'OCCUPIED_BY_OWNER':{txt:'Usage perso',cls:'blue'}, 'CLEANING_REQUIRED':{txt:'À nettoyer',cls:'warn'}, 'MAINTENANCE':{txt:'Maintenance',cls:'warn'} }[s] || {txt:s,cls:''};
+  }
+
+  async function renderBookings() {
+    const wrap = $('bookingList');
+    wrap.innerHTML = skeletonRows(3, 92);
+    try {
+      const json = await api('/api/partner/dashboard/bookings');
+      wrap.innerHTML = '';
+      if (!json.bookings.length) { wrap.innerHTML = '<p class="muted">Aucune réservation pour vos cabines.</p>'; return; }
+      json.bookings.forEach((b) => {
+        const el = document.createElement('div');
+        el.className = 'card';
+        const st = { 'CONFIRMED':'Confirmée','IN_PROGRESS':'En cours','COMPLETED':'Terminée','CANCELLED':'Annulée','PENDING_PAYMENT':'En attente de paiement' }[b.status] || b.status;
+        el.innerHTML = `
+          <div class="row"><span class="meta" style="flex:1">${fmtDate(b.startTime)} → ${fmtDate(b.endTime)}</span><span class="badge ok">${st}</span></div>
+          <b>${b.cabinId?.name || 'Cabine'}</b> · <span class="muted">${b.userId?.name || b.userId?.email}</span>
+          <div class="meta">Code PIN : <b class="price">${b.accessCode || '—'}</b> · ${fmt(b.totalPrice)}</div>`;
+        wrap.appendChild(el);
+      });
+    } catch (e) { wrap.innerHTML = '<p class="muted">' + e.message + '</p>'; }
+  }
+
+  // ---------- Cabin detail ----------
+  function renderAddCabinForm() {
+    return `
+      <div class="card">
+        <h2>Associer une cabine</h2>
+        <label>Numéro de série (QR à la livraison)</label>
+        <input class="input" id="snInput" placeholder="CBN-XXXX">
+        <label>Nom</label>
+        <input class="input" id="nameInput" placeholder="Ma cabine">
+        <label>Adresse (optionnel)</label>
+        <input class="input" id="addrInput" placeholder="Adresse">
+        <h2 style="margin-top:14px">🏠 Pièces de la cabine</h2>
+        <div class="room-grid" id="addRoomGrid"></div>
+        <button class="btn" id="snSubmit">Appairer la cabine</button>
+      </div>`;
+  }
+
+  let currentCabin = null;
+  async function openCabin(id) {
+    $('viewCabin').classList.remove('hidden');
+    $('viewCabin').classList.add('view-enter');
+    $('viewHome').classList.add('hidden');
+    await renderCabin(id);
+  }
+  $('btnBack').onclick = () => {
+    $('viewCabin').classList.add('hidden');
+    $('viewHome').classList.remove('hidden');
+    if (currentCabin && currentCabin.action === 'add') { switchHomeTab('cabins'); }
+    renderHome();
+  };
+
+  async function renderCabin(id) {
+    currentCabin = { id };
+    const wrap = $('cabinDetail');
+    wrap.innerHTML = skeletonRows(3, 130);
+    try {
+      const json = await api('/api/partner/cabins/' + id);
+      const c = json.cabin;
+      const isPersonal = c.operatingMode === 'PERSONAL';
+      const st = statusOf(c.status);
+      wrap.innerHTML = `
+        <div class="card">
+          <h2>${c.name}</h2>
+          <p class="meta">${c.serialNumber} · <span class="badge ${st.cls}">${st.txt}</span></p>
+          <div class="room-tags" style="margin-top:8px">${roomTags(c.rooms)}</div>
+          <div class="toggle-row" style="margin-top:8px">
+            <div><b>Mode Location</b><div class="meta">Publier la cabine sur la plateforme de réservation</div></div>
+            <label class="switch"><input type="checkbox" id="modeToggle" ${isPersonal ? '' : 'checked'}><span class="slider"></span></label>
+          </div>
+          <div id="rentalFields" class="${isPersonal ? 'hidden' : ''}">
+            <label>Prix par heure (€)</label>
+            <input class="input" id="priceInput" type="number" min="0" value="${c.rentalSettings.pricePerHour}">
+            <label class="toggle-row" style="border:none"><span style="flex:1">Visible sur le portail public</span>
+              <span class="switch"><input type="checkbox" id="listedToggle" ${c.rentalSettings.isListed ? 'checked' : ''}><span class="slider"></span></span>
+            </label>
+            <button class="btn" id="saveRental">Enregistrer les paramètres</button>
+          </div>
+        </div>
+        <div class="card">
+          <h2>État en temps réel</h2>
+          <div class="row">
+            <div class="kpi"><b id="cTemp">${c.telemetry.temperature ?? '--'}°</b><span>Température</span></div>
+            <div class="kpi"><b id="cHum">${c.telemetry.humidity ?? '--'}%</b><span>Humidité</span></div>
+            <div class="kpi"><b id="cPres">${c.telemetry.presence ? 'Oui' : 'Non'}</b><span>Présence</span></div>
+          </div>
+          ${isPersonal ? `
+          <h2 style="margin-top:14px">Contrôle à distance</h2>
+          <div class="device-list">
+            <div class="device" data-d="lighting">💡 Éclairage</div>
+            <div class="device" data-d="climate">🌡️ Climatisation</div>
+            <div class="device" data-d="heater">🔥 Chauffage</div>
+            <div class="device" data-d="waterHeater">♨️ Chauffe-eau</div>
+            <div class="device" data-d="ventilation">🌀 Ventilation</div>
+            <div class="device" data-d="lock">🔒 Serrure</div>
+            <div class="device" data-d="speaker">🔊 Audio</div>
+          </div>
+          <h2 style="margin-top:16px">Biométrie</h2>
+          <p class="meta">Enregistrez votre visage / empreinte pour ouvrir kiosk sans PIN (iOS : Touch ID · Face ID).</p>
+          <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap">
+            <button class="btn ghost" id="bioEnrollFace">👤 Enregistrer visage</button>
+            <button class="btn ghost" id="bioEnrollFinger">🫆 Enregistrer empreinte</button>
+          </div>
+          <p class="meta" id="bioStatus" style="margin-top:8px"></p>` : ''}
+        </div>
+        <div class="card"><h2>Automatisations</h2>
+          <p class="meta">« Règle : si température > 25°C alors ventilation ON » est active pour vos cabines.</p>
+          <button class="btn ghost" id="btnRules">Gérer les règles (API /automation)</button>
+        </div>`;
+
+      $('modeToggle').onchange = () => {
+        const becoming = isPersonal ? 'HOST_RENTAL' : 'PERSONAL';
+        if (c.status === 'OCCUPIED_BY_GUEST') { toast('Cabine occupée : changement impossible'); $('modeToggle').checked = isPersonal; return; }
+        api('/api/partner/cabins/' + id + '/mode', { method: 'PATCH', body: JSON.stringify({ targetMode: becoming }) })
+          .then((r) => { toast(r.message); renderCabin(id); })
+          .catch((e) => { toast(e.message); $('modeToggle').checked = isPersonal; });
+      };
+
+      const saveBtn = $('saveRental');
+      if (saveBtn) saveBtn.onclick = async () => {
+        try {
+          await api('/api/partner/cabins/' + id + '/mode', { method: 'PATCH', body: JSON.stringify({ targetMode: 'HOST_RENTAL', pricePerHour: Number($('priceInput').value), isListed: $('listedToggle').checked }) });
+          toast('Paramètres enregistrés');
+          renderCabin(id);
+        } catch (e) { toast(e.message); }
+      };
+
+      document.querySelectorAll('#cabinDetail .device').forEach((el) => {
+        el.onclick = () => {
+          const device = el.dataset.d;
+          const turningOn = !el.classList.contains('on');
+          el.classList.toggle('on', turningOn);
+          api('/api/control/' + id + '/control', { method: 'POST', body: JSON.stringify({ device, value: turningOn ? 'ON' : 'OFF' }) })
+            .then((r) => toast(r.message)).catch((e) => { toast(e.message); el.classList.toggle('on'); });
+        };
+      });
+
+      if ($('btnRules')) $('btnRules').onclick = () => toast('CRUD règles dispo sur POST/GET/PATCH/DELETE /api/automation');
+
+      const bioStatus = $('bioStatus');
+      const bioEnroll = async (kind) => {
+        if (!window.BioAuth) { toast('biometrics.js non chargé'); return; }
+        bioStatus.textContent = 'Enregistrement en cours…';
+        try {
+          const r = await window.BioAuth.enroll(kind, () => token);
+          bioStatus.textContent = r.message || (r.success ? 'OK' : 'Erreur');
+          if (r.success) toast('✅ ' + r.message);
+        } catch (e) { bioStatus.textContent = e.message; toast(e.message); }
+      };
+      if ($('bioEnrollFace')) $('bioEnrollFace').onclick = () => bioEnroll('face');
+      if ($('bioEnrollFinger')) $('bioEnrollFinger').onclick = () => bioEnroll('fingerprint');
+
+      const snBtn = $('snSubmit');
+      if (snBtn && currentCabin && currentCabin.action !== 'add') snBtn.onclick = submitAddCabin;
+    } catch (e) { wrap.innerHTML = '<p class="muted">' + e.message + '</p>'; }
+  }
+
+  // ---------- Shop ----------
+  async function renderShop() {
+    const wrap = $('shopList');
+    wrap.innerHTML = skeletonRows(3, 108);
+    try {
+      const json = await api('/api/shop/products');
+      wrap.innerHTML = '';
+      for (const p of json.products) {
+        const el = document.createElement('div');
+        el.className = 'card product';
+        el.innerHTML = `
+          <img src="${p.image}" alt="">
+          <div class="info">
+            <b>${p.title}</b>
+            <div class="price">${fmt(p.price)}</div>
+            <small class="meta">${p.specs?.surfaceM2 || '—'} m² · ${p.specs?.capacity || 2} pers · ${p.defaultRentalPricePerHour}€/h en location</small>
+            <div class="room-tags">${roomTags(p.specs?.rooms)}</div>
+            <button class="btn ghost" data-id="${p._id}" style="margin-top:8px">Acheter</button>
+          </div>`;
+        el.querySelector('button').onclick = async () => {
+          try {
+            const r = await api('/api/shop/orders', { method: 'POST', body: JSON.stringify({ productId: p._id }) });
+            toast('Cabine livrée : ' + r.cabin.serialNumber);
+            setAuth(token, { ...user, role: 'PARTNER' });
+            navTo('home');
+            switchHomeTab('cabins');
+          } catch (e) { toast(e.message); }
+        };
+        wrap.appendChild(el);
+      }
+      if (!json.products.length) wrap.innerHTML = '<p class="muted">Boutique vide.</p>';
+    } catch (e) { wrap.innerHTML = '<p class="muted">' + e.message + '</p>'; }
+  }
+
+  // ---------- Profile ----------
+  function renderProfile() {
+    $('profileInfo').innerHTML =
+      '<b>' + (user?.name || '') + '</b><br>' +
+      (user?.email || '') + '<br>' +
+      'Rôle : <b>' + (user?.role || 'GUEST') + '</b>';
+
+    api('/api/shop/orders').then((json) => {
+      const wrap = $('ordersList');
+      wrap.innerHTML = '';
+      if (!json.orders.length) { wrap.innerHTML = '<p class="muted">Aucun achat.</p>'; return; }
+      json.orders.forEach((o) => {
+        const el = document.createElement('div');
+        el.innerHTML = '<b>' + (o.productId?.title || 'Cabine') + '</b> · ' + o.serialNumber + ' · ' + fmt(o.price);
+        wrap.appendChild(el);
+      });
+    }).catch(() => { $('ordersList').textContent = 'Impossible de charger les achats.'; });
+  }
+
+  $('btnLogout')?.addEventListener('click', logout);
+  $('btnOnboardProfile')?.addEventListener('click', async () => {
+    try {
+      const json = await api('/api/payments/partner/onboard', { method: 'POST', body: JSON.stringify({}) });
+      if (json.onboardingUrl) location.href = json.onboardingUrl;
+      else toast('Compte en cours de configuration');
+    } catch (e) { toast(e.message); }
+  });
+
+  // ---------- Socket realtime ----------
+  function connectSocket() {
+    if (socket) return;
+    socket = io(API);
+    socket.on('iot:telemetry', (msg) => {
+      const parts = msg.topic.split('/');
+      if (parts[1]) {
+        const t = msg.data || {};
+        if (selectedCabinTab === 'overview' && $('viewCabin').classList.contains('hidden')) return;
+      }
+    });
+  }
+
+  // ---------- Bootstrap ----------
+  async function bootstrap() {
+    if (!token) { showAuth(); return; }
+    connectSocket();
+    loadRoomCatalog();
+    showApp();
+  }
+  bootstrap();
+})();
+</script>
+<footer class="app-footer">© pixelsoftwaredesign 2026 · Partenaire — Cabines Intelligentes</footer>
+</body>
+</html>

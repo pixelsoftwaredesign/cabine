@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Pixel Software Design — Éditeur Indoor</title>
+  <style>
+    :root{--p:#6c5ce7;--a:#00cec9;--bg:#0a0a1a;--card:#12122a;--hover:#1a1a3e;--t:#e0e0ff;--tm:#8888aa;--b:#2a2a4a;--ok:#00b894;--w:#fdcb6e;--d:#e17055;--g:linear-gradient(135deg,#6c5ce7,#00cec9)}
+    :root[data-theme="light"]{--bg:#f2f5fb;--card:#ffffff;--hover:#e9edf8;--t:#1f2350;--tm:#5b6090;--b:#d3d9eb}
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--t);display:flex;flex-direction:column;min-height:100vh}
+    header{background:var(--card);border-bottom:1px solid var(--b);padding:.6rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+    .logo{font-size:1.2rem;font-weight:800;background:var(--g);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+    .logo small{font-size:.62rem;font-weight:400;opacity:.75;letter-spacing:.06em}
+    nav{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap}
+    nav a{color:var(--tm);text-decoration:none;font-size:.82rem;padding:.35rem .7rem;border-radius:8px;transition:all .25s;white-space:nowrap}
+    nav a:hover,nav a.active{color:var(--a);background:var(--hover)}
+    .hdr-right{display:flex;gap:.5rem;align-items:center}
+    .badge{padding:.25rem .6rem;border-radius:20px;font-size:.7rem;font-weight:600;white-space:nowrap}
+    .badge.online{background:rgba(0,184,148,.18);color:var(--ok);border:1px solid rgba(0,184,148,.35)}
+    .badge.local{background:rgba(253,203,110,.16);color:var(--w);border:1px solid rgba(253,203,110,.35)}
+    .badge.checking{background:rgba(136,136,170,.15);color:var(--tm);border:1px solid var(--b)}
+    .badge.warn{background:rgba(225,112,85,.18);color:var(--d);border:1px solid rgba(225,112,85,.4)}
+    .icon-btn{background:var(--card);color:var(--t);border:1px solid var(--b);border-radius:8px;padding:.3rem .65rem;cursor:pointer;font-size:.85rem;line-height:1;transition:all .2s}
+    .icon-btn:hover{color:var(--a);border-color:var(--a)}
+    main{flex:1;display:flex;min-height:0}
+    #side{width:420px;min-width:320px;background:var(--card);border-right:1px solid var(--b);display:flex;flex-direction:column;min-height:0}
+    #sideScroll{flex:1;overflow-y:auto;padding:1rem;min-height:0}
+    #mapWrap{flex:1;position:relative;min-width:0}
+    #mapCanvas{position:absolute;inset:0}
+    #mapCanvas .leaflet-container{background:#0b1120;font-family:'Segoe UI',sans-serif}
+    #mapCanvas .leaflet-overlay-pane{pointer-events:none}
+    #mapCanvas .leaflet-control-zoom a{background:var(--card);color:var(--t);border:1px solid var(--b)}
+    #mapCanvas .leaflet-control-zoom a:hover{color:var(--a)}
+    .section-title{font-size:.92rem;font-weight:700;margin:.85rem 0 .6rem;display:flex;align-items:center;gap:.4rem}
+    .section-title:first-child{margin-top:0}
+    .section-title::after{content:'';flex:1;height:1px;background:var(--b)}
+    .hint{font-size:.72rem;color:var(--tm);margin-bottom:.55rem;line-height:1.5}
+    .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:.4rem}
+    .stat-card{background:var(--bg);border:1px solid var(--b);border-radius:10px;padding:.55rem .4rem;text-align:center;cursor:pointer;transition:border-color .2s}
+    .stat-card:hover{border-color:var(--a)}
+    .stat-card .v{font-size:1.25rem;font-weight:800;background:var(--g);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .stat-card .l{font-size:.62rem;color:var(--tm)}
+    .stat-card.alert .v{color:var(--d);background:none;-webkit-text-fill-color:var(--d)}
+    .stat-card.alert{border-color:rgba(225,112,85,.5)}
+    .palette{display:flex;flex-direction:column;gap:.4rem}
+    .draggable-cabin{padding:.5rem .7rem;background:var(--bg);border:2px dashed var(--b);border-radius:8px;cursor:grab;transition:all .2s;display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+    .draggable-cabin:hover{border-color:var(--p);background:var(--hover);transform:translateX(2px)}
+    .draggable-cabin.armed{border-color:var(--a);background:rgba(0,206,201,.08);box-shadow:0 0 0 1px var(--a)}
+    .draggable-cabin .nm{font-weight:600;font-size:.8rem;display:flex;align-items:center;gap:.4rem}
+    .draggable-cabin .sz{font-size:.64rem;color:var(--tm);white-space:nowrap}
+    .swatch{width:12px;height:12px;border-radius:3px;flex:none;display:inline-block}
+    .toggles{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem}
+    .tog{display:flex;align-items:center;gap:.35rem;font-size:.73rem;color:var(--tm);padding:.3rem .55rem;background:var(--bg);border:1px solid var(--b);border-radius:8px;cursor:pointer;user-select:none}
+    .tog input{accent-color:var(--p);cursor:pointer}
+    .btn{padding:.55rem 1rem;border:none;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;transition:transform .2s,box-shadow .2s;color:#fff}
+    .btn:hover{transform:scale(1.02)}
+    .btn:active{transform:scale(.98)}
+    .btn-primary{background:var(--g)}
+    .btn-secondary{background:var(--hover);color:var(--t);border:1px solid var(--b)}
+    .btn-danger{background:rgba(225,112,85,.85)}
+    .btn-sm{padding:.32rem .55rem;font-size:.7rem;border-radius:6px}
+    .btn-row{display:flex;gap:.4rem;flex-wrap:wrap;margin:.5rem 0}
+    .form-group{margin-bottom:.55rem}
+    .form-group label{display:block;font-size:.7rem;color:var(--tm);margin-bottom:.2rem}
+    .form-group input,.form-group select{width:100%;padding:.4rem .55rem;background:var(--bg);border:1px solid var(--b);border-radius:8px;color:var(--t);font-size:.8rem;outline:none;font-family:inherit}
+    .form-group input:focus,.form-group select:focus{border-color:var(--p)}
+    .form-2{display:grid;grid-template-columns:1fr 1fr;gap:.45rem}
+    .form-3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:.45rem}
+    #cabList{margin-top:.3rem}
+    .cab-item{display:flex;align-items:center;gap:.5rem;background:var(--bg);border:1px solid var(--b);border-radius:8px;padding:.4rem .55rem;margin-bottom:.35rem;cursor:pointer;font-size:.75rem;transition:border-color .2s}
+    .cab-item:hover{border-color:var(--a)}
+    .cab-item.sel{border-color:var(--p);background:rgba(108,92,231,.12)}
+    .cab-item .dot{width:9px;height:9px;border-radius:50%;flex:none}
+    .cab-item .info{flex:1;min-width:0}
+    .cab-item .code{font-weight:700;font-size:.75rem}
+    .cab-item .sub{font-size:.62rem;color:var(--tm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cab-item button{flex:none}
+    .prop-card{background:var(--bg);border:1px solid var(--b);border-radius:10px;padding:.7rem;margin-top:.4rem}
+    .prop-card.hidden{display:none}
+    .kbd{font-size:.66rem;color:var(--tm)}
+    .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--ok);color:var(--t);padding:.55rem 1rem;border-radius:10px;font-size:.8rem;opacity:0;transition:all .3s;z-index:4000;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .toast.err{border-color:var(--d)}
+    #view3d{position:absolute;inset:0;display:none;z-index:6;cursor:grab;background:#0b1120}
+    #view3d.grabbing{cursor:grabbing}
+    .icon-btn.on{color:var(--a);border-color:var(--a)}
+    /* ── éléments internes des marqueurs cabine ── */
+    .pixmaps-cabin-icon .cabin-widget{position:relative;transform-origin:center;border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,.45);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border:2px solid rgba(255,255,255,.55);overflow:visible}
+    .pixmaps-cabin-icon .cabin-widget.sel{box-shadow:0 0 0 3px var(--a),0 4px 12px rgba(0,0,0,.5)}
+    .pixmaps-cabin-icon .cabin-widget.collide{border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.7);animation:blink .5s infinite alternate}
+    .pixmaps-cabin-icon .rotate-handle{position:absolute;top:-5px;left:50%;margin-left:-7px;width:14px;height:14px;background:#38bdf8;border:2px solid #fff;border-radius:50%;cursor:grab;z-index:10;box-shadow:0 2px 4px rgba(0,0,0,.4)}
+    .pixmaps-cabin-icon .rotate-handle::after{content:'';position:absolute;bottom:-8px;left:4px;width:2px;height:8px;background:#38bdf8}
+    .pixmaps-cabin-icon .rotate-handle:hover{background:#0ea5e9}
+    .pixmaps-cabin-icon .lbl{color:#fff;font-size:11px;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.6);text-align:center;line-height:1.05;pointer-events:none}
+    .pixmaps-cabin-icon .dim{color:rgba(255,255,255,.85);font-size:8px;pointer-events:none;line-height:1}
+    .pixmaps-cabin-icon .borne .lbl{font-size:13px}
+    @keyframes blink{from{opacity:1}to{opacity:.5}}
+    .note{border:1px solid rgba(253,203,110,.35);background:rgba(253,203,110,.1);color:var(--w);border-radius:8px;padding:.5rem .6rem;font-size:.7rem;line-height:1.55;margin-top:.4rem}
+    @media(max-width:900px){
+      main{flex-direction:column}
+      #side{width:100%;min-width:0;max-height:52vh;border-right:none;border-bottom:1px solid var(--b)}
+      #mapWrap{min-height:48vh}
+    }
+  </style>
+  <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
+</head>
+<body>
+
+  <header>
+    <div class="logo">Pixel Software Design <small>EDITOR · AMÉNAGEMENT INDOOR</small></div>
+    <nav>
+      <a href="/map.html">🗺️ Carte des cabines</a>
+      <a href="/demo.html">🧭 Carte 2</a>
+      <a href="/plan.html">🎨 Studio Carte</a>
+      <a href="/editor.html" class="active">📐 Éditeur Indoor</a>
+      <a href="/viewer.html">🛰️ Vue 3D</a>
+    </nav>
+    <div class="hdr-right">
+      <button class="icon-btn" id="v3dBtn" title="Vue 3D du plan (WebGL)">🧊 Vue 3D</button>
+      <span class="badge checking" id="apiBadge">API · vérification…</span>
+      <button class="icon-btn" id="themeBtn" title="Basculer le thème">🌙</button>
+    </div>
+  </header>
+
+  <main>
+    <aside id="side">
+      <div id="sideScroll">
+
+        <div class="stats-grid">
+          <div class="stat-card"><div class="v" id="stCabins">0</div><div class="l">Cabines</div></div>
+          <div class="stat-card" id="stCollisionsCard"><div class="v" id="stCollisions">0</div><div class="l">Collisions</div></div>
+          <div class="stat-card"><div class="v" id="stSqm">0</div><div class="l">m² installés</div></div>
+        </div>
+
+        <div class="section-title">Palette de composants</div>
+        <div class="hint">Cliquez un modèle puis cliquez le plan pour le poser, ou glissez-le directement sur la carte.</div>
+        <div class="palette" id="palette"></div>
+
+        <div class="section-title">Plan d'étage</div>
+        <div class="toggles">
+          <label class="tog"><input type="checkbox" id="togGrid" checked> grille 2 m</label>
+          <label class="tog"><input type="checkbox" id="togWalls" checked> murs</label>
+          <label class="tog"><input type="checkbox" id="togSnap" checked> aimantage murs</label>
+        </div>
+        <div class="form-3">
+          <div class="form-group"><label>Niveau (floorId)</label><input type="text" id="inFloor" value="NIVEAU_1_SOUSSE"></div>
+          <div class="form-group"><label>Largeur (m)</label><input type="number" id="inPlanW" value="40" min="5" step="1"></div>
+          <div class="form-group"><label>Hauteur (m)</label><input type="number" id="inPlanH" value="30" min="5" step="1"></div>
+        </div>
+        <div class="hint">Aimantage : seuil de capture <b>0.20 m</b>, alignement parallèle au mur + grille 0.5 m.</div>
+
+        <div class="section-title">Propriétés de la cabine sélectionnée</div>
+        <div class="prop-card hidden" id="propCard">
+          <div class="form-group"><label>Code</label><input type="text" id="prCode" readonly></div>
+          <div class="form-2">
+            <div class="form-group"><label>Titre</label><input type="text" id="prTitle"></div>
+            <div class="form-group"><label>Statut IoT</label>
+              <select id="prStatus">
+                <option value="AVAILABLE">Disponible</option>
+                <option value="DIRTY">Nettoyage requis</option>
+                <option value="MAINTENANCE">Panne / maintenance</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-2">
+            <div class="form-group"><label>Rotation (°)</label><input type="number" id="prRot" step="1" min="0" max="359"></div>
+            <div class="form-group"><label>Position (m)</label><input type="text" id="prPos" readonly></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-secondary btn-sm" id="prApply">✔ Appliquer</button>
+            <button class="btn btn-danger btn-sm" id="prDelete">✖ Supprimer</button>
+          </div>
+        </div>
+
+        <div class="section-title">Cabines posées</div>
+        <div id="cabList"></div>
+
+        <div class="section-title">Actions</div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="saveBtn">💾 Enregistrer le plan</button>
+          <button class="btn btn-secondary" id="exportJsonBtn">⬇ JSON</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="exportDxfBtn">📐 Exporter DXF / CAD</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-danger btn-sm" id="clearBtn">🗑 Vider le plan</button>
+        </div>
+        <div class="hint">
+          <b>Raccourcis :</b> clic = sélectionner · poignée bleue = rotation 360° · <span class="kbd">Del</span> = supprimer ·
+          <span class="kbd">Esc</span> = désélectionner / annuler le placement.
+        </div>
+        <div class="note" id="apiNote">Vérification de l'API…</div>
+      </div>
+    </aside>
+
+    <div id="mapWrap"><div id="mapCanvas"></div><div id="view3d"></div></div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/vendor/leaflet/leaflet.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    /* ────────────────────────────── État global ────────────────────────────── */
+    var LS_UI = 'psd_editor_ui_theme';
+    var GRID = 0.5;          // grille d'alignement en mètres
+    var SNAP_THRESHOLD = 0.20; // seuil d'aimantage aux murs (mètres)
+
+    var TEMPLATES = {
+      CABIN_SOLO:       { label: 'Cabine Solo',      icon: '📦', w: 1.0, h: 1.0, color: '#10b981' },
+      CABIN_DUO:        { label: 'Cabine Duo',       icon: '🏢', w: 1.6, h: 1.2, color: '#0ea5e9' },
+      CABIN_EXECUTIVE:  { label: 'Executive VIP',    icon: '🛋️', w: 2.4, h: 1.8, color: '#8b5cf6' },
+      CABIN_ACCESSIBLE: { label: 'Accessible PMR',   icon: '♿', w: 1.6, h: 1.6, color: '#f59e0b' },
+      BORNE_IOT:        { label: 'Borne IoT',        icon: '⚡', w: 0.5, h: 0.5, color: '#ec4899' }
+    };
+    var STATUS_UI = {
+      AVAILABLE:    { color: '#10b981', text: 'Disponible' },
+      DIRTY:        { color: '#f59e0b', text: 'Nettoyage requis' },
+      MAINTENANCE:  { color: '#ef4444', text: 'Panne / maintenance' }
+    };
+
+    var state = {
+      uiTheme: localStorage.getItem(LS_UI) || 'dark',
+      apiMode: 'checking',
+      floorId: 'NIVEAU_1_SOUSSE',
+      planW: 40,
+      planH: 30,
+      showGrid: true,
+      showWalls: true,
+      snapping: true,
+      armedType: null,
+      selectedId: null,
+      cabins: [],
+      walls: [],
+      map: null,
+      savedAt: null
+    };
+
+    var $ = function (id) { return document.getElementById(id); };
+
+    function toast(msg, err) {
+      var t = $('toast');
+      t.textContent = msg;
+      t.className = 'toast show' + (err ? ' err' : '');
+      clearTimeout(toast._t);
+      toast._t = setTimeout(function () { t.className = 'toast'; }, 2600);
+    }
+
+    function fmt(n) { return Math.round(n * 100) / 100; }
+
+    function refresh3D() { if (window.__pxed && window.__pxed.refresh) window.__pxed.refresh(); }
+
+    /* ────────────────────────────── Mur par défaut ────────────────────────────── */
+    function defaultWalls(w, h) {
+      return [
+        { start: { x: 2, y: 2 }, end: { x: w - 2, y: 2 } },
+        { start: { x: 2, y: 2 }, end: { x: 2, y: h - 2 } },
+        { start: { x: w - 2, y: 2 }, end: { x: w - 2, y: h - 2 } },
+        { start: { x: 2, y: h - 2 }, end: { x: w - 2, y: h - 2 } },
+        { start: { x: Math.round(w / 3), y: 3 }, end: { x: Math.round(w / 3), y: h - 3 } },
+        { start: { x: Math.round(2 * w / 3), y: 3 }, end: { x: Math.round(2 * w / 3), y: h - 3 } }
+      ];
+    }
+
+    /* ────────────────────────────── API serveur (Express / Mongoose) ────────────────────────────── */
+    function apiFetch(path, opts) {
+      opts = opts || {};
+      opts.headers = Object.assign({ 'Content-Type': 'application/json' }, opts.headers || {});
+      return fetch(path, opts).then(function (r) {
+        return r.json().catch(function () { throw new Error('Réponse non JSON (' + r.status + ')'); })
+          .then(function (j) { if (!r.ok) throw new Error(j.error || ('HTTP ' + r.status)); return j; });
+      });
+    }
+
+    function setApiBadge(mode, text) {
+      state.apiMode = mode;
+      var b = $('apiBadge');
+      b.className = 'badge ' + mode;
+      b.textContent = text;
+      $('apiNote').innerHTML = mode === 'online'
+        ? 'L&#39;API du serveur reconnaît <b>/api/map/editor/layout</b> : les plans sont persistés en base (MongoDB).'
+        : 'API indisponible sur ce déploiement. Les plans sont sauvegardés dans votre navigateur (localStorage) et exportables en JSON / DXF.';
+    }
+
+    function detectApi() {
+      setApiBadge('checking', 'API · vérification…');
+      apiFetch('/api/health').then(function () {
+        setApiBadge('online', 'API · en ligne');
+      }).catch(function () {
+        setApiBadge('local', 'API · locale');
+      });
+    }
+
+    /* ────────────────────────────── Carte Leaflet (CRS.Simple) ────────────────────────────── */
+    function pxPerMeter(zoom) {
+      var a = state.map.project([0, 0], zoom);
+      var b = state.map.project([0, 1], zoom);
+      return Math.max(6, Math.hypot(b.x - a.x, b.y - a.y));
+    }
+
+    function setupMap() {
+      var bounds = [[-state.planH, 0], [0, state.planW]];
+      var map = L.map('mapCanvas', {
+        crs: L.CRS.Simple,
+        minZoom: -2,
+        maxZoom: 3,
+        maxBounds: L.latLngBounds([[-(state.planH + 6), -6], [6, state.planW + 6]]),
+        zoomControl: true
+      });
+      state.map = map;
+      map.fitBounds(bounds, { padding: [20, 20] });
+
+      L.rectangle(bounds, { color: '#00cec9', weight: 1, fillColor: 'rgba(13,27,42,.55)', fillOpacity: 1, interactive: false }).addTo(map);
+      drawGrid();
+      drawWalls();
+
+      map.on('click', onMapClick);
+      map.on('zoomend', function () {
+        state.cabins.forEach(function (c) { repaintIcon(c); });
+      });
+    }
+
+    function drawGrid() {
+      if (state._gridLayer) state._gridLayer.remove();
+      if (!state.showGrid) { state._gridLayer = L.layerGroup().addTo(state.map); return; }
+      var lines = [];
+      for (var x = 0; x <= state.planW; x += 2) {
+        lines.push(L.polyline([[-state.planH, x], [0, x]], {
+          color: x % 10 === 0 ? '#2a2a4a' : '#1a1a3e', weight: 1, interactive: false
+        }));
+      }
+      for (var y = 0; y <= state.planH; y += 2) {
+        lines.push(L.polyline([[-y, 0], [-y, state.planW]], {
+          color: y % 10 === 0 ? '#2a2a4a' : '#1a1a3e', weight: 1, interactive: false
+        }));
+      }
+      state._gridLayer = L.layerGroup(lines).addTo(state.map);
+    }
+
+    function drawWalls() {
+      if (state._wallLayer) state._wallLayer.remove();
+      if (!state.showWalls) { state._wallLayer = L.layerGroup().addTo(state.map); return; }
+      var polys = state.walls.map(function (wl) {
+        return L.polyline([[-wl.start.y, wl.start.x], [-wl.end.y, wl.end.x]], {
+          color: state.snapping ? '#ef4444' : '#5b6090', weight: 3, interactive: false
+        });
+      });
+      state._wallLayer = L.layerGroup(polys).addTo(state.map);
+    }
+
+    /* ────────────────────────────── Palette (drag & drop + click) ────────────────────────────── */
+    function buildPalette() {
+      var pal = $('palette');
+      pal.innerHTML = '';
+      Object.keys(TEMPLATES).forEach(function (type) {
+        var T = TEMPLATES[type];
+        var div = document.createElement('div');
+        div.className = 'draggable-cabin';
+        div.draggable = true;
+        div.setAttribute('data-type', type);
+        div.innerHTML =
+          '<span class="nm"><span class="swatch" style="background:' + T.color + '"></span>' +
+          T.icon + ' ' + T.label + '</span>' +
+          '<span class="sz">' + T.w + ' × ' + T.h + ' m</span>';
+        div.addEventListener('click', function () {
+          if (state.armedType === type) {
+            state.armedType = null; div.classList.remove('armed');
+            toast('Placement annulé');
+          } else {
+            state.armedType = type;
+            Array.prototype.forEach.call(pal.children, function (c) { c.classList.remove('armed'); });
+            div.classList.add('armed');
+            toast('Placement armé : cliquez sur le plan pour poser « ' + T.label + ' »');
+          }
+          if (state.selectedId !== null) selectCabin(null);
+        });
+        div.addEventListener('dragstart', function (e) {
+          state.armedType = type;
+          e.dataTransfer.setData('text/plain', type);
+          e.dataTransfer.effectAllowed = 'copy';
+        });
+        pal.appendChild(div);
+      });
+    }
+
+    /* ────────────────────────────── Géométrie : rotation / aimantage / collision ────────────────────────────── */
+    function rotatePoint(px, py, cx, cy, deg) {
+      var a = deg * Math.PI / 180, s = Math.sin(a), c = Math.cos(a);
+      var dx = px - cx, dy = py - cy;
+      return { x: cx + dx * c - dy * s, y: cy + dx * s + dy * c };
+    }
+
+    function cabinCorners(cab) {
+      var hw = cab.w / 2, hh = cab.h / 2;
+      var pts = [[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]];
+      return pts.map(function (p) { return rotatePoint(cab.x + p[0], cab.y + p[1], cab.x, cab.y, cab.rotation); });
+    }
+
+    // Algorithme SAT (Separating Axis Theorem) entre deux rectangles tournés
+    function polygonsOverlap(A, B) {
+      var axes = [];
+      [A, B].forEach(function (P) {
+        for (var i = 0; i < P.length; i++) {
+          var j = (i + 1) % P.length;
+          var e1 = P[j].x - P[i].x, e2 = P[j].y - P[i].y;
+          axes.push([-e2, e1]);
+        }
+      });
+      for (var k = 0; k < axes.length; k++) {
+        var ax = axes[k][0], ay = axes[k][1];
+        var projA = projectPolygon(A, ax, ay);
+        var projB = projectPolygon(B, ax, ay);
+        if (projA.max < projB.min || projB.max < projA.min) return false;
+      }
+      return true;
+    }
+
+    function projectPolygon(P, ax, ay) {
+      var min = Infinity, max = -Infinity;
+      for (var i = 0; i < P.length; i++) {
+        var t = P[i].x * ax + P[i].y * ay;
+        if (t < min) min = t;
+        if (t > max) max = t;
+      }
+      return { min: min, max: max };
+    }
+
+    // Aimantage sur les murs : projection orthogonale point → segment
+    function getClosestPointOnSegment(P, A, B) {
+      var AP = { x: P.x - A.x, y: P.y - A.y };
+      var AB = { x: B.x - A.x, y: B.y - A.y };
+      var ab2 = AB.x * AB.x + AB.y * AB.y;
+      if (ab2 === 0) return { point: { x: A.x, y: A.y }, distance: Math.hypot(P.x - A.x, P.y - A.y), angle: 0 };
+      var t = (AP.x * AB.x + AP.y * AB.y) / ab2;
+      t = Math.max(0, Math.min(1, t));
+      var closest = { x: A.x + t * AB.x, y: A.y + t * AB.y };
+      var distance = Math.hypot(P.x - closest.x, P.y - closest.y);
+      var wallAngle = Math.atan2(AB.y, AB.x) * (180 / Math.PI);
+      if (wallAngle < 0) wallAngle += 360;
+      return { point: closest, distance: distance, angle: wallAngle };
+    }
+
+    function applyWallSnapping(pos, threshold) {
+      var best = { snapped: false, x: pos.x, y: pos.y, angle: pos.rotation };
+      var minDist = threshold == null ? SNAP_THRESHOLD : threshold;
+      state.walls.forEach(function (wl) {
+        var r = getClosestPointOnSegment(pos, wl.start, wl.end);
+        if (r.distance < minDist) {
+          minDist = r.distance;
+          best = {
+            snapped: true,
+            x: Math.round(r.point.x / GRID) * GRID,
+            y: Math.round(r.point.y / GRID) * GRID,
+            angle: Math.round(r.angle)
+          };
+        }
+      });
+      return best;
+    }
+
+    function snapToGrid(v) { return Math.round(v / GRID) * GRID; }
+
+    function recomputeCollisions() {
+      var n = state.cabins.length;
+      var pairs = {};
+      state.cabins.forEach(function (c) { c.colliding = false; });
+      for (var i = 0; i < n; i++) {
+        for (var j = i + 1; j < n; j++) {
+          var A = state.cabins[i], B = state.cabins[j];
+          if (polygonsOverlap(cabinCorners(A), cabinCorners(B))) {
+            A.colliding = true; B.colliding = true;
+            pairs[A.id + '|' + B.id] = true;
+          }
+        }
+      }
+      var count = Object.keys(pairs).length;
+      state.collisions = count;
+      state.cabins.forEach(paintCabinState);
+      renderStats();
+      return count;
+    }
+
+    function paintCabinState(cab) {
+      if (!cab.marker) return;
+      var el = cab.marker.getElement();
+      if (!el) return;
+      var wg = el.querySelector('.cabin-widget');
+      if (!wg) return;
+      wg.classList.toggle('collide', !!cab.colliding);
+      wg.classList.toggle('sel', cab.id === state.selectedId);
+    }
+
+    /* ────────────────────────────── Création / rendu d'une cabine ────────────────────────────── */
+    function nextCode(prefix) {
+      var max = 1000;
+      state.cabins.forEach(function (c) {
+        if (c.code.indexOf(prefix) === 0) {
+          var n = parseInt(c.code.slice(prefix.length), 10);
+          if (!isNaN(n) && n > max) max = n;
+        }
+      });
+      return prefix + (max + 1);
+    }
+
+    function addCabin(type, x, y, opts) {
+      opts = opts || {};
+      var T = TEMPLATES[type] || TEMPLATES.CABIN_SOLO;
+      var codePref = type === 'BORNE_IOT' ? 'BORNE-' : 'CAB-';
+      var cab = {
+        id: opts.id || ('C' + Date.now() + '_' + Math.floor(Math.random() * 99999)),
+        code: opts.code || nextCode(codePref),
+        type: type,
+        title: opts.title || T.label,
+        w: T.w, h: T.h,
+        color: T.color,
+        x: x, y: y,
+        rotation: opts.rotation || 0,
+        status: opts.status || 'AVAILABLE',
+        colliding: false
+      };
+      state.cabins.push(cab);
+      createMarker(cab);
+      selectCabin(cab.id);
+      recomputeCollisions();
+      autosave();
+      refresh3D();
+      return cab;
+    }
+
+    function createMarker(cab) {
+      var icon = buildIcon(cab);
+      var marker = L.marker([-cab.y, cab.x], { icon: icon, draggable: true }).addTo(state.map);
+      cab.marker = marker;
+      bindRotateHandle(cab);
+
+      marker.on('click', function () { selectCabin(cab.id); });
+      marker.on('contextmenu', function (e) { L.DomEvent.stop(e); removeCabin(cab.id); });
+
+      marker.on('drag', function () {
+        var ll = marker.getLatLng();
+        var pos = { x: ll.lng, y: -ll.lat };
+        if (state.snapping) {
+          var snap = applyWallSnapping(pos);
+          if (snap.snapped) {
+            marker.setLatLng([-snap.y, snap.x]);
+            cab.x = snap.x; cab.y = snap.y;
+            cab.rotation = snap.angle % 360;
+            applyWidgetTransform(cab);
+          } else {
+            cab.x = pos.x; cab.y = pos.y;
+          }
+        } else {
+          cab.x = pos.x; cab.y = pos.y;
+        }
+        recomputeCollisions();
+        updateCabListEntry(cab);
+      });
+
+      marker.on('dragend', function () {
+        // Dernier alignement sur la grille 0.5 m
+        var ll = marker.getLatLng();
+        cab.x = snapToGrid(ll.lng);
+        cab.y = snapToGrid(-ll.lat);
+        marker.setLatLng([-cab.y, cab.x]);
+        recomputeCollisions();
+        updateCabListEntry(cab);
+        autosave();
+        refresh3D();
+      });
+    }
+
+    function buildIcon(cab) {
+      var ppm = pxPerMeter(state.map.getZoom());
+      var T = TEMPLATES[cab.type] || TEMPLATES.CABIN_SOLO;
+      var wPx = Math.max(22, Math.round(cab.w * ppm));
+      var hPx = Math.max(22, Math.round(cab.h * ppm));
+      var st = STATUS_UI[cab.status] || STATUS_UI.AVAILABLE;
+
+      var html = '';
+      if (cab.type === 'BORNE_IOT') {
+        html = '<div class="cabin-widget borne" style="width:100%;height:100%;background:' + st.color + ';transform:rotate(' + cab.rotation + 'deg)">' +
+          '<div class="rotate-handle"></div>' +
+          '<span class="lbl">⚡</span></div>';
+      } else {
+        html = '<div class="cabin-widget" style="width:100%;height:100%;background:' + st.color + ';transform:rotate(' + cab.rotation + 'deg)">' +
+          '<div class="rotate-handle"></div>' +
+          '<span class="lbl">' + esc(cab.code) + '</span>' +
+          '<span class="dim">' + fmt(cab.w) + '×' + fmt(cab.h) + ' m</span></div>';
+      }
+
+      var icon = L.divIcon({
+        className: 'pixmaps-cabin-icon',
+        html: html,
+        iconSize: [wPx, hPx],
+        iconAnchor: [wPx / 2, hPx / 2]
+      });
+      return icon;
+    }
+
+    function repaintIcon(cab) {
+      if (!cab.marker) return;
+      var icon = buildIcon(cab);
+      cab.marker.setIcon(icon);
+      bindRotateHandle(cab);
+      paintCabinState(cab);
+    }
+
+    function applyWidgetTransform(cab) {
+      if (!cab.marker) return;
+      var el = cab.marker.getElement();
+      if (!el) return;
+      var wg = el.querySelector('.cabin-widget');
+      if (wg) wg.style.transform = 'rotate(' + cab.rotation + 'deg)';
+      paintCabinState(cab);
+    }
+
+    function esc(s) {
+      return String(s).replace(/[&<>"]/g, function (m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m];
+      });
+    }
+
+    function removeCabin(id) {
+      var victim = null;
+      for (var i = 0; i < state.cabins.length; i++) if (state.cabins[i].id === id) { victim = state.cabins[i]; break; }
+      if (victim && victim.marker && state.map._layers[victim.marker._leaflet_id]) {
+        state.map.removeLayer(victim.marker);
+      }
+      state.cabins = state.cabins.filter(function (c) { return c.id !== id; });
+      if (state.selectedId === id) selectCabin(null);
+      recomputeCollisions();
+      autosave();
+      toast('Cabine supprimée');
+      refresh3D();
+    }
+
+    /* ────────────────────────────── Rotation 360° (poignée) ────────────────────────────── */
+    var rotateSession = null;
+
+    function currentWidget(cab) {
+      if (!cab.marker) return null;
+      var el = cab.marker.getElement();
+      return el ? el.querySelector('.cabin-widget') : null;
+    }
+
+    function widgetRect(cab) {
+      var el = cab.marker ? cab.marker.getElement() : null;
+      if (!el || !el.isConnected) return null;
+      var r = el.getBoundingClientRect();
+      return { cx: r.left + r.width / 2, cy: r.top + r.height / 2 };
+    }
+
+    function beginRotate(cab, e) {
+      e.stopPropagation(); // ne déclenche pas le déplacement du marker
+      e.preventDefault();
+      rotateSession = { cab: cab };
+      state.map.dragging.disable();
+      document.body.style.cursor = 'grabbing';
+    }
+
+    function endRotate() {
+      if (!rotateSession) return;
+      var cab = rotateSession.cab;
+      rotateSession = null;
+      state.map.dragging.enable();
+      document.body.style.cursor = '';
+      if (cab && cab.marker) {
+        var wg = currentWidget(cab);
+        if (wg) wg.classList.remove('rotating');
+        autosave();
+        refreshProps();
+        updateCabListEntry(cab);
+        refresh3D();
+      }
+    }
+
+    function bindRotateHandle(cab) {
+      if (!cab.marker) return;
+      var handle = (cab.marker.getElement() || {}).querySelector ? cab.marker.getElement().querySelector('.rotate-handle') : null;
+      if (!handle) return;
+      handle.addEventListener('mousedown', function (e) { beginRotate(cab, e); });
+      handle.addEventListener('touchstart', function (e) { e.stopPropagation(); e.preventDefault(); rotateSession = { cab: cab }; state.map.dragging.disable(); });
+    }
+
+    window.addEventListener('mousemove', function (e) {
+      if (!rotateSession) return;
+      moveRotate(rotateSession.cab, e, e);
+    });
+    window.addEventListener('touchmove', function (e) {
+      if (!rotateSession) return;
+      var t = e.touches[0];
+      moveRotate(rotateSession.cab, e, t);
+    });
+    window.addEventListener('mouseup', endRotate);
+    window.addEventListener('touchend', endRotate);
+
+    function moveRotate(cab, e, coord) {
+      var r = widgetRect(cab);
+      if (!r) return;
+      var dx = coord.clientX - r.cx, dy = coord.clientY - r.cy;
+      // rotation 0° = poignée vers le haut ; atan2(dx, -dy)
+      var deg = Math.round(Math.atan2(dx, -dy) * 180 / Math.PI);
+      if (deg < 0) deg += 360;
+      cab.rotation = deg % 360;
+      var wg = currentWidget(cab);
+      if (wg) {
+        wg.style.transform = 'rotate(' + cab.rotation + 'deg)';
+        wg.classList.add('rotating');
+      }
+      paintCabinState(cab);
+      recomputeCollisions();
+      updateCabListEntry(cab);
+    }
+
+    /* ────────────────────────────── Interactions carte (clic / drop) ────────────────────────────── */
+    function onMapClick(e) {
+      if (state.armedType) {
+        var x = snapToGrid(e.latlng.lng);
+        var y = snapToGrid(-e.latlng.lat);
+        addCabin(state.armedType, x, y);
+        disarmPalette();
+        return;
+      }
+      selectCabin(null);
+    }
+
+    function disarmPalette() {
+      state.armedType = null;
+      Array.prototype.forEach.call($('palette').children, function (c) { c.classList.remove('armed'); });
+    }
+
+    function wireMapDnD() {
+      var container = state.map.getContainer();
+      container.addEventListener('dragover', function (e) { e.preventDefault(); });
+      container.addEventListener('drop', function (e) {
+        e.preventDefault();
+        var type = e.dataTransfer.getData('text/plain') || state.armedType;
+        if (!type || !TEMPLATES[type]) {
+          toast('Glissez un modèle depuis la palette', true);
+          return;
+        }
+        var rect = container.getBoundingClientRect();
+        var ll = state.map.containerPointToLatLng(L.point(e.clientX - rect.left, e.clientY - rect.top));
+        addCabin(type, snapToGrid(ll.lng), snapToGrid(-ll.lat));
+        disarmPalette();
+      });
+    }
+
+    /* ────────────────────────────── Sélection / propriétés ────────────────────────────── */
+    function selectCabin(id) {
+      state.selectedId = id;
+      state.cabins.forEach(function (c) { if (c.marker) paintCabinState(c); });
+      updateCabListEntries();
+      refreshProps();
+    }
+
+    function getSelected() {
+      return state.cabins.find(function (c) { return c.id === state.selectedId; }) || null;
+    }
+
+    function refreshProps() {
+      var card = $('propCard');
+      var cab = getSelected();
+      if (!cab) { card.classList.add('hidden'); return; }
+      card.classList.remove('hidden');
+      $('prCode').value = cab.code;
+      $('prTitle').value = cab.title;
+      $('prStatus').value = cab.status;
+      $('prRot').value = Math.round(cab.rotation);
+      $('prPos').value = fmt(cab.x) + ' ; ' + fmt(cab.y);
+    }
+
+    function applyProps() {
+      var cab = getSelected();
+      if (!cab) return;
+      cab.title = $('prTitle').value.trim() || TEMPLATES[cab.type].label;
+      cab.status = $('prStatus').value;
+      cab.rotation = ((parseInt($('prRot').value, 10) || 0) % 360 + 360) % 360;
+      repaintIcon(cab);
+      updateCabListEntry(cab);
+      recomputeCollisions();
+      autosave();
+      toast('Propriétés appliquées');
+      refresh3D();
+    }
+
+    /* ────────────────────────────── Liste latérale ────────────────────────────── */
+    function renderStats() {
+      $('stCabins').textContent = state.cabins.length;
+      $('stCollisions').textContent = state.collisions || 0;
+      var card = $('stCollisionsCard');
+      card.classList.toggle('alert', (state.collisions || 0) > 0);
+      var sqm = state.cabins.reduce(function (acc, c) { return acc + c.w * c.h; }, 0);
+      $('stSqm').textContent = fmt(sqm);
+    }
+
+    function updateCabListEntry(cab) {
+      var row = document.querySelector('.cab-item[data-id="' + cab.id + '"]');
+      if (row) row.querySelector('.sub').textContent =
+        fmt(cab.x) + ' ; ' + fmt(cab.y) + ' m · ' + cab.rotation + '°';
+    }
+
+    function renderCabList() {
+      var list = $('cabList');
+      list.innerHTML = '';
+      state.cabins.forEach(function (cab) {
+        var st = STATUS_UI[cab.status] || STATUS_UI.AVAILABLE;
+        var row = document.createElement('div');
+        row.className = 'cab-item' + (cab.id === state.selectedId ? ' sel' : '');
+        row.setAttribute('data-id', cab.id);
+        row.innerHTML =
+          '<span class="dot" style="background:' + st.color + '"></span>' +
+          '<span class="info"><span class="code">' + esc(cab.code) + '</span> · ' + esc(cab.title) +
+          ' <span class="sub">' + fmt(cab.x) + ' ; ' + fmt(cab.y) + ' m · ' + cab.rotation + '°</span></span>' +
+          '<button class="btn btn-danger btn-sm" data-del="' + cab.id + '">✖</button>';
+        row.addEventListener('click', function (e) {
+          if (e.target.getAttribute('data-del')) { removeCabin(cab.id); return; }
+          selectCabin(cab.id);
+          state.map.panTo([-cab.y, cab.x]);
+        });
+        list.appendChild(row);
+      });
+    }
+
+    function updateCabListEntries() {
+      renderCabList();
+    }
+
+    /* ────────────────────────────── Persistance locale + serveur ────────────────────────────── */
+    function layoutToJSON() {
+      return {
+        engine: 'Pixel Software Design Editor v2.0',
+        floorId: state.floorId,
+        plan: { width: state.planW, height: state.planH, unit: 'm', grid: GRID },
+        walls: state.walls,
+        cabins: state.cabins.map(function (c) {
+          return {
+            cabinId: c.id,
+            code: c.code,
+            type: c.type,
+            title: c.title,
+            position: { x: c.x, y: c.y, rotation: c.rotation, unit: 'm' },
+            dimension: { w: c.w, h: c.h },
+            status: c.status,
+            iot: c.type === 'BORNE_IOT'
+          };
+        }),
+        savedAt: new Date().toISOString()
+      };
+    }
+
+    function lsKey() { return 'psd_editor_' + state.floorId; }
+
+    function autosave() {
+      try {
+        localStorage.setItem(lsKey(), JSON.stringify(layoutToJSON()));
+        state.savedAt = new Date();
+      } catch (e) { /* quota */ }
+    }
+
+    function restoreFromData(d, source) {
+      if (!d || !d.cabins) return 0;
+      var count = 0;
+      d.cabins.forEach(function (c) {
+        if (!TEMPLATES[c.type]) return;
+        addCabin(c.type, c.position.x, c.position.y, {
+          id: c.cabinId || c.id,
+          code: c.code,
+          title: c.title,
+          rotation: c.position.rotation,
+          status: c.status
+        });
+        count++;
+      });
+      if (d.plan) {
+        state.planW = Number(d.plan.width) || state.planW;
+        state.planH = Number(d.plan.height) || state.planH;
+        $('inPlanW').value = state.planW;
+        $('inPlanH').value = state.planH;
+      }
+      if (Array.isArray(d.walls) && d.walls.length) state.walls = d.walls;
+      selectCabin(null);
+      state.cabins.forEach(function (c) { if (c.marker) paintCabinState(c); });
+      renderStats();
+      toast('Plan restauré depuis ' + source + ' (' + count + ' éléments)');
+      refresh3D();
+      return count;
+    }
+
+    function restoreFromServer() {
+      if (state.apiMode !== 'online') return restoreFromLocal();
+      apiFetch('/api/map/editor/layout?floorId=' + encodeURIComponent(state.floorId))
+        .then(function (res) {
+          if (res.layout) {
+            state.walls = res.layout.walls && res.layout.walls.length ? res.layout.walls : state.walls;
+            restoreFromData(res.layout, 'le serveur');
+          }
+        })
+        .catch(function () { restoreFromLocal(); });
+    }
+
+    function restoreFromLocal() {
+      try {
+        var raw = localStorage.getItem(lsKey());
+        if (!raw) return;
+        var d = JSON.parse(raw);
+        if (d && d.cabins) restoreFromData(d, 'le navigateur');
+      } catch (e) { /* ignorer */ }
+    }
+
+    function download(filename, text, mime) {
+      var blob = new Blob([text], { type: mime || 'application/octet-stream' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 200);
+    }
+
+    /* ────────────────────────────── Export DXF (CAD usine) ────────────────────────────── */
+    function num(n) { return (Math.round(n * 1000) / 1000).toString(); }
+    function dx(fl) { return num(fl); }
+    function dxY(y) { return num(state.planH - y); } // inversion d'axe pour CAD (Y vers le haut)
+
+    function buildDxf() {
+      var L2 = [];
+      function pair(code, val) { L2.push(String(code), String(val)); }
+
+      // HEADER
+      pair(0, 'SECTION'); pair(2, 'HEADER');
+      pair(9, '$ACADVER'); pair(1, 'AC1009');
+      pair(9, '$INSBASE'); pair(10, '0.0'); pair(20, '0.0'); pair(30, '0.0');
+      pair(0, 'ENDSEC');
+
+      // TABLES (calques)
+      pair(0, 'SECTION'); pair(2, 'TABLES');
+      pair(0, 'TABLE'); pair(2, 'LAYER'); pair(70, '3');
+      var layers = [
+        ['WALLS', '1'],
+        ['CABINS', '3'],
+        ['LABELS', '7']
+      ];
+      layers.forEach(function (ly) {
+        pair(0, 'LAYER'); pair(2, ly[0]); pair(70, '0'); pair(62, ly[1]); pair(6, 'CONTINUOUS');
+      });
+      pair(0, 'ENDTAB');
+      pair(0, 'ENDSEC');
+
+      // ENTITIES
+      pair(0, 'SECTION'); pair(2, 'ENTITIES');
+
+      // Murs → LINE
+      state.walls.forEach(function (wl) {
+        pair(0, 'LINE'); pair(8, 'WALLS');
+        pair(10, dx(wl.start.x)); pair(20, dxY(wl.start.y)); pair(30, '0.0');
+        pair(11, dx(wl.end.x)); pair(21, dxY(wl.end.y)); pair(31, '0.0');
+      });
+
+      // Cabines → POLYLINE fermée + texte
+      state.cabins.forEach(function (cab) {
+        var corners = cabinCorners(cab);
+        pair(0, 'POLYLINE'); pair(8, 'CABINS'); pair(66, '1'); pair(70, '1');
+        corners.forEach(function (p) {
+          pair(0, 'VERTEX'); pair(8, 'CABINS');
+          pair(10, dx(p.x)); pair(20, dxY(p.y)); pair(30, '0.0');
+        });
+        pair(0, 'SEQEND'); pair(8, 'CABINS');
+
+        pair(0, 'TEXT'); pair(8, 'LABELS');
+        pair(10, dx(cab.x)); pair(20, dxY(cab.y)); pair(30, '0.0');
+        pair(40, '0.35');
+        pair(1, cab.code);
+        pair(50, num(((360 - cab.rotation) % 360).toFixed(2))); // sens trigonométrique CAD
+      });
+
+      pair(0, 'ENDSEC');
+      pair(0, 'EOF');
+
+      return L2.join('\n') + '\n';
+    }
+
+    /* ────────────────────────────── Sauvegarde serveur / JSON ────────────────────────────── */
+    function saveLayout() {
+      var layout = layoutToJSON();
+      if (state.collisions > 0) {
+        toast('⚠ ' + state.collisions + ' collision(s) — corrigez avant d\'enregistrer', true);
+        return;
+      }
+      if (state.apiMode === 'online') {
+        apiFetch('/api/map/editor/layout', {
+          method: 'POST',
+          body: JSON.stringify({ floorId: state.floorId, layout: layout })
+        }).then(function () {
+          autosave();
+          toast('Plan sauvegardé sur le serveur ✔');
+        }).catch(function (e) {
+          toast('Échec serveur : ' + e.message, true);
+          download(state.floorId + '.json', JSON.stringify(layout, null, 2), 'application/json');
+        });
+      } else {
+        autosave();
+        download(state.floorId + '.json', JSON.stringify(layout, null, 2), 'application/json');
+        toast('API hors ligne — JSON téléchargé ✔');
+      }
+    }
+
+    function clearAll() {
+      if (state.cabins.length === 0) { toast('Le plan est déjà vide'); return; }
+      if (!confirm('Vider le plan ? Toutes les cabines seront supprimées.')) return;
+      state.cabins.slice().forEach(function (c) {
+        if (c.marker && c.marker._leaflet_id && state.map._layers[c.marker._leaflet_id]) state.map.removeLayer(c.marker);
+      });
+      state.cabins = [];
+      state.selectedId = null;
+      $('propCard').classList.add('hidden');
+      recomputeCollisions();
+      autosave();
+      toast('Plan vidé');
+      refresh3D();
+    }
+
+    /* ────────────────────────────── Thème ────────────────────────────── */
+    function applyTheme() {
+      document.documentElement.setAttribute('data-theme', state.uiTheme);
+      $('themeBtn').textContent = state.uiTheme === 'dark' ? '🌙' : '☀️';
+      if (state.map) state.map.invalidateSize();
+    }
+
+    /* ────────────────────────────── Câblage UI ────────────────────────────── */
+    function wireUI() {
+      $('themeBtn').addEventListener('click', function () {
+        state.uiTheme = state.uiTheme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem(LS_UI, state.uiTheme);
+        applyTheme();
+      });
+      $('togGrid').addEventListener('change', function () { state.showGrid = this.checked; drawGrid(); });
+      $('togWalls').addEventListener('change', function () { state.showWalls = this.checked; drawWalls(); });
+      $('togSnap').addEventListener('change', function () { state.snapping = this.checked; drawWalls(); });
+
+      $('inFloor').addEventListener('change', function () {
+        state.floorId = this.value.trim() || state.floorId;
+        toast('Niveau actif : ' + state.floorId);
+      });
+      $('inPlanW').addEventListener('change', onPlanResize);
+      $('inPlanH').addEventListener('change', onPlanResize);
+
+      $('prApply').addEventListener('click', applyProps);
+      $('prDelete').addEventListener('click', function () {
+        var cab = getSelected();
+        if (cab) removeCabin(cab.id);
+      });
+
+      $('saveBtn').addEventListener('click', saveLayout);
+      $('exportJsonBtn').addEventListener('click', function () {
+        download(state.floorId + '.json', JSON.stringify(layoutToJSON(), null, 2), 'application/json');
+        toast('JSON exporté');
+      });
+      $('exportDxfBtn').addEventListener('click', function () {
+        download(state.floorId + '.dxf', buildDxf(), 'application/dxf;charset=utf-8');
+        toast('DXF exporté (' + state.cabins.length + ' cabines) ✔');
+      });
+      $('clearBtn').addEventListener('click', clearAll);
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          if (state.armedType) { disarmPalette(); toast('Placement annulé'); }
+          else selectCabin(null);
+        }
+        if ((e.key === 'Delete' || e.key === 'Backspace') && state.selectedId &&
+            !(document.activeElement && document.activeElement.tagName === 'INPUT')) {
+          e.preventDefault();
+          removeCabin(state.selectedId);
+        }
+      });
+
+      window.addEventListener('resize', function () { if (state.map) state.map.invalidateSize(); });
+      setTimeout(function () { if (state.map) state.map.invalidateSize(); }, 150);
+    }
+
+    function onPlanResize() {
+      var w = parseFloat($('inPlanW').value) || state.planW;
+      var h = parseFloat($('inPlanH').value) || state.planH;
+      if (w < 5) w = 5;
+      if (h < 5) h = 5;
+      if (w === state.planW && h === state.planH) return;
+      state.planW = w; state.planH = h;
+      state.walls = defaultWalls(w, h);
+      if (state.map) {
+        state.map.remove();
+        state.map = null;
+      }
+      state._gridLayer = null;
+      state._wallLayer = null;
+      setupMap();
+      state.cabins.forEach(function (c) { c.marker = null; createMarker(c); });
+      selectCabin(null);
+      recomputeCollisions();
+      autosave();
+      toast('Plan redimensionné : ' + w + ' × ' + h + ' m');
+      refresh3D();
+    }
+
+    /* ────────────────────────────── Initialisation ────────────────────────────── */
+    function init() {
+      applyTheme();
+      state.walls = defaultWalls(state.planW, state.planH);
+      buildPalette();
+      setupMap();
+      wireMapDnD();
+      wireUI();
+      detectApi();
+      setTimeout(restoreFromServer, 400);
+      renderStats();
+    }
+
+    window.__pxedGetState = function () {
+      return { cabins: state.cabins.slice(), walls: state.walls.slice(), planW: state.planW, planH: state.planH, snapping: state.snapping };
+    };
+
+    init();
+  })();
+  </script>
+  <script>
+  (function () {
+    'use strict';
+
+    /* =============================================================
+       Plan3D — Visionneuse 3D WebGL du plan d'étage (zéro dépendance)
+       Axes monde : X = est (plan), Y = haut, Z = nord (plan)
+       ============================================================= */
+    var BOX_H = 2.4, BORNE_H = 1.1, WALL_H = 2.6, WALL_T = 0.08;
+    var STATUS_RGB = {
+      AVAILABLE: hexRgb('#10b981'),
+      DIRTY: hexRgb('#f59e0b'),
+      MAINTENANCE: hexRgb('#ef4444')
+    };
+    function hexRgb(hex) {
+      var n = parseInt(hex.slice(1), 16);
+      return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255];
+    }
+    function edState() { return window.__pxedGetState ? window.__pxedGetState() : { cabins: [], walls: [], planW: 40, planH: 30, snapping: true }; }
+
+    function toast3d(msg, err) {
+      var t = document.getElementById('toast');
+      if (!t) { alert(msg); return; }
+      t.textContent = msg;
+      t.className = 'toast show' + (err ? ' err' : '');
+      clearTimeout(toast3d._t);
+      toast3d._t = setTimeout(function () { t.className = 'toast'; }, 2600);
+    }
+
+    /* ── matrices (colonnes majeures, API WebGL standard) ── */
+    function mat4Projection(fovy, aspect, near, far) {
+      var f = 1 / Math.tan(fovy / 2), nf = 1 / (near - far);
+      return new Float32Array([
+        f / aspect, 0, 0, 0,
+        0, f, 0, 0,
+        0, 0, (far + near) * nf, -1,
+        0, 0, 2 * far * near * nf, 0
+      ]);
+    }
+    function mat4LookAt(eye, c, up) {
+      var zx = eye[0] - c[0], zy = eye[1] - c[1], zz = eye[2] - c[2];
+      var l = Math.sqrt(zx * zx + zy * zy + zz * zz); zx /= l; zy /= l; zz /= l;
+      var ux = up[0], uy = up[1], uz = up[2];
+      var xx = uy * zz - uz * zy, xy = uz * zx - ux * zz, xz = ux * zy - uy * zx;
+      l = Math.sqrt(xx * xx + xy * xy + xz * xz); xx /= l; xy /= l; xz /= l;
+      var yx = zy * xz - zz * xy, yy = zz * xx - zx * xz, yz = zx * xy - zy * xx;
+      return new Float32Array([
+        xx, yx, zx, 0,
+        xy, yy, zy, 0,
+        xz, yz, zz, 0,
+        -(xx * eye[0] + xy * eye[1] + xz * eye[2]),
+        -(yx * eye[0] + yy * eye[1] + yz * eye[2]),
+        -(zx * eye[0] + zy * eye[1] + zz * eye[2]), 1
+      ]);
+    }
+    function mat4Mul(a, b) {
+      var o = new Float32Array(16);
+      for (var c = 0; c < 4; c++) for (var r = 0; r < 4; r++) {
+        var t = 0;
+        for (var k = 0; k < 4; k++) t += a[k * 4 + r] * b[c * 4 + k];
+        o[c * 4 + r] = t;
+      }
+      return o;
+    }
+
+    /* ── collecteur de géométrie (vertex pos3 + color4, indices tri + lignes séparés) ── */
+    function Geometry() { this.verts = []; this.tri = []; this.lines = []; }
+    Geometry.prototype.add = function (positions, col) {
+      var base = this.verts.length / 7;
+      for (var i = 0; i < positions.length; i++) {
+        var p = positions[i];
+        this.verts.push(p[0], p[1], p[2], col[0], col[1], col[2], col[3] == null ? 1 : col[3]);
+      }
+      for (var j = 1; j + 1 < positions.length; j++) this.tri.push(base, base + j, base + j + 1);
+    };
+    Geometry.prototype.line = function (a, b, col) {
+      var base = this.verts.length / 7;
+      this.verts.push(a[0], a[1], a[2], col[0] == null ? 1 : col[0], col[1] == null ? 1 : col[1], col[2] == null ? 1 : col[2], col[3] == null ? 1 : col[3]);
+      this.verts.push(b[0], b[1], b[2], col[0] == null ? 1 : col[0], col[1] == null ? 1 : col[1], col[2] == null ? 1 : col[2], col[3] == null ? 1 : col[3]);
+      this.lines.push(base, base + 1);
+    };
+    Geometry.prototype.upload = function (gl, bufPos, bufCol, bufIdx) {
+      var arr = new Float32Array(this.verts);
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufPos);
+      gl.bufferData(gl.ARRAY_BUFFER, arr, gl.DYNAMIC_DRAW);
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufCol);
+      gl.bufferData(gl.ARRAY_BUFFER, arr, gl.DYNAMIC_DRAW);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufIdx);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.tri.concat(this.lines)), gl.DYNAMIC_DRAW);
+      this._triCount = this.tri.length;
+      this._lineStart = this.tri.length;
+    };
+
+    function Plan3D(container) {
+      this.container = container;
+      this._on = false;
+      this._yaw = -0.7;
+      this._pitch = 1.05;
+      this._radius = 80;
+      this._drag = null;
+      this._pinch = 0;
+      this._data = { cabins: [], walls: [], planW: 40, planH: 30, snapping: true };
+
+      var cv = document.createElement('canvas');
+      cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%';
+      this.cv = cv;
+      container.appendChild(cv);
+
+      var gl = this.gl = cv.getContext('webgl', { antialias: true }) ||
+                     cv.getContext('experimental-webgl', { antialias: true }) ||
+                     cv.getContext('webgl2', { antialias: true });
+      if (!gl) throw new Error('WebGL indisponible');
+      gl.disable(gl.DEPTH_TEST); // painter's order suffisant ici
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+      var vs = 'attribute vec3 aPos;attribute vec4 aColor;uniform mat4 uMVP;varying vec4 vColor;void main(){vColor=aColor;gl_Position=uMVP*vec4(aPos,1.0);}';
+      var fs = 'precision mediump float;varying vec4 vColor;void main(){gl_FragColor=vColor;}';
+      this._prog = compile(gl, vs, fs);
+      this._aPos = gl.getAttribLocation(this._prog, 'aPos');
+      this._aColor = gl.getAttribLocation(this._prog, 'aColor');
+      this._uMVP = gl.getUniformLocation(this._prog, 'uMVP');
+      this._bufPos = gl.createBuffer();
+      this._bufCol = gl.createBuffer();
+      this._bufIdx = gl.createBuffer();
+
+      this._bindPointer();
+    }
+
+    function compile(gl, vsSrc, fsSrc) {
+      var mk = function (type, src) {
+        var s = gl.createShader(type);
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s) || 'shader');
+        return s;
+      };
+      var p = gl.createProgram();
+      gl.attachShader(p, mk(gl.VERTEX_SHADER, vsSrc));
+      gl.attachShader(p, mk(gl.FRAGMENT_SHADER, fsSrc));
+      gl.linkProgram(p);
+      if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p) || 'link');
+      return p;
+    }
+
+    Plan3D.prototype.enable = function () {
+      if (this._on) return;
+      this._on = true;
+      this.cv.style.display = 'block';
+      this._resize();
+      var self = this;
+      (function loop() {
+        if (!self._on) return;
+        self._render(self._data);
+        requestAnimationFrame(loop);
+      })();
+    };
+    Plan3D.prototype.disable = function () {
+      this._on = false;
+      this.cv.style.display = 'none';
+    };
+    Plan3D.prototype.setData = function (st) { this._data = st || this._data; };
+    Plan3D.prototype._resize = function () {
+      var r = this.container.getBoundingClientRect();
+      this.cv.width = Math.max(1, r.width);
+      this.cv.height = Math.max(1, r.height);
+    };
+
+    /* ── boîte extruée : centre plan (cx,cy), rotation deg, dims w×h, hauteur hZ ── */
+    function pushBox(g, cx, cy, rotDeg, w, h, hZ, col) {
+      var a = rotDeg * Math.PI / 180, s = Math.sin(a), c = Math.cos(a);
+      var hw = w / 2, hh = h / 2;
+      function rot(px, py) {
+        return [cx + px * c - py * s, cy + px * s + py * c];
+      }
+      var p0 = rot(-hw, -hh), p1 = rot(hw, -hh), p2 = rot(hw, hh), p3 = rot(-hw, hh);
+      var poly0 = [[p0[0], 0, p0[1]], [p1[0], 0, p1[1]], [p2[0], 0, p2[1]], [p3[0], 0, p3[1]]];
+      var polyTop = [[p0[0], hZ, p0[1]], [p1[0], hZ, p1[1]], [p2[0], hZ, p2[1]], [p3[0], hZ, p3[1]]];
+      var face = [0.94, 0.94, 0.94];
+      var darker = [col[0] * 0.8, col[1] * 0.8, col[2] * 0.8];
+      var lighter = [Math.min(1, col[0] * 1.25), Math.min(1, col[1] * 1.25), Math.min(1, col[2] * 1.25)];
+      g.add(poly0, darker);                                  // dessous
+      g.add(polyTop, lighter);                               // toit
+      for (var e = 0; e < 4; e++) {
+        var a0 = poly0[e], a1 = poly0[(e + 1) % 4], b1 = polyTop[(e + 1) % 4], b0 = polyTop[e];
+        g.add([a0, a1, b1, b0], face);                       // faces latérales
+      }
+    }
+
+    Plan3D.prototype._render = function (st) {
+      var gl = this.gl, cv = this.cv;
+      var rect = this.container.getBoundingClientRect();
+      var W = Math.max(1, Math.round(rect.width)), H = Math.max(1, Math.round(rect.height));
+      if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+      if (W === 0 || H === 0) return;
+
+      var g = new Geometry();
+      var floorCol = [0.10, 0.14, 0.23, 1];
+      var gridCol = [0.16, 0.16, 0.30, 0.75];
+      var wallCol = [0.94, 0.27, 0.27, 0.92];
+      var pw = st.planW, ph = st.planH;
+
+      // sol
+      g.add([
+        [0, 0, 0], [pw, 0, 0], [pw, 0, ph], [0, 0, ph]
+      ], floorCol);
+      // grille 2 m
+      for (var x = 0; x <= pw; x += 2) { g.line([x, 0.004, 0], [x, 0.004, ph], gridCol); }
+      for (var z = 0; z <= ph; z += 2) { g.line([0, 0.004, z], [pw, 0.004, z], gridCol); }
+
+      // murs → boîtes fines de hauteur WALL_H
+      st.walls.forEach(function (wl) {
+        var sx = wl.start.x, sy = wl.start.y, ex = wl.end.x, ey = wl.end.y;
+        var lx = ex - sx, lz = ey - sy;
+        var len = Math.hypot(lx, lz) || 0.001;
+        var ang = Math.atan2(lz, lx) * 180 / Math.PI;
+        g.add([[sx, WALL_H, sy], [ex, WALL_H, ey], [ex, 0, ey], [sx, 0, sy]], wallCol);
+        g.line([sx, WALL_H, sy], [ex, WALL_H, ey], [0.35, 0.05, 0.05, 1]);
+        g.line([sx, 0, sy], [ex, 0, ey], [0.35, 0.05, 0.05, 1]);
+        void len; void ang;
+      });
+
+      // cabines → boîtes
+      st.cabins.forEach(function (cab) {
+        var rgb = STATUS_RGB[cab.status] || STATUS_RGB.AVAILABLE;
+        var hZ = cab.type === 'BORNE_IOT' ? BORNE_H : BOX_H;
+        pushBox(g, cab.x, cab.y, cab.rotation || 0, cab.w, cab.h, hZ, rgb);
+        if (cab.colliding) {
+          var cc = [0.98, 0.3, 0.3];
+          g.add([
+            [cab.x - cab.w / 2, 0, cab.y - cab.h / 2],
+            [cab.x + cab.w / 2, 0, cab.y - cab.h / 2],
+            [cab.x + cab.w / 2, 0, cab.y + cab.h / 2],
+            [cab.x - cab.w / 2, 0, cab.y + cab.h / 2]
+          ], cc);
+        }
+      });
+
+      // caméra
+      var cx = pw / 2, cy = ph / 2;
+      var eye = [cx + this._radius * Math.cos(this._pitch) * Math.sin(this._yaw),
+                 2 + this._radius * Math.sin(this._pitch),
+                 cy + this._radius * Math.cos(this._pitch) * Math.cos(this._yaw)];
+      var proj = mat4Projection(Math.PI / 4, W / H, 1, 1200);
+      var view = mat4LookAt(eye, [cx, 1, cy], [0, 1, 0]);
+      var mvp = mat4Mul(proj, view);
+
+      // flush
+      gl.viewport(0, 0, W, H);
+      gl.clearColor(0.043, 0.067, 0.125, 1);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      gl.useProgram(this._prog);
+      gl.uniformMatrix4fv(this._uMVP, false, mvp);
+      g.upload(gl, this._bufPos, this._bufCol, this._bufIdx);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this._bufPos);
+      gl.enableVertexAttribArray(this._aPos);
+      gl.vertexAttribPointer(this._aPos, 3, gl.FLOAT, false, 28, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this._bufCol);
+      gl.enableVertexAttribArray(this._aColor);
+      gl.vertexAttribPointer(this._aColor, 4, gl.FLOAT, false, 28, 12);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._bufIdx);
+      if (g._triCount) gl.drawElements(gl.TRIANGLES, g._triCount, gl.UNSIGNED_SHORT, 0);
+      if (g.lines.length) gl.drawElements(gl.LINES, g.lines.length, gl.UNSIGNED_SHORT, g._lineStart * 2);
+    };
+
+    /* ── interactions : drag = orbite, molette = zoom, pinch = zoom ── */
+    Plan3D.prototype._bindPointer = function () {
+      var self = this;
+      var cv = this.cv;
+      cv.addEventListener('mousedown', function (e) {
+        self._drag = { x: e.clientX, y: e.clientY };
+        cv.classList.add('grabbing');
+      });
+      window.addEventListener('mousemove', function (e) {
+        if (!self._drag) return;
+        var dx = e.clientX - self._drag.x, dy = e.clientY - self._drag.y;
+        self._drag.x = e.clientX; self._drag.y = e.clientY;
+        self._yaw += dx * 0.006;
+        self._pitch = Math.max(0.12, Math.min(1.5, self._pitch + dy * 0.006));
+      });
+      window.addEventListener('mouseup', function () {
+        if (!self._drag) return;
+        self._drag = null;
+        cv.classList.remove('grabbing');
+      });
+      cv.addEventListener('wheel', function (e) {
+        e.preventDefault();
+        self._radius = Math.max(12, Math.min(260, self._radius * Math.exp(e.deltaY * 0.0012)));
+      }, { passive: false });
+      cv.addEventListener('touchstart', function (e) {
+        e.preventDefault();
+        if (e.touches.length === 1) self._drag = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        else if (e.touches.length === 2) self._pinch = dist2(e.touches);
+      }, { passive: false });
+      cv.addEventListener('touchmove', function (e) {
+        e.preventDefault();
+        if (e.touches.length === 2 && self._pinch) {
+          var d = dist2(e.touches);
+          self._radius = Math.max(12, Math.min(260, self._radius * (self._pinch / d)));
+          self._pinch = d;
+        } else if (e.touches.length === 1 && self._drag) {
+          var dx = e.touches[0].clientX - self._drag.x, dy = e.touches[0].clientY - self._drag.y;
+          self._drag.x = e.touches[0].clientX; self._drag.y = e.touches[0].clientY;
+          self._yaw += dx * 0.006;
+          self._pitch = Math.max(0.12, Math.min(1.5, self._pitch + dy * 0.006));
+        }
+      }, { passive: false });
+      cv.addEventListener('touchend', function () { self._drag = null; self._pinch = 0; });
+      function dist2(t) {
+        return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+      }
+    };
+
+    /* ── câblage bouton ── */
+    var view3d = document.getElementById('view3d');
+    var v3dBtn = document.getElementById('v3dBtn');
+    var plan3d = null, on = false;
+
+    function ensure() { if (!plan3d) plan3d = new Plan3D(view3d); }
+
+    v3dBtn.addEventListener('click', function () {
+      on = !on;
+      if (on) {
+        try { ensure(); plan3d.enable(); plan3d.setData(edState()); }
+        catch (e) { toast3d('Vue 3D indisponible (WebGL désactivé)', true); on = false; return; }
+        var lc = document.querySelector('#mapCanvas .leaflet-container');
+        if (lc) lc.style.opacity = '0';
+        v3dBtn.classList.add('on');
+      } else {
+        if (plan3d) plan3d.disable();
+        var lc2 = document.querySelector('#mapCanvas .leaflet-container');
+        if (lc2) lc2.style.opacity = '';
+        v3dBtn.classList.remove('on');
+      }
+    });
+
+    window.__pxed = {
+      refresh: function () { if (plan3d && on) plan3d.setData(edState()); }
+    };
+  })();
+  </script>
+</body>
+</html>

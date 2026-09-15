@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#10161a">
+<meta name="author" content="pixelsoftwaredesign">
+<!-- © pixelsoftwaredesign 2026 -->
+<title>Démo — Cycle de vie complet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<script src="/animations.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ambient),var(--bg);color:var(--text);font-family:var(--font-ui);min-height:100vh;padding-bottom:24px}
+  header{position:sticky;top:0;z-index:20;background:rgba(11,18,32,.65);backdrop-filter:blur(6px);padding:16px 16px 10px;border-bottom:1px solid var(--border)}
+  header h1{font-family:var(--font-display);font-size:1.3rem;font-weight:600}
+  header h1 span{color:var(--accent)}
+  header .sub{color:var(--muted);font-size:.8rem}
+  main{max-width:860px;margin:0 auto;padding:16px}
+  .card{background:var(--card);border:1px solid rgba(255,255,255,.03);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+  h2{font-size:1rem;margin-bottom:8px}
+  label{display:block;color:var(--muted);font-size:.8rem;margin-bottom:4px}
+  .input{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:12px;margin-bottom:10px;font-size:1rem}
+  .btn{display:block;width:100%;border:none;border-radius:14px;padding:13px;font-size:.95rem;font-weight:600;background:linear-gradient(155deg,var(--ember),var(--ember-dim));box-shadow:0 4px 16px rgba(242,166,90,.28);color:#241202;cursor:pointer;margin-top:8px}
+  .btn:active{transform:scale(.98)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn.ghost{background:var(--card2);color:var(--text);box-shadow:none}
+  .btn.danger{background:#7f1d1d;color:var(--danger);box-shadow:none}
+  .btn.ok{background:linear-gradient(155deg,#5fb27f,#3d8b5e);color:#fff}
+  .btn.small{padding:8px 14px;font-size:.78rem;width:auto;margin-top:0;border-radius:9px}
+  .hidden{display:none!important}
+  .meta{color:var(--muted);font-size:.8rem;line-height:1.5}
+  .badge{font-size:.66rem;padding:3px 8px;border-radius:99px;font-weight:600;display:inline-block}
+  .badge.ok{background:#14532d;color:var(--ok)}
+  .badge.warn{background:#451a03;color:var(--warn)}
+  .badge.red{background:#7f1d1d;color:var(--danger)}
+  .badge.blue{background:#0c4a6e;color:var(--accent)}
+  .badge.muted{background:#1e293b;color:var(--muted)}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);padding:12px 18px;border-radius:12px;font-weight:600;z-index:50;display:none;max-width:90vw}
+  .toast.show{display:block}
+  /* pipeline */
+  .pipe{display:flex;gap:0;flex-wrap:wrap;align-items:stretch;margin:10px 0 4px}
+  .node{flex:1;min-width:96px;border:1px solid var(--border);border-radius:12px;padding:8px 6px;text-align:center;font-size:.66rem;color:var(--muted);position:relative;margin-right:6px;background:var(--card2)}
+  .node:last-child{margin-right:0}
+  .node .n{font-size:.95rem;font-weight:700;color:var(--text);display:block}
+  .node.active{border-color:var(--ember);box-shadow:0 0 0 1px var(--ember),0 4px 14px rgba(242,166,90,.25);color:var(--ember)}
+  .node.done{border-color:var(--pine);color:var(--ok)}
+  /* steps */
+  .step{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--border);font-size:.88rem}
+  .step:last-child{border-bottom:none}
+  .step .st{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);flex:none;display:flex;align-items:center;justify-content:center;font-size:.7rem}
+  .step.run .st{border-color:var(--ember);border-top-color:transparent;animation:spin .8s linear infinite}
+  .step.done .st{background:#14532d;border-color:#14532d;color:var(--ok)}
+  .step.err .st{background:#7f1d1d;border-color:#7f1d1d;color:var(--danger)}
+  .step .b{flex:none;font-size:1.05rem}
+  .step .d{flex:1}
+  .step .d b{font-size:.85rem;display:block}
+  .step .d .m{font-size:.72rem;color:var(--muted);word-break:break-word}
+  .step .out{font-size:.72rem;color:var(--ok);flex:none;font-weight:600}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .log{background:#0b1114;border:1px solid var(--border);border-radius:12px;padding:12px;font-family:ui-monospace,Menlo,monospace;font-size:.72rem;color:#9fb4bd;height:150px;overflow-y:auto;white-space:pre-wrap;line-height:1.5}
+  .log .ok{color:#4ade80}.log .warn{color:#fbbf24}.log .err{color:#f87171}
+  .timeline{border-left:2px solid var(--border);margin-left:6px;padding-left:16px}
+  .tl{position:relative;padding:6px 0 12px}
+  .tl::before{content:'';position:absolute;left:-21px;top:10px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+  .tl b{font-size:.8rem}
+  .tl .m{font-size:.7rem;color:var(--muted)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .kpi{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center}
+  .kpi .v{font-family:var(--font-display);font-size:1.3rem}
+  .kpi .l{font-size:.68rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<header><h1>🎬 Démo — <span>Cycle de vie complet</span></h1><div class="sub">Rejeu usine → client → démontage · Track & Trace · bordereau · QR · transfert</div></header>
+
+<main>
+  <div id="authCard" class="card">
+    <h2>Connexion</h2>
+    <label>Email</label><input class="input" id="email" type="email" placeholder="admin@cabine.com">
+    <label>Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
+    <button class="btn" id="loginBtn">Se connecter</button>
+  </div>
+
+  <div id="appView" class="hidden">
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <h2 style="margin:0">Répartition du parc</h2>
+        <span class="meta" id="parkCount"></span>
+      </div>
+      <div class="pipe" id="pipeline"></div>
+    </div>
+
+    <div class="card">
+      <h2>▶ Rejouer le cycle complet</h2>
+      <p class="meta" style="margin-bottom:8px">Crée une cabine <b>CAB-2026-DEMO-XXXX</b> et enchaîne chaque étape du cycle de vie réel via les API : fabrication, assemblage, QC, expédition (bordereau + QR colisage), transit GPS, arrivée site, mise en service, puis démontage complet jusqu'au stockage.</p>
+      <button class="btn ok" id="playBtn">🎬 Lancer la démo</button>
+      <button class="btn ghost" id="resetBtn" style="margin-top:6px">🧹 Vider les cabines de démo (CAB-2026-DEMO-*)</button>
+      <div class="grid2" style="margin-top:12px">
+        <div class="kpi"><div class="v" id="kSerial">—</div><div class="l">Série</div></div>
+        <div class="kpi"><div class="v" id="kLife">—</div><div class="l">Étape en cours</div></div>
+      </div>
+      <div id="steps" style="margin-top:8px"></div>
+      <h3 class="meta" style="margin:10px 0 4px">Journal</h3>
+      <div class="log" id="log"></div>
+    </div>
+
+    <div class="card hidden" id="traceCard">
+      <div style="display:flex;align-items:center;gap:10px">
+        <h2 style="margin:0">🧭 Fiche de vie</h2>
+        <a class="btn ghost small" id="bordBtn" target="_blank" style="margin:0;margin-left:auto">📄 Bordereau PDF</a>
+      </div>
+      <div class="pipe" id="miniPipe" style="margin-top:10px"></div>
+      <div class="timeline" id="tl" style="margin-top:8px"></div>
+    </div>
+  </div>
+</main>
+
+<div id="toast" class="toast"></div>
+
+<script>
+(function(){
+  if(window.CabinMotion) CabinMotion.init(document);
+  const API=location.origin;
+  const $=id=>document.getElementById(id);
+  let TOKEN=localStorage.getItem('demo_token')||'';
+  const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2800);};
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  async function api(path,opt){
+    const r=await fetch(API+path,Object.assign({headers:{'Content-Type':'application/json',Authorization:'Bearer '+TOKEN}},opt||{}));
+    const j=await r.json().catch(()=>({success:false,message:'Erreur réseau'}));
+    if(r.status===401){localStorage.removeItem('demo_token');TOKEN='';location.reload();}
+    return j;
+  }
+
+  const LC={FACTORY_PURCHASED:['Achetée usine','warn'],READY_FOR_SHIPPING:['Prête envoi','blue'],IN_TRANSIT:['En transit','blue'],ASSEMBLY_IN_PROGRESS:['Assemblage','warn'],OPERATIONAL:['En service','ok'],DECOMPOSITION_REQUESTED:['Décomposition','red'],DECOMPOSED_IN_STORAGE:['Stockée','muted']};
+  const ORDER=['FACTORY_PURCHASED','READY_FOR_SHIPPING','IN_TRANSIT','ASSEMBLY_IN_PROGRESS','OPERATIONAL','DECOMPOSITION_REQUESTED','DECOMPOSED_IN_STORAGE'];
+
+  let steps=[]; let running=false;
+  function log(msg,cls){
+    const el=$('log'); if(!el)return;
+    const t=document.createElement('div'); t.innerHTML=esc(msg); if(cls)t.className=cls;
+    el.appendChild(t); el.scrollTop=el.scrollHeight;
+  }
+  function renderPipeline(){
+    $('pipeline').innerHTML=ORDER.map((c,i)=>`<div class="node${steps.length? '' : ''}" data-p="${c}" id="node-${c}"><span class="n">${String(i+1)}</span>${LC[c][0]}</div>`).join('');
+    $('miniPipe').innerHTML=ORDER.map((c,i)=>`<div class="node" id="mnode-${c}"><span class="n">${String(i+1)}</span>${LC[c][0]}</div>`).join('');
+  }
+  function setPhase(code){
+    document.querySelectorAll('#pipeline .node').forEach(n=>n.classList.remove('active','done'));
+    document.querySelectorAll('#miniPipe .node').forEach(n=>n.classList.remove('active','done'));
+    const i=ORDER.indexOf(code);
+    ORDER.slice(0,i).forEach(c=>{const a=$('node-'+c),b=$('mnode-'+c);if(a)a.classList.add('done');if(b)b.classList.add('done');});
+    const a=$('node-'+code),b=$('mnode-'+code);
+    if(a)a.classList.add('active'); if(b)b.classList.add('active');
+    $('kLife').textContent=LC[code]?.[0]||code;
+  }
+  async function loadPark(){
+    const j=await api('/api/lifecycle/units').catch(()=>null); if(!j)return;
+    const counts={}; j.units.forEach(u=>counts[u.lifecycle]=(counts[u.lifecycle]||0)+1);
+    $('parkCount').textContent=j.units.length+' cabine(s)';
+    renderPipeline();
+    setPhase(steps.length?ORDER[ORDER.length-1]:null);
+    document.querySelectorAll('#pipeline .node').forEach(n=>{
+      const c=n.dataset.p; n.querySelector('.n').textContent=counts[c]||0;
+    });
+  }
+
+  const DBG=100;
+  function addStep(icon,label,fn,clamp){
+    const div=document.createElement('div'); div.className='step';
+    div.innerHTML=`<span class="st"></span><span class="b">${icon}</span><div class="d"><b>${esc(label)}</b><div class="m"></div></div><span class="out"></span>`;
+    $('steps').appendChild(div); $('steps').scrollIntoView({behavior:'smooth',block:'end'});
+    return async()=>{
+      div.classList.add('run');
+      const m=div.querySelector('.m');
+      const run=async()=>{
+        try{
+          const r=await fn(m);
+          m.textContent=r&&r.detail?r.detail:'';
+          div.querySelector('.out').textContent='✓';
+          div.classList.remove('run'); div.classList.add('done');
+          log((r&&r.line?r.line:label),'ok');
+          return r;
+        }catch(e){
+          m.textContent=String(e&&e.message||e);
+          div.querySelector('.out').textContent='✗';
+          div.classList.remove('run'); div.classList.add('err');
+          log(label+' → ERREUR : '+String(e&&e.message||e),'err');
+          throw e;
+        }
+      };
+      if(clamp){ await run(); }
+      else { await new Promise(r=>setTimeout(r,DBG)); await run(); }
+      await new Promise(r=>setTimeout(r,350));
+    };
+  }
+
+  async function replay(){
+    running=true; $('playBtn').disabled=true; $('resetBtn').disabled=true;
+    $('steps').innerHTML=''; $('log').innerHTML=''; $('tl').innerHTML=''; $('traceCard').classList.add('hidden'); $('kSerial').textContent='—';
+    steps=[]; renderPipeline();
+
+    const rnd=String(Math.floor(1000+Math.random()*9000));
+    const serial='CAB-2026-DEMO-'+rnd;
+    $('kSerial').textContent=serial;
+    let cabinId=null, tracking='', orderId='';
+
+    const stepsDef=[
+      ['🏭','Création unité usine',m=>api('/api/factory/units',{method:'POST',body:JSON.stringify({serialNumber:serial,name:'Cabine démo cycle de vie',hardwareVersion:'v1 démo',esp32MacAddress:'02:'+serial.slice(-4).split('').join(':')})}).then(j=>{
+        if(!j.success) throw new Error(j.message);
+        cabinId=j.unit._id;
+        return {line:'Créée : '+serial+' → FACTORY_PURCHASED',detail:'Cabin créée'};
+      })],
+      ['🔩','Assemblage usine P1→P4',async m=>{
+        const a=await api('/api/factory/units/'+cabinId+'/assembly');
+        if(!a.success) throw new Error(a.message);
+        const ordered=a.assembly.slice().sort((x,y)=>x.station.localeCompare(y.station));
+        for(const st of ordered){
+          m.textContent='Station '+st.station.toUpperCase()+'…';
+          const j=await api('/api/factory/units/'+cabinId+'/assembly/'+st.station,{method:'POST',body:JSON.stringify({operations:st.operations.map(o=>o.label)})});
+          if(!j.success) throw new Error(j.message||('station '+st.station));
+        }
+        return {line:'Assemblage terminé (P1-P4)','detail':'4 stations ✓'};
+      }],
+      ['✅','Contrôle qualité usine',m=>api('/api/factory/units/'+cabinId+'/qc',{method:'POST',body:JSON.stringify({})}).then(j=>{
+        if(!j.success) throw new Error(j.message);
+        setPhase('READY_FOR_SHIPPING');
+        return {line:'QC réussi → READY_FOR_SHIPPING'};
+      })],
+      ['🚚','Expédition + bordereau + QR colisage',m=>api('/api/lifecycle/cabins/'+cabinId+'/shipping',{method:'PATCH',body:JSON.stringify({carrierName:'DHL',destinationAddress:'Démonstration — Tunis, La Marsa',dock:'Quai B'})}).then(j=>{
+        if(!j.success) throw new Error(j.message);
+        tracking=j.trackingNumber; setPhase('IN_TRANSIT');
+        $('bordBtn').href=API+'/api/lifecycle/report/bordereau/'+cabinId;
+        return {line:'Expédiée — tracking '+tracking+' · QR '+j.packingQR,'detail':'Tracking '+tracking};
+      })],
+      ['🛰️','Suivi GPS transit (2 points)',async m=>{
+        for(const p of [{la:36.8065,lo:10.1815},{la:36.7990,lo:10.1740}]){
+          const j=await api('/api/lifecycle/cabins/'+cabinId+'/transit',{method:'PATCH',body:JSON.stringify({carrier:'DHL',vehicle:'TN-1234-DEMO',lat:p.la,lng:p.lo})});
+          if(!j.success) throw new Error(j.message);
+          m.textContent='point '+p.la.toFixed(4)+', '+p.lo.toFixed(4)+' ✓';
+        }
+        return {line:'2 waypoints GPS enregistrés','detail':'35.8065…'}||{};
+      }],
+      ['📍','Arrivée sur site (assemblage)',m=>api('/api/lifecycle/cabins/'+cabinId+'/site-arrival',{method:'POST',body:JSON.stringify({})}).then(j=>{
+        if(!j.success) throw new Error(j.message);
+        setPhase('ASSEMBLY_IN_PROGRESS');
+        return {line:'Arrivée → ASSEMBLY_IN_PROGRESS'};
+      })],
+      ['🛠️','Mise en service → opérationnelle',m=>api('/api/lifecycle/cabins/'+cabinId+'/operational',{method:'POST',body:JSON.stringify({})}).then(j=>{
+        if(!j.success) throw new Error(j.message);
+        setPhase('OPERATIONAL');
+        return {line:'Commission → OPERATIONAL (louable)'};
+      })],
+      ['🚨','Demande de démontage (relocation)',m=>api('/api/lifecycle/cabins/'+cabinId+'/decompose',{method:'POST',body:JSON.stringify({reason:'RELOCATION',targetDestination:'Sousse, Port El Kantaoui'})}).then(j=>{
+        if(!j.success) throw new Error(j.message);
+        orderId=j.orderId; setPhase('DECOMPOSITION_REQUESTED');
+        return {line:'Ordre '+orderId+' · hors-service, bourse masquée, MQTT DECOMMISSION_PREPARATION','detail':orderId};
+      })],
+      ['👷','Affectation technicien',async m=>{
+        let users=(await api('/api/workforce')).agents||[];
+        let tech=users.find(u=>u.role==='TECHNICIAN'||(u.roles&&u.roles.includes('TECHNICIAN')));
+        if(!tech){
+          const email='demo.tech'+rnd+'@cabine.com';
+          const cr=await api('/api/workforce',{method:'POST',body:JSON.stringify({name:'Technicien Démo',email,password:'pass1234',role:'TECHNICIAN'})});
+          if(!cr.success) throw new Error(cr.message);
+          tech=cr.agent;
+        }
+        const j=await api('/api/lifecycle/decompositions/'+cabinId+'/assign',{method:'POST',body:JSON.stringify({technicianId:tech.id||tech._id})});
+        if(!j.success) throw new Error(j.message);
+        m.textContent=(tech.name||tech.email);
+        return {line:'Technicien '+(tech.name||tech.email)+' affecté'};
+      }],
+      ['📖','Guide de démontage inversé (8 étapes)',async m=>{
+        const cfg=await api('/api/lifecycle/config');
+        const g=await api('/api/lifecycle/decompositions/'+cabinId+'/guide');
+        if(!g.success) throw new Error(g.message);
+        for(const s of g.steps){
+          const j=await api('/api/lifecycle/decompositions/'+cabinId+'/steps/'+s.key,{method:'PATCH',body:JSON.stringify({})});
+          if(!j.success) throw new Error(j.message+' ('+s.key+')');
+        }
+        return {line:'8 étapes P4→P1 validées (guide inversé)'};
+      }],
+      ['🧾','Inventaire composants (4 scans QR)',async m=>{
+        const inv={armoire_iot:'IOT',tablette:'TAB',serrure_relais:'LCK',panneaux:'STR'};
+        let n=0;
+        for(const [k,p] of Object.entries(inv)){
+          const j=await api('/api/lifecycle/decompositions/'+cabinId+'/inventory',{method:'POST',body:JSON.stringify({key:k,scanValue:'QR-'+p+'-'+serial})});
+          if(!j.success) throw new Error(j.message);
+          n++; m.textContent=n+'/4';
+        }
+        return {line:'4 composants scannés (QT-IOT/TAB/LCK/STR)'};
+      }],
+      ['📦','Clôture → stockage',m=>api('/api/lifecycle/decompositions/'+cabinId+'/complete',{method:'POST',body:JSON.stringify({notes:'Palettes étiquetées — démo',photos:[],result:'STORAGE'})}).then(j=>{
+        if(!j.success) throw new Error(j.message);
+        setPhase('DECOMPOSED_IN_STORAGE');
+        $('kLife').textContent='Stockée';
+        return {line:'Décomposition '+orderId+' clôturée → DECOMPOSED_IN_STORAGE'};
+      })],
+      ['🧭','Trace finale (événements)',async m=>{
+        const t=await api('/api/lifecycle/cabins/'+cabinId+'/trace');
+        if(!t.success) throw new Error(t.message);
+        $('tl').innerHTML=t.events.slice().reverse().map(e=>`<div class="tl"><b>${esc(e.action)}</b> <span class="badge muted">${esc(e.from||'—')} → ${esc(e.to||'—')}</span><div class="m">${new Date(e.at).toLocaleString('fr-FR')} · ${esc(e.by)}</div></div>`).join('');
+        $('traceCard').classList.remove('hidden'); setTimeout(()=>$('traceCard').scrollIntoView({behavior:'smooth',block:'start'}),300);
+        return {line:'Fiche de vie affichée — '+t.events.length+' événements tracés'};
+      }]
+    ];
+
+    try{
+      for(const [icon,label,fn] of stepsDef){
+        const onestep=addStep(icon,label,fn);
+        await onestep();
+      }
+      loadPark(); setPhase('DECOMPOSED_IN_STORAGE');
+      toast('🎉 Cycle complet rejoué avec succès');
+    }catch(e){
+      toast('Démo interrompue — voir le journal');
+    }finally{
+      running=false; $('playBtn').disabled=false; $('resetBtn').disabled=false;
+      loadPark();
+    }
+  }
+
+  $('playBtn').onclick=()=>{ if(!running) replay(); };
+  $('resetBtn').onclick=async()=>{
+    if(!confirm('Supprimer définitivement toutes les cabines CAB-2026-DEMO-* (unités usine + suivi + historiques) ?'))return;
+    const j=await api('/api/lifecycle/units'); if(!j.success)return;
+    const demos=j.units.filter(u=>u.serialNumber.startsWith('CAB-2026-DEMO-'));
+    let n=0;
+    for(const u of demos){ const r=await api('/api/lifecycle/cabins/'+u._id,{method:'DELETE'}); if(r.success)n++; }
+    toast(n+' cabine(s) de démo supprimée(s)'); $('steps').innerHTML=''; $('log').innerHTML='';
+    await loadPark();
+  };
+
+  $('loginBtn').onclick=async()=>{
+    const j=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email:$('email').value,password:$('password').value})}).catch(()=>({success:false}));
+    if(!j.success){toast('Identifiants invalides');return;}
+    TOKEN=j.token; localStorage.setItem('demo_token',TOKEN);
+    $('authCard').classList.add('hidden'); $('appView').classList.remove('hidden');
+    renderPipeline(); await loadPark();
+  };
+
+  (async()=>{ if(TOKEN){ $('authCard').classList.add('hidden');$('appView').classList.remove('hidden'); renderPipeline(); loadPark(); } })();
+})();
+</script>
+</body>
+</html>

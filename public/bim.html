@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#10161a">
+<meta name="author" content="pixelsoftwaredesign">
+<!-- © pixelsoftwaredesign 2026 -->
+<title>Jumeau numérique BIM</title>
+<script src="/socket.io/socket.io.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<script src="/animations.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ambient),var(--bg);color:var(--text);font-family:var(--font-ui);min-height:100vh;padding-bottom:24px}
+  header{position:sticky;top:0;z-index:20;background:rgba(11,18,32,.65);backdrop-filter:blur(6px);padding:16px 16px 10px;border-bottom:1px solid var(--border)}
+  header h1{font-family:var(--font-display);font-size:1.3rem;font-weight:600}
+  header h1 span{color:var(--accent)}
+  header .sub{color:var(--muted);font-size:.8rem}
+  main{max-width:900px;margin:0 auto;padding:16px}
+  .card{background:var(--card);border:1px solid rgba(255,255,255,.03);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+  h2{font-size:1rem;margin-bottom:8px}
+  h3{font-size:.82rem;margin:10px 0 6px;color:var(--muted)}
+  label{display:block;color:var(--muted);font-size:.8rem;margin-bottom:4px}
+  .input{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:12px;margin-bottom:10px;font-size:1rem}
+  .btn{display:block;width:100%;border:none;border-radius:14px;padding:13px;font-size:.95rem;font-weight:600;background:linear-gradient(155deg,var(--ember),var(--ember-dim));box-shadow:0 4px 16px rgba(242,166,90,.28);color:#241202;cursor:pointer;margin-top:8px}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:var(--card2);color:var(--text);box-shadow:none}
+  .btn.small{padding:8px 14px;font-size:.78rem;width:auto;margin-top:0;border-radius:9px}
+  .hidden{display:none!important}
+  .meta{color:var(--muted);font-size:.8rem;line-height:1.5}
+  .badge{font-size:.66rem;padding:3px 8px;border-radius:99px;font-weight:600}
+  .badge.ok{background:#14532d;color:var(--ok)}
+  .badge.warn{background:#451a03;color:var(--warn)}
+  .badge.red{background:#7f1d1d;color:var(--danger)}
+  .badge.blue{background:#0c4a6e;color:var(--accent)}
+  .badge.muted{background:#1e293b;color:var(--muted)}
+  .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .kpi .cell{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:12px;text-align:center}
+  .kpi .cell b{font-family:var(--font-display);font-size:1.4rem;display:block}
+  .kpi .cell span{color:var(--muted);font-size:.7rem}
+  #viewer{width:100%;height:420px;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:radial-gradient(circle at 50% 30%,#1a2228 0%,#0b1218 75%);position:relative;touch-action:none}
+  .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:.7rem;color:var(--muted)}
+  .legend .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+  .item{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:8px;display:flex;gap:10px;align-items:center;cursor:pointer}
+  .item .sel{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .item b{flex:1;font-size:.9rem}
+  .item .meta{font-size:.7rem}
+  .unit-tab{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);padding:12px 18px;border-radius:12px;font-weight:600;z-index:50;display:none;max-width:90vw}
+  .toast.show{display:block}
+  .row{display:flex;gap:10px}
+  .row>*{flex:1}
+  #glNote{display:none;position:absolute;left:14px;right:14px;top:10px;z-index:5;background:rgba(10,14,26,.92);border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:.74rem;color:var(--muted)}
+  #glNote.show{display:block}
+  #glNote.warn{border-color:rgba(242,166,90,.4);color:var(--warn)}
+  #viewer{position:relative}
+</style>
+</head>
+<body>
+<header><h1>🏗️ Jumeau numérique <span>BIM</span></h1><div class="sub">Maquette 3D temps réel · GUID ↔ flux MQTT · états & alarmes des équipements</div></header>
+
+<main>
+  <div id="authCard" class="card">
+    <h2>Connexion</h2>
+    <label>Email</label><input class="input" id="email" type="email" placeholder="admin@cabine.com">
+    <label>Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
+    <button class="btn" id="loginBtn">Se connecter</button>
+  </div>
+
+  <div id="appView" class="hidden">
+    <div class="card">
+      <label>Unité / cabine (jumeau)</label>
+      <select class="input" id="unitSel"></select>
+      <div class="row">
+        <button class="btn" id="loadTwin">Charger le jumeau</button>
+        <button class="btn ghost" id="seedTwin">🌱 Amorcer les éléments</button>
+      </div>
+      <div class="kpi" style="margin-top:12px">
+        <div class="cell"><b id="tTotal">0</b><span>Équipements</span></div>
+        <div class="cell"><b id="tOk" style="color:var(--ok)">0</b><span>Nominal</span></div>
+        <div class="cell"><b id="tAlarm" style="color:var(--danger)">0</b><span>Alarmes</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🎛️ Visuel 3D</h2>
+      <div id="viewer"><div id="glNote"></div></div>
+      <div class="legend">
+        <span><span class="dot" style="background:#5fb27f"></span>OK / Online</span>
+        <span><span class="dot" style="background:#f2a65a"></span>Actif / On</span>
+        <span><span class="dot" style="background:#7dd3fc"></span>Ouvert</span>
+        <span><span class="dot" style="background:#94a3b8"></span>Fermé / Idle</span>
+        <span><span class="dot" style="background:#fb7185"></span>Alarme</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <div><h2>📋 Équipements (GUID)</h2><div id="elList"></div></div>
+      </div>
+      <div id="elDetail" class="hidden" style="margin-top:10px;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px"></div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script type="importmap">{"imports":{"three":"/vendor/three/three.module.js"}}</script>
+<script type="module">
+const API=location.origin;
+const $=id=>document.getElementById(id);
+let TOKEN=localStorage.getItem('bim_token')||'';
+let selected=null;
+const STATUS_COLOR={OK:0x5fb27f,ONLINE:0x5fb27f,IDLE:0x94a3b8,OFF:0x94a3b8,ON:0xf2a65a,ACTIVE:0xf2a65a,OPEN:0x7dd3fc,CLOSED:0x94a3b8,ALARM:0xfb7185};
+const TYPE_ICON={ESP32:'🧠',RELAY:'🔀',SENSOR:'🌡️',DOOR:'🚪',LOCK:'🔒',POWER:'⚡',LIGHT:'💡'};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const socket=io();
+socket.on('twin:update',(u)=>{ if(u&&objects[u.guid]){ objects[u.guid].material.color.setHex(STATUS_COLOR[u.status]||0x94a3b8); } if(u){ const el=elements.find(e=>e.guid===u.guid); if(el){ el.status=u.status; if(soft) soft.setElements(elements); document.getElementById('elDetail')&&renderDetail(); renderElements(); } } });
+const objects={};
+let soft=null;
+let elements=[];
+let currentSerial='';
+
+const toast=(m)=>{const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2600);};
+async function api(path,opt){
+  const r=await fetch(API+path,Object.assign({headers:{'Content-Type':'application/json',Authorization:'Bearer '+TOKEN}},opt||{}));
+  const j=await r.json().catch(()=>({success:false,message:'Erreur'}));
+  if(r.status===401){localStorage.removeItem('bim_token');TOKEN='';location.reload();}
+  return j;
+}
+
+import * as THREE from 'three';
+import { OrbitControls } from '/vendor/three/OrbitControls.js';
+function hasWebGL(){
+  try{
+    const c=document.createElement('canvas');
+    return !!(window.WebGLRenderingContext&&(c.getContext('webgl')||c.getContext('experimental-webgl')||c.getContext('webgl2')));
+  }catch(e){ return false; }
+}
+
+/* ── Rendu 3D logiciel (Canvas 2D) : matrices + perspective + painter's order ── */
+function mat4Perspective(fovY,aspect,zNear,zFar){
+  const f=1/Math.tan(fovY/2);
+  return [f/aspect,0,0,0, 0,f,0,0, 0,0,(zFar+zNear)/(zNear-zFar),-1, 0,0,(2*zFar*zNear)/(zNear-zFar),0];
+}
+function mat4LookAt(eye,center,up){
+  let zx=eye[0]-center[0],zy=eye[1]-center[1],zz=eye[2]-center[2];
+  let len=Math.hypot(zx,zy,zz);zx/=len;zy/=len;zz/=len;
+  let xx=up[1]*zz-up[2]*zy,xy=up[2]*zx-up[0]*zz,xz=up[0]*zy-up[1]*zx;
+  len=Math.hypot(xx,xy,xz);if(len>0){xx/=len;xy/=len;xz/=len;}
+  const yx=zy*xz-zz*xy, yy=zz*xx-zx*xz, yz=zx*xy-zy*xx;
+  return [xx,yx,zx,0, xy,yy,zy,0, xz,yz,zz,0,
+    -(xx*eye[0]+xy*eye[1]+xz*eye[2]), -(yx*eye[0]+yy*eye[1]+yz*eye[2]), -(zx*eye[0]+zy*eye[1]+zz*eye[2]), 1];
+}
+function mat4Mul(a,b){
+  const o=new Array(16).fill(0);
+  for(let c=0;c<4;c++)for(let r=0;r<4;r++)
+    o[c*4+r]=a[r]*b[c*4]+a[4+r]*b[c*4+1]+a[8+r]*b[c*4+2]+a[12+r]*b[c*4+3];
+  return o;
+}
+function SoftViewer(canvas){
+  this.cv=canvas;
+  this.ctx=canvas.getContext('2d');
+  if(!this.ctx) throw new Error('Canvas 2D indisponible');
+  this.yaw=-0.7; this.pitch=1.0; this.radius=4.6;
+  this.elements=[]; this.drag=null; this.pinch=0;
+  const self=this;
+  canvas.addEventListener('mousedown',e=>{self.drag={x:e.clientX,y:e.clientY};});
+  canvas.addEventListener('wheel',e=>{e.preventDefault();self.radius=Math.max(1.8,Math.min(15,self.radius*Math.exp(e.deltaY*0.0012)));},{passive:false});
+  canvas.addEventListener('touchstart',e=>{e.preventDefault();self.drag=e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null;self.pinch=e.touches.length===2?Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY):0;},{passive:false});
+}
+window.addEventListener('mousemove',e=>{SoftDrag&&SoftDrag(e);});
+window.addEventListener('mouseup',()=>{SoftDrag&&SoftDrag(null,true);});
+let SoftDrag=function(e,mouseUp){
+  if(mouseUp){ document._soft&&(document._soft.drag=null); return; }
+  const s=document._soft; if(!s||!s.drag)return;
+  s.yaw+=(e.clientX-s.drag.x)*0.006;
+  s.pitch=Math.max(0.12,Math.min(1.5,s.pitch+(e.clientY-s.drag.y)*0.006));
+  s.drag={x:e.clientX,y:e.clientY};
+};
+SoftViewer.prototype.setElements=function(els){ this.elements=els||[]; };
+SoftViewer.prototype.draw=function(){
+  const cv=this.cv,ctx=this.ctx;
+  const W=cv.clientWidth||1,H=cv.clientHeight||1;
+  if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}
+  ctx.fillStyle='#0b1218';ctx.fillRect(0,0,W,H);
+  const cx=1.35,cy=1.0,cz=0.85;
+  const eye=[cx+this.radius*Math.cos(this.pitch)*Math.sin(this.yaw),
+             cy+this.radius*Math.sin(this.pitch),
+             cz+this.radius*Math.cos(this.pitch)*Math.cos(this.yaw)];
+  const mvp=mat4Mul(mat4Perspective(Math.PI/4,W/H,0.1,50),mat4LookAt(eye,[cx,cy,cz],[0,1,0]));
+  const pr=p=>{
+    const x=mvp[0]*p[0]+mvp[4]*p[1]+mvp[8]*p[2]+mvp[12];
+    const y=mvp[1]*p[0]+mvp[5]*p[1]+mvp[9]*p[2]+mvp[13];
+    const w=mvp[3]*p[0]+mvp[7]*p[1]+mvp[11]*p[2]+mvp[15];
+    const z=mvp[2]*p[0]+mvp[6]*p[1]+mvp[10]*p[2]+mvp[14];
+    if(w<=0)return null;
+    return [(x/w*0.5+0.5)*W,(1-(y/w*0.5+0.5))*H,z];
+  };
+  const line=(a,b,color,alpha)=>{
+    const A=pr(a),B=pr(b); if(!A||!B)return;
+    ctx.strokeStyle=color; ctx.globalAlpha=alpha; ctx.lineWidth=1; ctx.beginPath();
+    ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]); ctx.stroke(); ctx.globalAlpha=1;
+  };
+  const BOX=[3.0,2.2,2.6];
+  const corners=[];
+  for(let i=0;i<8;i++){const x=(i&1)?BOX[0]:0,y=(i&2)?BOX[1]:0,z=(i&4)?BOX[2]:0;corners.push([x,y,z]);}
+  const ED=[[0,1],[0,2],[0,4],[1,3],[1,5],[2,3],[2,6],[3,7],[4,5],[4,6],[5,7],[6,7]];
+  ED.forEach(e=>{line(corners[e[0]],corners[e[1]],'rgba(43,58,72,0.60)',1);});
+  for(let gx=0;gx<=3;gx+=1)line([gx,0,0],[gx,0,2.6],'rgba(42,53,64,0.9)',1);
+  for(let gz=0;gz<=2.6;gz+=0.65)line([0,0,gz],[3,0,gz],'rgba(30,41,53,0.8)',1);
+  ctx.globalAlpha=1;
+  const pts=[];
+  this.elements.forEach(el=>{const q=pr(el.pos?[el.pos.x,el.pos.y,el.pos.z]:[1,1,1]);if(q)pts.push({el,q});});
+  pts.sort((a,b)=>b.q[2]-a.q[2]);
+  pts.forEach(o=>{
+    const c=STATUS_COLOR[String(o.el.status).toUpperCase()];
+    const col=(typeof c==='number')?'#'+c.toString(16).padStart(6,'0'):(c||'#94a3b8');
+    const s=3.4*(1+Math.max(0,1-Math.abs(o.q[2]))*0.35);
+    ctx.beginPath();ctx.fillStyle='#10161a';ctx.arc(o.q[0],o.q[1],s+1.6,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.shadowColor=o.el.status==='ALARM'?col:'transparent';ctx.shadowBlur=o.el.status==='ALARM'?10:0;
+    ctx.fillStyle=col;ctx.arc(o.q[0],o.q[1],s,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+    ctx.fillStyle='#eef3f1';ctx.font='600 10px Inter,sans-serif';
+    ctx.fillText((TYPE_ICON[o.el.type]||'')+' '+o.el.name,o.q[0]+s+3,o.q[1]+3);
+  });
+};
+SoftViewer.prototype.start=function(){
+  const self=this;
+  document._soft=self;
+  (function loop(){requestAnimationFrame(loop);if(self.cv.isConnected)self.draw();})();
+};
+let scene,camera,renderer,controls;
+function initViewer(){
+  const vv=$('viewer');
+  if(!hasWebGL()){
+    const note=$('glNote');
+    vv.innerHTML='';
+    const cv=document.createElement('canvas');
+    cv.style.width='100%'; cv.style.height='100%'; cv.style.display='block';
+    cv.style.touchAction='none';
+    vv.appendChild(cv);
+    vv.appendChild(note);
+    note.textContent='🔧 Rendu 3D logiciel actif (WebGL indisponible) — qualité visuelle réduite.';
+    note.classList.add('show','warn');
+    soft=new SoftViewer(cv);
+    soft.start();
+    return;
+  }
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x0b1218);
+  camera=new THREE.PerspectiveCamera(55,1,0.1,100);
+  camera.position.set(4.2,2.9,4.6);
+  renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  vv.appendChild(renderer.domElement);
+  resize();
+  window.addEventListener('resize',resize);
+  controls=new OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true; controls.dampingFactor=0.08; controls.minDistance=2; controls.maxDistance=12;
+  const hemi=new THREE.HemisphereLight(0xffffff,0x334,0.9); scene.add(hemi);
+  const dir=new THREE.DirectionalLight(0xffffff,1.2); dir.position.set(3,4,2); scene.add(dir);
+  const grid=new THREE.GridHelper(8,16,0x2a3540,0x1e2935); scene.add(grid);
+  (function loop(){ requestAnimationFrame(loop); if(controls)controls.update(); if(renderer)renderer.render(scene,camera); })();
+}
+function resize(){ const w=$('viewer').clientWidth; $('viewer').style.height=w<560?'300px':'420px'; const h=$('viewer').clientHeight; if(renderer){renderer.setSize(w,h);} if(camera){camera.aspect=w/h; camera.updateProjectionMatrix();} }
+function clearScene(){ Object.values(objects).forEach(o=>{ scene.remove(o.mesh); scene.remove(o.labelSprite); }); for(const k in objects) delete objects[k]; }
+
+function makeLabel(text){
+  const canvas=document.createElement('canvas'); canvas.width=256; canvas.height=48;
+  const c=canvas.getContext('2d'); c.font='bold 18px Inter,sans-serif'; c.fillStyle='#eef3f1';
+  c.shadowColor='rgba(0,0,0,.9)'; c.shadowBlur=6; c.fillText(text,10,30);
+  const tex=new THREE.CanvasTexture(canvas);
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true}));
+  spr.scale.set(1.1,0.21,1);
+  return spr;
+}
+
+async function loadViewer(){
+  if(soft){ soft.setElements(elements); return; }
+  clearScene();
+  const cabin=new THREE.Mesh(new THREE.BoxGeometry(3.0,2.2,2.6),new THREE.MeshBasicMaterial({color:0x2b3a48,wireframe:true,transparent:true,opacity:.35}));
+  cabin.position.y=1.1; scene.add(cabin);
+  elements.forEach(el=>{
+    const px=el.pos?.x-1.2, py=el.pos?.y-0.1, pz=el.pos?.z-1.2;
+    const col=STATUS_COLOR[String(el.status).toUpperCase()]||0x94a3b8;
+    const geo=new THREE.SphereGeometry(0.11,20,20);
+    const mat=new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:.45});
+    const mesh=new THREE.Mesh(geo,mat);
+    mesh.position.set(px,py,pz);
+    scene.add(mesh);
+    const label=makeLabel((TYPE_ICON[el.type]||'')+' '+el.name);
+    label.position.set(px,py+0.28,pz);
+    scene.add(label);
+    objects[el.guid]={mesh,labelSprite:label,el};
+    mesh.userData.guid=el.guid;
+  });
+}
+renderer&&0; initViewer();
+
+function pulse(id){ const el=$('elList [data-id="'+id+'"]'); if(el){ el.scrollIntoView({block:'center',behavior:'smooth'}); } }
+
+function renderElements(){
+  $('elList').innerHTML=elements.map(el=>`
+    <div class="item" data-id="${el._id}" style="border-color:${selected===el._id?'rgba(242,166,90,.55)':'var(--border)'}">
+      <span class="sel" style="background:${'#'+(STATUS_COLOR[String(el.status).toUpperCase()]||0x94a3b8).toString(16).padStart(6,'0')}"></span>
+      <b>${TYPE_ICON[el.type]||''} ${esc(el.name)}</b>
+      <span class="meta" style="font-family:monospace">${esc(el.guid)}</span>
+      <span class="badge ${el.status==='ALARM'?'red':['ON','ACTIVE','OPEN'].includes(el.status)?'warn':el.status==='OK'||el.status==='ONLINE'?'ok':'muted'}">${esc(el.status)}</span>
+    </div>`).join('');
+  document.querySelectorAll('#elList .item').forEach(i=>i.onclick=()=>{ selected=i.dataset.id; renderDetail(); renderElements(); });
+}
+function renderDetail(){
+  const el=elements.find(e=>e._id===selected);
+  if(!el){ $('elDetail').classList.add('hidden'); return; }
+  const hist=el.history||[];
+  $('elDetail').innerHTML=`
+    <h3>${TYPE_ICON[el.type]||''} ${esc(el.name)} <span class="badge ${el.status==='ALARM'?'red':'ok'}">${esc(el.status)}</span></h3>
+    <div class="meta">GUID : <code style="color:var(--accent)">${esc(el.guid)}</code></div>
+    <div class="meta">Type ${esc(el.type)} · zone ${esc(el.zone||'—')} · étage ${esc(el.floor||'—')} · flux <code>${esc(el.topic||'—')}</code></div>
+    <div class="meta">Valeur : ${esc(JSON.stringify(el.value||{}))}</div>
+    <h3>Historique</h3>
+    <div style="max-height:140px;overflow-y:auto">${hist.length?hist.slice().reverse().slice(0,12).map(h=>`<div style="font-family:monospace;font-size:.72rem;color:var(--muted)">${new Date(h.ts).toLocaleTimeString('fr-FR')} — <b>${esc(h.status)}</b> ${h.value?esc(JSON.stringify(h.value)):''}</div>`).join(''):'<div class="meta">Aucun événement</div>'}</div>
+    <div class="row" style="margin-top:10px">
+      ${el.status!=='ALARM'?`<button class="btn danger small" data-alarm="${el._id}">🚨 Simuler une alarme</button>`:''}
+      ${el.status==='ALARM'?`<button class="btn ok small" data-resolve="${el._id}">🟢 Résoudre</button>`:''}
+      <button class="btn ghost small" data-pulse="${el._id}">📍 Repérer en 3D</button>
+    </div>`;
+  document.querySelectorAll('[data-alarm]').forEach(b=>b.onclick=async()=>{
+    const j=await api('/api/twin/elements/'+b.dataset.alarm,{method:'PATCH',body:JSON.stringify({status:'ALARM',value:{warning:'alarme simulée'}})});
+    toast(j.success?'Alarme active — GUID '+j.element.guid:j.message); reload();
+  });
+  document.querySelectorAll('[data-resolve]').forEach(b=>b.onclick=async()=>{
+    const j=await api('/api/twin/alarms/'+b.dataset.resolve+'/resolve',{method:'POST',body:JSON.stringify({})});
+    toast(j.success?'Alarme résolue':j.message); reload();
+  });
+  document.querySelectorAll('[data-pulse]').forEach(b=>b.onclick=()=>{});
+}
+
+async function reload(){
+  const unit=$('unitSel').value;
+  if(!unit)return;
+  const j=await api('/api/twin/elements?cabinSerial='+encodeURIComponent(unit));
+  if(!j.success)return;
+  elements=j.elements||[];
+  currentSerial=unit;
+  $('tTotal').textContent=elements.length;
+  $('tOk').textContent=elements.filter(e=>e.status!=='ALARM').length;
+  $('tAlarm').textContent=elements.filter(e=>e.status==='ALARM').length;
+  renderElements();
+  loadViewer();
+  if(!selected&&elements.length)selected=elements[0]._id;
+  renderDetail();
+}
+
+async function loadUnits(){
+  const j=await api('/api/twin/units');
+  if(!j.success)return;
+  $('unitSel').innerHTML=j.units.map(u=>`<option value="${u.serialNumber}">${u.serialNumber} — ${esc(u.name)} <span class="muted">· ${u.twin.total} équip.</span></option>`).join('')||'<option value="">Aucune cabine</option>';
+}
+$('loadTwin').onclick=reload;
+$('seedTwin').onclick=async()=>{
+  const serial=$('unitSel').value;
+  if(!serial)return toast('Choisissez une cabine');
+  const j=await api('/api/twin/seed',{method:'POST',body:JSON.stringify({cabinSerial:serial})});
+  toast(j.message||j.message); reload();
+};
+$('loginBtn').onclick=async()=>{
+  const j=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email:$('email').value,password:$('password').value})}).catch(()=>({success:false}));
+  if(!j.success){toast('Identifiants invalides');return;}
+  if(!['ADMIN','MANAGER','PARTNER','TECHNICIAN','MAINTENANCE_CONTROLLER','DEVELOPER','IOT_AGENT'].includes(j.user.role)){toast('Accès réservé');return;}
+  TOKEN=j.token;localStorage.setItem('bim_token',TOKEN);
+  $('authCard').classList.add('hidden');$('appView').classList.remove('hidden');
+  const role=j.user.role;
+  $('seedTwin').style.display=(role==='ADMIN'||role==='MANAGER'||role==='PARTNER'||role==='IOT_AGENT')?'':'none';
+  await loadUnits(); reload();
+};
+(async()=>{ if(TOKEN){ $('authCard').classList.add('hidden');$('appView').classList.remove('hidden');
+  const me=await api('/api/auth/me');
+  const r=me.success?me.user.role:'';
+  const ALLOWED=['ADMIN','MANAGER','PARTNER','TECHNICIAN','MAINTENANCE_CONTROLLER','DEVELOPER','IOT_AGENT'];
+  if(!me.success||!ALLOWED.includes(r)){ localStorage.removeItem('bim_token'); TOKEN=''; location.reload(); return; }
+  $('seedTwin').style.display=(['ADMIN','MANAGER','PARTNER','IOT_AGENT'].includes(r)?'':'none');
+  await loadUnits(); reload(); } })();
+</script>
+</body>
+</html>

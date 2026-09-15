@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#10161a">
+<meta name="author" content="pixelsoftwaredesign">
+<!-- © pixelsoftwaredesign 2026 -->
+<title>Réservation — Cabines Intelligentes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<script src="/animations.js"></script>
+<script src="/biometrics.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ambient),var(--bg);color:var(--text);font-family:var(--font-ui);min-height:100vh;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+  header{background:rgba(11,18,32,.6);backdrop-filter:blur(6px);border-bottom:1px solid var(--border);padding:18px 16px 0;text-align:center;position:sticky;top:0;z-index:20}
+  header h1{font-family:var(--font-display);font-weight:600;font-size:1.5rem}
+  header .sub{color:var(--muted);font-size:.8rem;margin-top:2px}
+  main{max-width:520px;margin:0 auto;padding:16px}
+  .card{background:var(--card);border:1px solid rgba(255,255,255,.03);border-radius:16px;padding:16px;margin-bottom:14px}
+  .card-hero{position:relative;background:linear-gradient(180deg,rgba(242,166,90,.09),rgba(242,166,90,0) 55%),var(--surface);border:1px solid rgba(242,166,90,.22)}
+  h2{font-size:1rem;margin-bottom:8px}
+  .price{color:var(--accent);font-weight:700}
+  .muted{color:var(--muted)}
+  .btn{display:block;width:100%;border:none;border-radius:14px;padding:14px;font-size:1rem;font-weight:600;background:linear-gradient(155deg,var(--ember),var(--ember-dim));box-shadow:0 4px 16px rgba(242,166,90,.28);color:#241202;cursor:pointer;margin-top:8px;transition:transform .12s}
+  .btn:active{transform:scale(.96)}
+  .btn.ghost{background:var(--card2);color:var(--text);box-shadow:none}
+  .btn.danger{background:#7f1d1d;color:var(--danger);box-shadow:none}
+  .btn.small{padding:10px 16px;font-size:.85rem;margin-top:0;display:inline-block;width:auto}
+  .input{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;color:var(--text);font-size:1rem}
+  label{display:block;color:var(--muted);font-size:.8rem;margin:8px 0 4px}
+  .slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+  .slot{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 4px;text-align:center;font-size:.8rem;cursor:pointer}
+  .slot:not(.available){opacity:.4;pointer-events:none}
+  .slot.selected{background:linear-gradient(155deg,var(--ember),var(--ember-dim));color:#241202;font-weight:700;border-color:transparent}
+  .cab{display:flex;gap:12px;align-items:center;cursor:pointer;padding:8px;border-radius:12px;transition:background .15s}
+  .cab:hover,.cab.selected{background:var(--surface-2)}
+  .cab .dot{width:44px;height:44px;border-radius:13px;background:linear-gradient(155deg,rgba(242,166,90,.35),rgba(242,166,90,.06));border:1px solid rgba(242,166,90,.25);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+  .cab .info{flex:1;min-width:0}
+  .cab .info b{display:block;font-size:.95rem}
+  .cab .info small{color:var(--muted);font-size:.78rem}
+  .pin{font-family:var(--font-display);font-size:2.2rem;letter-spacing:10px;color:var(--accent);text-align:center;margin:14px 0}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);padding:12px 18px;border-radius:12px;font-weight:600;z-index:50;display:none;max-width:90vw}
+  .toast.show{display:block}
+  .hidden{display:none!important}
+
+  /* --- Tabs --- */
+  .tab-bar{display:flex;gap:4px;padding:10px 0 0;margin:0 -16px}
+  .tab-bar button{flex:1;border:none;background:transparent;color:var(--muted);padding:10px 8px;font-size:.85rem;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
+  .tab-bar button.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+  .tab-bar button .badge-count{background:var(--danger);color:#fff;font-size:.65rem;padding:1px 6px;border-radius:99px;margin-left:4px;font-weight:600}
+
+  /* --- Stepper --- */
+  .steps{display:flex;align-items:center;gap:0;margin:16px 0 12px;padding:0 4px}
+  .step{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--muted)}
+  .step .num{width:24px;height:24px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:600;flex-shrink:0;transition:all .25s}
+  .step.active .num{background:var(--accent);border-color:var(--accent);color:#241202}
+  .step.active{color:var(--text);font-weight:600}
+  .step.done .num{background:var(--pine);border-color:var(--pine);color:#fff}
+  .step-line{flex:1;height:2px;background:var(--border);margin:0 6px}
+  .step-line.done{background:var(--pine)}
+
+  /* --- Search --- */
+  .search-row{display:flex;gap:8px;margin-bottom:12px}
+  .search-row .input{margin-bottom:0;flex:1}
+  .search-row select{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:10px;font-size:.85rem;color:var(--text);min-width:90px}
+
+  /* --- Summary sidebar --- */
+  .summary{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:12px;font-size:.85rem}
+  .summary .row{display:flex;justify-content:space-between;padding:4px 0}
+  .summary .total{border-top:1px solid var(--border);margin-top:4px;padding-top:8px;font-weight:700;font-size:1rem}
+
+  /* --- Reservations list --- */
+  .res-card{background:var(--card);border:1px solid rgba(255,255,255,.03);border-radius:16px;padding:14px;margin-bottom:10px;position:relative;overflow:hidden}
+  .res-card.upcoming{border-left:3px solid var(--accent)}
+  .res-card.active{border-left:3px solid var(--pine)}
+  .res-card.past{opacity:.7}
+  .res-header{display:flex;justify-content:space-between;align-items:start;margin-bottom:6px}
+  .res-cabin{font-weight:600;font-size:.95rem}
+  .res-date{color:var(--muted);font-size:.78rem;margin-top:2px}
+  .badge{font-size:.7rem;padding:3px 8px;border-radius:99px;font-weight:600;flex-shrink:0}
+  .badge.conf{background:#14532d;color:var(--ok)}
+  .badge.progress{background:#1e3a5f;color:#60a5fa}
+  .badge.done{background:var(--surface-2);color:var(--muted)}
+  .badge.cancel{background:#7f1d1d;color:var(--danger)}
+  .countdown{font-family:var(--font-display);font-size:1.6rem;font-weight:400;color:var(--ok);margin:6px 0}
+  .countdown.urgent{color:var(--danger);animation:urgentPulse 1s ease-in-out infinite}
+  .res-pin{background:var(--surface-2);border-radius:10px;padding:8px 12px;margin:6px 0;display:flex;align-items:center;justify-content:space-between}
+  .res-pin code{font-family:var(--font-display);font-size:1.1rem;letter-spacing:4px;color:var(--accent)}
+  .qr-wrap{text-align:center;margin:8px 0}
+  .qr-wrap canvas,.qr-wrap img{border-radius:8px;border:2px solid var(--border)}
+  .qr-label{font-size:.7rem;color:var(--muted);margin-top:4px}
+  .res-actions{display:flex;gap:8px;margin-top:8px}
+
+  /* --- Empty state --- */
+  .empty{text-align:center;padding:32px 16px;color:var(--muted)}
+  .empty .ico{font-size:2.5rem;margin-bottom:8px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🏠 Cabines Intelligentes</h1>
+  <p class="sub">Réservez, gérez vos accès, contrôlez à la voix.</p>
+  <div class="tab-bar" id="tabBar" style="display:none">
+    <button class="active" data-tab="reserve">Réservation</button>
+    <button data-tab="my">Mes réservations <span class="badge-count hidden" id="myCount"></span></button>
+  </div>
+</header>
+
+<main>
+  <!-- Auth -->
+  <div id="authCard" class="card">
+    <h2>Connexion pour réserver</h2>
+    <label>Email</label><input class="input" id="email" type="email" placeholder="vous@exemple.com">
+    <label>Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
+    <button class="btn" id="loginBtn">Se connecter / Créer un compte</button>
+    <p style="text-align:center;margin-top:10px"><a href="/map.html" style="color:var(--accent);font-size:.85rem;text-decoration:none">🗺️ Explorer la carte</a></p>
+  </div>
+
+  <!-- === TAB: Réserver === -->
+  <div id="viewReserve" class="hidden">
+    <!-- Stepper -->
+    <div class="steps" id="stepper">
+      <div class="step active" data-step="1"><span class="num">1</span> Cabine</div>
+      <div class="step-line"></div>
+      <div class="step" data-step="2"><span class="num">2</span> Créneau</div>
+      <div class="step-line"></div>
+      <div class="step" data-step="3"><span class="num">3</span> Confirmation</div>
+    </div>
+
+    <!-- Step 1: Cabine -->
+    <div id="step1" class="card reveal">
+      <h2>Choisissez une cabine</h2>
+      <div class="search-row">
+        <input class="input" id="searchCabins" placeholder="🔍 Rechercher par ville, nom..." autocomplete="off">
+        <select id="sortCabins"><option value="">Trier</option><option value="price-asc">Prix ↑</option><option value="price-desc">Prix ↓</option><option value="name">Nom A→Z</option></select>
+      </div>
+      <div id="cabins" class="stagger-in"></div>
+      <p id="noCabins" class="muted hidden" style="text-align:center;padding:16px">Aucune cabine trouvée.</p>
+    </div>
+
+    <!-- Step 2: Créneau -->
+    <div id="step2" class="card hidden reveal reveal-delay-1">
+      <h2>Choisissez la date et le créneau</h2>
+      <label>Date</label>
+      <input class="input" id="date" type="date">
+      <div class="slots stagger-in" id="slots"></div>
+      <div class="search-row" style="margin-top:10px">
+        <label style="margin:0">Durée</label>
+        <select class="input" id="duration" style="margin:0;flex:0 0 120px">
+          <option value="1">1 heure</option>
+          <option value="2" selected>2 heures</option>
+          <option value="3">3 heures</option>
+          <option value="4">4 heures</option>
+        </select>
+      </div>
+      <div class="summary" id="summaryCard">
+        <div class="row"><span>Cabine</span><b id="sumCabin">—</b></div>
+        <div class="row"><span>Date</span><span id="sumDate">—</span></div>
+        <div class="row"><span>Heure</span><span id="sumTime">—</span></div>
+        <div class="row"><span>Durée</span><span id="sumDur">—</span></div>
+        <div class="row total"><span>Total</span><span class="price" id="sumTotal">—</span></div>
+      </div>
+      <button class="btn" id="bookBtn">Confirmer et payer</button>
+    </div>
+
+    <!-- Step 3: Confirmation -->
+    <div id="step3" class="card card-hero hidden scale-reveal">
+      <div class="empty"><div class="ico">🎉</div></div>
+      <h2 style="text-align:center">Réservation confirmée !</h2>
+      <p class="muted" style="text-align:center">Votre code d'accès à saisir sur la tablette :</p>
+      <div class="pin" id="pin"></div>
+      <div class="qr-wrap" id="qrWrap"></div>
+      <p class="muted" style="text-align:center;font-size:.8rem" id="confirmInfo"></p>
+      <button class="btn ghost" id="btnViewMy">Voir mes réservations</button>
+      <button class="btn" id="btnNewBook">Nouvelle réservation</button>
+    </div>
+  </div>
+
+  <!-- === TAB: Mes réservations === -->
+  <div id="viewMy" class="hidden">
+    <div class="steps" style="margin-bottom:16px">
+      <div class="step active"><span class="num" style="background:var(--accent);color:#241202;border-color:var(--accent)">📋</span> <b>Mes réservations</b></div>
+    </div>
+    <div id="myBookings" class="stagger-in"></div>
+    <div id="emptyBookings" class="empty hidden">
+      <div class="ico">📭</div>
+      <p>Aucune réservation pour le moment</p>
+      <button class="btn" id="btnNewFromEmpty" style="margin-top:12px">Réserver une cabine</button>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  if (window.CabinMotion) CabinMotion.init(document);
+  const API = location.origin;
+  const $ = (id) => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  const preSelectedCabinId = params.get('cabin');
+  // Devise héritée depuis la carte (conversion d'affichage uniquement)
+  const DISPLAY_CURRENCIES = ['EUR','TND','USD','GBP','MAD','DZD'];
+  let displayCurrency = String(params.get('currency') || '').toUpperCase();
+  let fxRates = null; // base EUR
+  let token = localStorage.getItem('book_token') || '';
+  let user = JSON.parse(localStorage.getItem('book_user') || 'null');
+  let selectedCabin = null;
+  let selectedSlot = null;
+  let cabinPrice = 0;
+  let allCabins = [];
+  let myReservations = [];
+  let countdownTimers = [];
+  let roomCatalog = [];
+
+  const cvt = (n, from, to) => (fxRates && fxRates[from] != null && fxRates[to] != null) ? (n * fxRates[from]) / fxRates[to] : n;
+  const fmtDis = (n, cur) => {
+    const from = cur && DISPLAY_CURRENCIES.includes(cur) ? cur : 'EUR';
+    const to = displayCurrency && DISPLAY_CURRENCIES.includes(displayCurrency) ? displayCurrency : from;
+    return cvt(n, from, to).toLocaleString('fr-FR', { style: 'currency', currency: to });
+  };
+  async function loadRates() {
+    try { const j = await fetch(API + '/api/cabins/rates').then(r => r.json()); fxRates = j.rates || null; } catch (e) { fxRates = null; }
+  }
+  loadRates();
+
+  async function loadRoomCatalog(){
+    try{
+      const j=await fetch(API+'/api/factory/rooms').then(r=>r.json());
+      roomCatalog = (j && j.rooms) || [];
+    }catch(e){ roomCatalog = []; }
+  }
+  const roomInfo=(code)=>roomCatalog.find(r=>r.code===code)||{code,label:code,icon:'🚪'};
+  const roomTags=(codes)=>(codes||[]).length
+    ? codes.slice(0,4).map(c=>`<span style="font-size:.68rem;background:var(--surface-2);border:1px solid var(--border);border-radius:99px;padding:2px 8px">${roomInfo(c).icon} ${roomInfo(c).label}</span>`).join('')
+    : '';
+
+  const auth = (h={}) => ({ 'Content-Type':'application/json', ...(token?{Authorization:'Bearer '+token}:{}), ...h });
+  async function api(path, opts={}) {
+    const res = await fetch(API+path, {...opts, headers: auth(opts.headers)});
+    const json = await res.json().catch(() => ({ success:false, message:'Réponse invalide' }));
+    if (!res.ok && !json.success) throw new Error(json.message || ('Erreur '+res.status));
+    return json;
+  }
+  function toast(m, opts){
+    if (window.CabinMotion && CabinMotion.toast) return CabinMotion.toast(m, Object.assign({duration:3200}, opts||{}));
+    const el=$('toast'); el.textContent=m; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3200);
+  }
+  const fmt = (n) => n.toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
+  const fmtDate = (d) => new Date(d).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});
+  const fmtTime = (d) => new Date(d).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  const CURRENCY_SYMBOLS = {EUR:'€',TND:'TND',USD:'$',GBP:'£',MAD:'MAD',DZD:'DA'};
+
+  // ====================== TABS ======================
+  function switchTab(tab) {
+    $('tabBar').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+    $('viewReserve').classList.toggle('hidden',tab!=='reserve');
+    $('viewMy').classList.toggle('hidden',tab!=='my');
+    if(tab==='my') loadMyReservations();
+    if(tab==='reserve') window.scrollTo({top:0});
+  }
+  $('tabBar').addEventListener('click', e=>{
+    const btn=e.target.closest('button[data-tab]');
+    if(btn) switchTab(btn.dataset.tab);
+  });
+
+  // ====================== STEPPER ======================
+  function setStep(n) {
+    document.querySelectorAll('.steps .step').forEach(s=>{
+      const sn=+s.dataset.step;
+      s.classList.toggle('active',sn===n);
+      s.classList.toggle('done',sn<n);
+    });
+    document.querySelectorAll('.steps .step-line').forEach((l,i)=>l.classList.toggle('done',i<n));
+    $('step1').classList.toggle('hidden',n!==1);
+    $('step2').classList.toggle('hidden',n!==2);
+    $('step3').classList.toggle('hidden',n!==3);
+  }
+
+  // ====================== AUTH ======================
+  $('loginBtn').onclick = async () => {
+    const email=$('email').value.trim(), password=$('password').value;
+    if(!email||!password) return toast('Email et mot de passe requis');
+    try {
+      let json;
+      try { json = await api('/api/auth/login', { method:'POST', body: JSON.stringify({email,password}) }); }
+      catch(e) { json = await api('/api/auth/register', { method:'POST', body: JSON.stringify({email,password,name:email.split('@')[0],role:'GUEST'}) }); }
+      token = json.token;
+      user = json.user;
+      localStorage.setItem('book_token', token);
+      localStorage.setItem('book_user', JSON.stringify(user));
+      enterApp();
+    } catch(e){ toast(e.message); }
+  };
+
+  function enterApp() {
+    $('authCard').classList.add('hidden');
+    $('tabBar').style.display='flex';
+    $('viewReserve').classList.remove('hidden');
+    loadRoomCatalog();
+    loadCabins();
+    loadMyReservations();
+  }
+
+  if(token) enterApp();
+
+  // ====================== CABINES ======================
+  async function loadCabins(){
+    try {
+      const json = await api('/api/reservations/available');
+      allCabins = json.cabins || [];
+      renderCabins(allCabins);
+    } catch(e){ toast(e.message); }
+  }
+
+  function renderCabins(cabins) {
+    const wrap = $('cabins');
+    const noCabins = $('noCabins');
+    wrap.innerHTML='';
+    if(!cabins.length){ wrap.innerHTML=''; noCabins.classList.remove('hidden'); return; }
+    noCabins.classList.add('hidden');
+
+    let filtered = [...cabins];
+    const q = $('searchCabins').value.trim().toLowerCase();
+    if(q) filtered = filtered.filter(c => (c.name||'').toLowerCase().includes(q) || (c.address||'').toLowerCase().includes(q));
+    const sort = $('sortCabins').value;
+    if(sort==='price-asc') filtered.sort((a,b)=>a.rentalSettings.pricePerHour-b.rentalSettings.pricePerHour);
+    if(sort==='price-desc') filtered.sort((a,b)=>b.rentalSettings.pricePerHour-a.rentalSettings.pricePerHour);
+    if(sort==='name') filtered.sort((a,b)=>a.name.localeCompare(b.name));
+
+    filtered.forEach(c=>{
+      const el=document.createElement('div');
+      el.className='cab';
+      el.innerHTML=`<div class="dot">🏠</div>
+        <div class="info">
+          <b>${c.name}</b>
+          <small>${c.address||''} · ${c.telemetry?.temperature??'--'}°C</small>
+          <div class="price">${fmtDis(c.rentalSettings.pricePerHour, c.pricing?.currency || 'EUR')}/heure</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">${roomTags(c.rooms)}</div>
+        </div>`;
+      el.onclick=()=>{ selectCabin(c, el); };
+      wrap.appendChild(el);
+    });
+    if(window.CabinMotion) window.CabinMotion.observeReveals(wrap);
+  }
+
+  $('searchCabins').addEventListener('input', ()=>renderCabins(allCabins));
+  $('sortCabins').addEventListener('change', ()=>renderCabins(allCabins));
+
+  function selectCabin(c, el) {
+    selectedCabin = c;
+    cabinPrice = c.rentalSettings.pricePerHour;
+    document.querySelectorAll('.cab.selected').forEach(x=>x.classList.remove('selected'));
+    if(el) el.classList.add('selected');
+    setStep(2);
+    $('date').valueAsDate = new Date();
+    loadSlots();
+    updateSummary();
+    window.scrollTo({top:$('step2').offsetTop-60,behavior:'smooth'});
+  }
+
+  // ====================== SLOTS ======================
+  $('date').onchange = loadSlots;
+  function loadSlots(){
+    if(!selectedCabin) return;
+    const date=$('date').value;
+    if(!date) return;
+    selectedSlot=null;
+    api(`/api/reservations/slots?cabinId=${selectedCabin._id}&date=${date}`).then(json=>{
+      const wrap=$('slots');
+      wrap.innerHTML='';
+      json.slots.forEach(s=>{
+        const el=document.createElement('div');
+        const h=new Date(s.start).getHours();
+        el.className='slot '+(s.available?'available':'');
+        el.textContent=h+':00';
+        el.onclick=()=>{
+          if(!s.available) return;
+          document.querySelectorAll('.slot.selected').forEach(x=>x.classList.remove('selected'));
+          el.classList.add('selected');
+          selectedSlot=s;
+          updateSummary();
+        };
+        wrap.appendChild(el);
+      });
+      updateSummary();
+    }).catch(e=>toast(e.message));
+  }
+
+  $('duration').onchange = updateSummary;
+  function updateSummary(){
+    if(!selectedSlot){ $('sumCabin').textContent=selectedCabin?selectedCabin.name:'—'; $('sumDate').textContent=$('date').value||'—'; $('sumTime').textContent='—'; $('sumDur').textContent='—'; $('sumTotal').textContent='—'; return; }
+    const hours=Number($('duration').value);
+    const start=new Date(selectedSlot.start);
+    const total=cabinPrice*hours;
+    const baseCurrency = selectedCabin.pricing?.currency || 'EUR';
+    const sym = CURRENCY_SYMBOLS[baseCurrency] || baseCurrency;
+    $('sumCabin').textContent=selectedCabin.name;
+    $('sumDate').textContent=fmtDate(start);
+    $('sumTime').textContent=fmtTime(start);
+    $('sumDur').textContent=hours+'h';
+    $('sumTotal').textContent=fmtDis(total, baseCurrency);
+  }
+
+  // ====================== BOOKING ======================
+  $('bookBtn').onclick = async () => {
+    if(!selectedCabin||!selectedSlot) return toast('Choisissez un créneau');
+    const hours=Number($('duration').value);
+    const start=new Date(selectedSlot.start);
+    const end=new Date(start.getTime()+hours*3600000);
+
+    try {
+      const vs = await fetch(API+'/api/cabins/'+selectedCabin._id+'/status?startTime='+start.toISOString()+'&endTime='+end.toISOString()).then(r=>r.json());
+      if(vs.success && !vs.cabin.bookable){
+        toast('⚠️ '+((vs.cabin.verification?.slotFree===false)?'Créneau déjà réservé':vs.cabin.verification?.statusText||'Indisponible')+' — actualisation...');
+        loadSlots();
+        return;
+      }
+    } catch(e){}
+
+    try {
+      const r=await api('/api/reservations',{ method:'POST', body: JSON.stringify({cabinId:selectedCabin._id,startTime:start.toISOString(),endTime:end.toISOString()}) });
+      toast('Paiement en cours...');
+      const p=await api('/api/payments/dev-confirm',{ method:'POST', body: JSON.stringify({reservationId:r.reservation.id}) });
+
+      setStep(3);
+      $('pin').innerHTML='';
+      String(p.accessCode).split('').forEach((d,i)=>{
+        const sp=document.createElement('span'); sp.textContent=d; sp.className='pop-in'; sp.style.display='inline-block'; sp.style.animationDelay=(i*0.08)+'s'; $('pin').appendChild(sp);
+      });
+      $('confirmInfo').textContent=selectedCabin.name+' · '+fmtDate(start)+' → '+fmtTime(end);
+
+      if(typeof QRCode!=='undefined'){
+        $('qrWrap').innerHTML='';
+        const qr=new QRCode($('qrWrap'),{text:String(p.accessCode),width:128,height:128,colorDark:'#eef3f1',colorLight:'#1a2228',correctLevel:QRCode.CorrectLevel.M});
+        const lbl=document.createElement('div'); lbl.className='qr-label'; lbl.textContent='Scannez ou saisissez le code'; $('qrWrap').appendChild(lbl);
+      }
+
+      loadMyReservations();
+    } catch(e){ toast(e.message); }
+  };
+
+  $('btnViewMy').onclick = ()=>switchTab('my');
+  $('btnNewBook').onclick = ()=>{ setStep(1); $('pin').innerHTML=''; $('qrWrap').innerHTML=''; window.scrollTo({top:0}); };
+  $('btnNewFromEmpty').onclick = ()=>switchTab('reserve');
+
+  // ====================== MES RÉSERVATIONS ======================
+  async function loadMyReservations(){
+    try {
+      const json=await api('/api/reservations/mine');
+      myReservations=json.reservations||[];
+      renderMyReservations();
+    } catch(e){}
+  }
+
+  function renderMyReservations(){
+    countdownTimers.forEach(clearInterval);
+    countdownTimers=[];
+    const wrap=$('myBookings');
+    const empty=$('emptyBookings');
+    const badge=$('myCount');
+    wrap.innerHTML='';
+
+    const now=Date.now();
+    const upcoming=myReservations.filter(r=>new Date(r.startTime).getTime()>now);
+    if(upcoming.length){ badge.classList.remove('hidden'); badge.textContent=upcoming.length; } else badge.classList.add('hidden');
+
+    const active=myReservations.filter(r=>new Date(r.startTime).getTime()<=now && new Date(r.endTime).getTime()>now);
+    const past=myReservations.filter(r=>new Date(r.endTime).getTime()<=now);
+
+    if(!myReservations.length){ empty.classList.remove('hidden'); return; }
+    empty.classList.add('hidden');
+
+    [...active,...upcoming,...past].forEach(res=>{
+      const el=document.createElement('div');
+      const isPast=new Date(res.endTime).getTime()<=now;
+      const isActive=new Date(res.startTime).getTime()<=now && new Date(res.endTime).getTime()>now;
+      const isUpcoming=!isPast&&!isActive;
+      el.className='res-card '+(isActive?'active':isPast?'past':'upcoming');
+
+      const stBadge=isActive?'<span class="badge progress">En cours</span>':res.status==='CONFIRMED'?'<span class="badge conf">Confirmée</span>':res.status==='COMPLETED'?'<span class="badge done">Terminée</span>':'<span class="badge cancel">'+res.status+'</span>';
+
+      let countdownHTML='';
+      if(isActive){
+        const msLeft=new Date(res.endTime)-Date.now();
+        const m=Math.floor(msLeft/60000);
+        countdownHTML=`<div class="countdown${m<=10?' urgent':''}" id="cd-${res._id}">Se termine dans ${m}min</div>`;
+      } else if(isUpcoming){
+        const msUntil=new Date(res.startTime)-Date.now();
+        const h=Math.floor(msUntil/3600000);
+        const m=Math.floor((msUntil%3600000)/60000);
+        countdownHTML=`<div class="countdown" id="cd-${res._id}">Commence dans ${h>0?h+'h ':''}${m}min</div>`;
+      }
+
+      let pinHTML='';
+      if(res.accessCode && !isPast){
+        pinHTML=`<div class="res-pin"><div><small class="muted">Code d'accès</small><br><code>${res.accessCode}</code></div></div>`;
+      }
+
+      let qrHTML='';
+      if(res.accessCode && !isPast && typeof QRCode!=='undefined'){
+        qrHTML=`<div class="qr-wrap" id="qr-${res._id}"></div>`;
+      }
+
+      el.innerHTML=`
+        <div class="res-header"><div class="res-cabin">${res.cabinId?.name||'Cabine'}</div>${stBadge}</div>
+        <div class="res-date">📅 ${fmtDate(res.startTime)} · ${fmtTime(res.startTime)} → ${fmtTime(res.endTime)}</div>
+        ${countdownHTML}
+        ${pinHTML}
+        ${qrHTML}
+        <div style="font-size:.8rem;margin-top:4px"><b>${fmt(res.totalPrice)}</b></div>
+        ${isActive?`<div class="res-actions"><button class="btn danger small" onclick="checkOut('${res._id}','${res.cabinId?._id||''}')">🚪 Check-out</button></div>`:''}
+        ${(isActive || isUpcoming) ? `<div style="margin-top:8px; display:flex; gap:8px">
+          <button class="btn ghost small" onclick="bioEnrollRes('face')">👤 Visage</button>
+          <button class="btn ghost small" onclick="bioEnrollRes('fingerprint')">🫆 Empreinte</button>
+          <span style="font-size:.7rem;color:var(--muted);align-self:center">activer l'ouverture biométrique</span>
+        </div>` : ''}
+      `;
+      wrap.appendChild(el);
+
+      if(isActive || isUpcoming){
+        countdownTimers.push(setInterval(()=>{
+          const endMs=new Date(isActive?res.endTime:res.startTime).getTime();
+          const left=endMs-Date.now();
+          const cdEl=document.getElementById('cd-'+res._id);
+          if(!cdEl) return;
+          if(isActive){
+            if(left<=0){ cdEl.textContent='Terminé'; cdEl.classList.add('urgent'); clearInterval(countdownTimers[countdownTimers.length-1]); return; }
+            const mm=Math.floor(left/60000);
+            cdEl.textContent='Se termine dans '+mm+'min';
+            cdEl.classList.toggle('urgent',mm<=10);
+          } else {
+            if(left<=0){ cdEl.textContent='Maintenant !'; cdEl.classList.add('urgent'); return; }
+            const hh=Math.floor(left/3600000); const mm=Math.floor((left%3600000)/60000);
+            cdEl.textContent='Commence dans '+(hh>0?hh+'h ':'')+mm+'min';
+          }
+        },10000));
+      }
+
+      if(res.accessCode && !isPast && typeof QRCode!=='undefined'){
+        setTimeout(()=>{ try{ new QRCode(document.getElementById('qr-'+res._id),{text:String(res.accessCode),width:80,height:80,colorDark:'#eef3f1',colorLight:'#1a2228',correctLevel:QRCode.CorrectLevel.L}); }catch(e){} },50);
+      }
+    });
+  }
+
+  window.checkOut = async function(resId, cabinId){
+    if(!confirm('Terminer votre session maintenant ?')) return;
+    try{
+      toast('Check-out en cours...');
+      await fetch(API+'/api/access/reservation/'+resId+'/checkout',{ method:'POST', headers:auth() });
+      toast('✅ Session terminée. Merci !');
+      loadMyReservations();
+    } catch(e){ toast(e.message); }
+  };
+
+  window.bioEnrollRes = async function(kind){
+    if(!window.BioAuth) return toast('biometrics.js non chargé');
+    toast('Enregistrement '+(kind==='face'?'visage':'empreinte')+'…');
+    try{
+      const r = await window.BioAuth.enroll(kind, ()=>token);
+      toast(r.success ? ('✅ '+(r.message||'Enregistré')) : ('❌ '+(r.message||'Erreur')));
+      if(!r.success && r.message) window.alert(r.message);
+    } catch(e){ toast(e.message); window.alert(e.message); }
+  };
+})();
+</script>
+<footer class="app-footer">© pixelsoftwaredesign 2026 · Réservation — Cabines Intelligentes</footer>
+</body>
+</html>

@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#10161a">
+<meta name="author" content="pixelsoftwaredesign">
+<!-- © pixelsoftwaredesign 2026 -->
+<title>Cabine Intelligente</title>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/biometrics.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<script src="/animations.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--ambient), var(--bg);
+    color: var(--text);
+    font-family: var(--font-ui);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 16px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .hidden { display: none !important; }
+  .screen { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
+  .clock { text-align: center; }
+  .clock h1 { font-family: var(--font-display); font-size: 4rem; font-weight: 400; letter-spacing: .5px; font-variant-numeric: tabular-nums; }
+  .clock span { color: var(--muted); font-size: 1.1rem; }
+  .status-chip {
+    text-align: center;
+    padding: 12px;
+    border-radius: 14px;
+    font-weight: 600;
+    background: var(--card);
+  }
+  .card {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.35);
+  }
+  .indicator {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .indicator .value { font-weight: 700; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .btn {
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--surface-2);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    cursor: pointer;
+    transition: transform .08s, opacity .2s, box-shadow .2s;
+  }
+  .btn:active { transform: scale(.96); }
+  .btn.on {
+    background: linear-gradient(155deg, var(--ember), var(--ember-dim));
+    color: #241202;
+    box-shadow: 0 4px 18px rgba(242,166,90,.35);
+  }
+  .pin-display { text-align: center; font-size: 2.2rem; letter-spacing: 12px; color: var(--accent); height: 48px; }
+  .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .key { font-size: 1.5rem; padding: 20px; }
+  .key.back, .key.enter { grid-column: span 1; }
+  .biometrics { margin-top: 12px; text-align: center; }
+  .mic-btn {
+    border: none;
+    border-radius: 50%;
+    width: 72px;
+    height: 72px;
+    font-size: 1.6rem;
+    background: linear-gradient(155deg, var(--ember), var(--ember-dim));
+    box-shadow: 0 6px 20px rgba(242,166,90,.3);
+    color: #241202;
+    margin: 0 auto;
+    display: block;
+    cursor: pointer;
+  }
+  .mic-btn.listening { background: var(--danger); }
+  .countdown { text-align: center; font-size: 1.8rem; font-weight: 300; color: var(--ok); }
+  .status-msg { text-align: center; color: var(--muted); font-size: .95rem; min-height: 20px; }
+  .session-line { display:flex; justify-content:space-between; font-size:.85rem; color:var(--muted); padding:3px 0; }
+  .session-line b { color: var(--text); }
+  .ring-wrap { display:flex; align-items:center; gap:16px; }
+  .ring-wrap svg { flex-shrink:0; }
+  .ring-time { font-family:var(--font-display); font-size:1.9rem; color:var(--ok); font-weight:400; font-variant-numeric:tabular-nums; }
+  .ring-time.urgent { color:var(--danger); }
+  .ring-label { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.5px; }
+  .guide-trigger { display:flex; align-items:center; justify-content:space-between; background:none; border:none; color:var(--text); font-size:1rem; font-weight:600; width:100%; cursor:pointer; padding:4px 0; }
+  .guide-trigger .car{ transition:transform .25s var(--ease-out); }
+  .guide.open .car{ transform:rotate(180deg); }
+  .guide-body{ display:none; margin-top:10px; }
+  .guide.open .guide-body{ display:block; }
+  .guide-row{ display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border); font-size:.85rem; }
+  .guide-row:last-child{ border-bottom:none; }
+  .guide-cmd{ color:var(--muted); font-size:.78rem; }
+  .btn-checkout { border:none; border-radius:14px; padding:14px; font-size:.95rem; font-weight:700; background:rgba(232,115,95,.15); color:var(--danger); cursor:pointer; margin-top:8px; border:1px solid rgba(232,115,95,.35); }
+  .btn-checkout:active { transform:scale(.96); }
+  .btn.mini { padding:8px 10px; font-size:.85rem; border-radius:10px; }
+  .thermo-list { display:flex; flex-direction:column; gap:12px; }
+  .thermo { display:flex; flex-direction:column; gap:8px; }
+  .thermo-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .thermo-label { font-weight:600; font-size:.92rem; }
+  .thermo-val { color:var(--accent); }
+  .stepper { display:flex; align-items:center; gap:10px; }
+  .thermo-range { flex:1; text-align:center; color:var(--muted); font-size:.75rem; }
+  .btn.bio { background:linear-gradient(155deg, var(--ember), var(--ember-dim)); color:#241202; }
+  .btn.bio:disabled { opacity:.45; cursor:default; }
+  .voice-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .voice-chip { background:var(--surface-2); border:1px solid var(--border); border-radius:99px; padding:4px 10px; font-size:.72rem; color:var(--muted); }
+  .badge-live { display:inline-flex; align-items:center; gap:6px; font-size:.7rem; color:var(--ok); font-weight:600; }
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--card);
+    border: 1px solid #334155;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    z-index: 50;
+    display: none;
+  }
+  .toast.show { display: block; }
+</style>
+</head>
+<body>
+
+<div id="lockScreen" class="screen">
+  <div class="clock">
+    <h1 id="clock">--:--</h1>
+    <span id="date">--</span>
+  </div>
+  <div class="status-chip" id="cabinState">Cabine : vérification...</div>
+  <div class="card">
+    <div class="pin-display" id="pinDisplay"></div>
+    <div class="keypad" id="keypad"></div>
+    <p class="status-msg" id="pinMsg" style="margin-top:12px"></p>
+  </div>
+  <div class="card biometrics">
+    <p class="status-msg" style="margin-bottom:10px">Ou ouvrez avec la biométrie</p>
+    <div class="grid">
+      <button class="btn" id="bioFace">👤 Reconnaissance faciale</button>
+      <button class="btn" id="bioFinger">🫆 Empreinte digitale</button>
+    </div>
+  </div>
+</div>
+
+<div id="dashScreen" class="screen hidden">
+  <div class="clock">
+    <h1 id="dashClock" style="font-size:2.4rem">--:--</h1>
+  </div>
+  <div class="card card-hero">
+    <p style="margin-bottom:12px"><span class="badge-live"><span class="live-dot"></span> Session active</span></p>
+    <div class="ring-wrap">
+      <svg class="countdown-ring" width="92" height="92" id="ringSvg">
+        <circle cx="46" cy="46" r="40" stroke="rgba(107,191,156,.15)" stroke-width="7" fill="none"></circle>
+        <circle cx="46" cy="46" r="40" stroke="var(--pine)" stroke-width="7" fill="none" stroke-linecap="round"></circle>
+      </svg>
+      <div>
+        <div class="ring-label">Temps restant</div>
+        <div class="ring-time" id="countdown">--:--</div>
+        <div class="session-line"><span>Cliente :</span><b id="guestName">invité</b></div>
+        <div class="session-line"><span>Fin :</span><b id="endTimeTxt">--:--</b></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="indicator">
+      <span>Température</span><span class="value" id="temp">--</span>
+    </div>
+    <div class="indicator">
+      <span>Humidité</span><span class="value" id="humidity">--</span>
+    </div>
+    <div class="indicator">
+      <span>Présence</span><span class="value" id="presence">--</span>
+    </div>
+  </div>
+  <div class="card">
+    <h2 style="font-size:1.1rem; margin-bottom:12px">Contrôles</h2>
+    <div class="grid">
+      <button class="btn" id="btnLight" data-device="lighting">💡 Éclairage</button>
+      <button class="btn" id="btnVent" data-device="ventilation">🌀 Ventilation</button>
+      <button class="btn" id="btnSpeaker" data-device="speaker">🔊 Audio</button>
+      <button class="btn" id="btnLock" data-device="lock">🔒 Serrure</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2 style="font-size:1.1rem; margin-bottom:12px">Thermostats</h2>
+    <div class="thermo-list" id="thermoList">
+      <div class="thermo" data-thermo="climate">
+        <div class="thermo-head">
+          <span class="thermo-label">🌡️ Climatisation</span>
+          <button class="btn mini" id="btnClimate" data-device="climate">Consigne <b class="thermo-val">22°</b></button>
+        </div>
+        <div class="stepper">
+          <button class="btn mini" data-step="-1" data-for="climate">−</button>
+          <span class="thermo-range">18–30 °C</span>
+          <button class="btn mini" data-step="1" data-for="climate">+</button>
+        </div>
+      </div>
+      <div class="thermo" data-thermo="heater">
+        <div class="thermo-head">
+          <span class="thermo-label">🔥 Chauffage</span>
+          <button class="btn mini" id="btnHeater" data-device="heater">Consigne <b class="thermo-val">34°</b></button>
+        </div>
+        <div class="stepper">
+          <button class="btn mini" data-step="-1" data-for="heater">−</button>
+          <span class="thermo-range">30–40 °C</span>
+          <button class="btn mini" data-step="1" data-for="heater">+</button>
+        </div>
+      </div>
+      <div class="thermo" data-thermo="waterHeater">
+        <div class="thermo-head">
+          <span class="thermo-label">♨️ Chauffe-eau</span>
+          <button class="btn mini" id="btnWaterHeater" data-device="waterHeater">Consigne <b class="thermo-val">45°</b></button>
+        </div>
+        <div class="stepper">
+          <button class="btn mini" data-step="-1" data-for="waterHeater">−</button>
+          <span class="thermo-range">30–60 °C</span>
+          <button class="btn mini" data-step="1" data-for="waterHeater">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h2 style="font-size:1.1rem; margin-bottom:12px">Éclairage — couleur</h2>
+    <div class="thermo-list">
+      <div class="thermo" data-thermo="lightTemp">
+        <div class="thermo-head">
+          <span class="thermo-label">💡 Température de couleur</span>
+          <button class="btn mini" id="btnLightTemp" data-device="lightTemp">Consigne <b class="thermo-val">3500K</b></button>
+        </div>
+        <div class="stepper">
+          <button class="btn mini" data-step="-100" data-for="lightTemp">−</button>
+          <span class="thermo-range">2700–6500 K · chaud → froid</span>
+          <button class="btn mini" data-step="100" data-for="lightTemp">+</button>
+        </div>
+      </div>
+      <div class="thermo" data-thermo="lightSat">
+        <div class="thermo-head">
+          <span class="thermo-label">❤️ Saturation rouge</span>
+          <button class="btn mini" id="btnLightSat" data-device="lightSat">Consigne <b class="thermo-val">0%</b></button>
+        </div>
+        <div class="stepper">
+          <button class="btn mini" data-step="-5" data-for="lightSat">−</button>
+          <span class="thermo-range">0–100 % · blanc → rouge</span>
+          <button class="btn mini" data-step="5" data-for="lightSat">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <button class="mic-btn" id="micBtn">🎙️</button>
+    <div class="voice-chips">
+      <span class="voice-chip">« Allume la lumière »</span>
+      <span class="voice-chip">« Éteins le chauffage »</span>
+      <span class="voice-chip">« Quel est l'état ? »</span>
+    </div>
+  </div>
+  <div class="card guide" id="guideCard">
+    <button class="guide-trigger" id="guideToggle">🛠️ Guide de la cabine <span class="car">▾</span></button>
+    <div class="guide-body">
+      <div class="guide-row"><span>💡 Éclairage</span><span class="guide-cmd">« Allume la lumière »</span></div>
+      <div class="guide-row"><span>💡💡 Couleur (2700–6500 K)</span><span class="guide-cmd">« Lumière à 3500 kelvins »</span></div>
+      <div class="guide-row"><span>❤️ Saturation rouge (0–100)</span><span class="guide-cmd">« Rouge à 80 »</span></div>
+      <div class="guide-row"><span>🌡️ Climatisation (18–30 °C)</span><span class="guide-cmd">« Clim à 22 degrés »</span></div>
+      <div class="guide-row"><span>🔥 Chauffage (30–40 °C)</span><span class="guide-cmd">« Chauffage à 35 degrés »</span></div>
+      <div class="guide-row"><span>♨️ Chauffe-eau (30–60 °C)</span><span class="guide-cmd">« Eau chaude à 50 degrés »</span></div>
+      <div class="guide-row"><span>🌀 Ventilation</span><span class="guide-cmd">« Active la ventilation »</span></div>
+      <div class="guide-row"><span>🔊 Audio</span><span class="guide-cmd">« Allume l'audio »</span></div>
+      <div class="guide-row"><span>🔒 Serrure</span><span class="guide-cmd">« Ferme / ouvre la serrure »</span></div>
+    </div>
+  </div>
+  <button class="btn-checkout" id="btnCheckout">🚪 Check-out — terminer la session</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  const params = new URLSearchParams(location.search);
+  const cabinId = params.get('cabin');
+  const cabinSpecified = !!cabinId;
+
+  const byId = (id) => document.getElementById(id);
+
+  let socket = null;
+  let session = null;
+  let pin = '';
+  let countdownTimer = null;
+  let recognition = null;
+  const deviceStates = {};
+
+  const API_BASE = location.origin;
+
+  // ---------- Horloge ----------
+  function tickClock() {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    byId('clock').textContent = `${hh}:${mm}`;
+    if (!byId('dashScreen').classList.contains('hidden')) {
+      byId('dashClock').textContent = `${hh}:${mm}`;
+    }
+    byId('date').textContent = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+  }
+  setInterval(tickClock, 1000);
+  tickClock();
+
+  // ---------- Toast ----------
+  function toast(msg) {
+    if (window.CabinMotion && CabinMotion.toast) {
+      CabinMotion.toast(msg, { duration: 3200 });
+    } else {
+      const el = byId('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 3200);
+    }
+  }
+
+  // ---------- Clavier PIN ----------
+  function buildKeypad() {
+    const pad = byId('keypad');
+    pad.innerHTML = '';
+    ['1','2','3','4','5','6','7','8','9','⌫','0','✓'].forEach((k) => {
+      const btn = document.createElement('button');
+      btn.className = 'btn key' + (k === '✓' ? ' on' : '');
+      btn.textContent = k;
+      btn.onclick = () => keyPress(k);
+      pad.appendChild(btn);
+    });
+  }
+
+  function renderPinDots(animateLast) {
+    const el = byId('pinDisplay');
+    el.innerHTML = '';
+    for (let i = 0; i < pin.length; i++) {
+      const dot = document.createElement('span');
+      dot.textContent = '•';
+      dot.style.display = 'inline-block';
+      if (animateLast && i === pin.length - 1) dot.className = 'pop-in';
+      el.appendChild(dot);
+    }
+  }
+
+  function keyPress(k) {
+    if (k === '⌫') { pin = pin.slice(0, -1); renderPinDots(false); byId('pinMsg').textContent = ''; return; }
+    if (k === '✓') { verifyPin(); return; }
+    if (pin.length < 6) { pin += k; renderPinDots(true); }
+    byId('pinMsg').textContent = '';
+  }
+
+  async function verifyPin() {
+    if (pin.length !== 6) {
+      byId('pinMsg').textContent = 'Code à 6 chiffres';
+      return;
+    }
+    try {
+      byId('pinMsg').textContent = 'Vérification...';
+      const payload = { pinCode: pin };
+      if (cabinSpecified) payload.cabinId = cabinId;
+      const res = await fetch(`${API_BASE}/api/access/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const json = await res.json();
+      if (!json.success) {
+        pin = '';
+        const disp = byId('pinDisplay');
+        disp.innerHTML = '';
+        disp.classList.remove('shake');
+        void disp.offsetWidth; // restart animation
+        disp.classList.add('shake');
+        byId('pinMsg').textContent = json.message || 'Code invalide';
+        speak(json.message || 'Code invalide');
+        return;
+      }
+      openSession(json.reservation);
+    } catch (err) {
+      byId('pinMsg').textContent = 'Erreur réseau';
+    }
+  }
+
+  // ---------- Session ----------
+  function openSession(reservation) {
+    session = reservation;
+    pin = '';
+    byId('lockScreen').classList.add('hidden');
+    byId('dashScreen').classList.remove('hidden');
+    byId('dashScreen').classList.add('view-enter');
+    const welcomeCard = byId('dashScreen').querySelector('.card');
+    if (welcomeCard) welcomeCard.classList.add('glow-wash');
+    byId('guestName').textContent = reservation.clientName || 'invité';
+    const endTxt = new Date(reservation.endTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    byId('endTimeTxt').textContent = endTxt;
+    startCountdown(reservation.startTime ? new Date(reservation.startTime) : null, new Date(reservation.endTime));
+    speak('Bienvenue dans la cabine');
+  }
+
+  function startCountdown(startTime, endTime) {
+    clearInterval(countdownTimer);
+    const total = endTime - startTime;
+    function refresh() {
+      const now = Date.now();
+      const left = endTime - now;
+      if (left <= 0) { endSession(); return; }
+      const m = Math.floor(left / 60000);
+      const s = Math.floor((left % 60000) / 1000);
+      byId('countdown').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      byId('countdown').classList.toggle('urgent', left <= 60000);
+      if (total > 0 && window.CabinMotion && CabinMotion.countdownRing) {
+        CabinMotion.countdownRing(document.getElementById('ringSvg'), left / total);
+      }
+    }
+    refresh();
+    countdownTimer = setInterval(refresh, 1000);
+  }
+
+  function endSession() {
+    clearInterval(countdownTimer);
+    byId('dashScreen').classList.add('hidden');
+    byId('lockScreen').classList.remove('hidden');
+    session = null;
+    speak('Votre créneau est terminé');
+  }
+
+  // ---------- Check-out & guide ----------
+  byId('guideToggle').addEventListener('click', () => {
+    byId('guideCard').classList.toggle('open');
+  });
+
+  byId('btnCheckout').addEventListener('click', async () => {
+    if (!confirm('Terminer votre session maintenant ?')) return;
+    speak('Session terminée, bonne journée');
+    if (session && session.id) {
+      try {
+        await fetch(`${API_BASE}/api/access/reservation/${session.id}/checkout`, { method: 'POST' });
+      } catch (e) {}
+    }
+    endSession();
+  });
+
+  // ---------- Contrôles IoT ----------
+  const THERMO = {
+    climate: { min: 18, max: 30, def: 22, unit: '°', labelFR: 'climatisation', keys: ['clim', 'climatisation', 'climatiseur', 'froid'] },
+    heater: { min: 30, max: 40, def: 34, unit: '°', labelFR: 'chauffage', keys: ['chauffage', 'chauffer'] },
+    waterHeater: { min: 30, max: 60, def: 45, unit: '°', labelFR: 'chauffe-eau', keys: ['chauffe-eau', 'eau chaude', 'eau'] },
+    lightTemp: { min: 2700, max: 6500, def: 3500, unit: 'K', labelFR: 'lumière', keys: ['lumière chaude', 'lumiere chaude', 'lumière froide', 'lumiere froide', 'lumière', 'lumiere'], number: true },
+    lightSat: { min: 0, max: 100, def: 60, unit: '%', labelFR: 'saturation rouge', keys: ['saturation', 'rouge', 'red'], number: true }
+  };
+  const thermoBtnId = (device) => 'btn' + (device === 'waterHeater' ? 'WaterHeater' : device[0].toUpperCase() + device.slice(1));
+
+  const thermoVal = {};
+  for (const [device, cfg] of Object.entries(THERMO)) {
+    thermoVal[device] = cfg.def;
+    const btn = byId(thermoBtnId(device));
+    const valEl = btn ? btn.querySelector('.thermo-val') : null;
+    function render() {
+      if (valEl) valEl.textContent = thermoVal[device] + cfg.unit;
+      if (btn) btn.classList.toggle('on', deviceStates[device] === 'ON');
+    }
+    btn.addEventListener('click', () => {
+      const state = deviceStates[device] === 'ON' ? 'OFF' : 'ON';
+      deviceStates[device] = state;
+      render();
+      sendCommand(device, state === 'ON' ? thermoVal[device] : { off: true });
+      speak(state === 'ON' ? THERMO[device].labelFR + ' activé' : THERMO[device].labelFR + ' éteint');
+    });
+    render();
+  }
+
+  document.querySelectorAll('.stepper [data-step]').forEach((el) => {
+    el.addEventListener('click', () => {
+      const device = el.dataset.for;
+      const cfg = THERMO[device];
+      if (!cfg) return;
+      if (deviceStates[device] !== 'ON') {
+        deviceStates[device] = 'ON';
+      }
+      const next = Math.min(cfg.max, Math.max(cfg.min, thermoVal[device] + Number(el.dataset.step)));
+      thermoVal[device] = next;
+      const btn = byId(thermoBtnId(device));
+      btn.querySelector('.thermo-val').textContent = next + cfg.unit;
+      btn.classList.add('on');
+      sendCommand(device, next);
+    });
+  });
+
+  const controlButtons = ['btnLight','btnVent','btnSpeaker','btnLock'];
+  controlButtons.forEach((id) => {
+    byId(id).addEventListener('click', () => {
+      const device = byId(id).dataset.device;
+      const state = deviceStates[device] === 'ON' ? 'OFF' : 'ON';
+      deviceStates[device] = state;
+      byId(id).classList.toggle('on', state === 'ON');
+      if (state === 'ON') {
+        byId(id).classList.remove('glow-wash');
+        void byId(id).offsetWidth;
+        byId(id).classList.add('glow-wash');
+      }
+      sendCommand(device, state);
+      speak(state === 'ON' ? 'Allumé' : 'Éteint');
+    });
+  });
+
+  function sendCommand(device, value) {
+    const serial = (session && session.cabinSerial) || (cabinSpecified ? cabinId : null);
+    if (serial && socket && socket.connected) {
+      socket.emit('iot:command', { cabinSerial: serial, deviceId: device, action: 'SET', value });
+    } else if (socket && socket.connected) {
+      toast('Session active requise pour contrôler');
+    } else {
+      toast('Connexion au serveur indisponible');
+    }
+  }
+
+  // ---------- Biométrie (visage / empreinte) ----------
+  function handleBioResult(json, kindMsg) {
+    if (json && json.success) {
+      if (json.reservation) { openSession(json.reservation); speak(kindMsg + ' reconnu, bienvenue'); return true; }
+    }
+    return false;
+  }
+
+  async function biometricUnlock(kindMsg) {
+    if (!window.BioAuth) { byId('pinMsg').textContent = 'Biométrie indisponible (rechargez la page)'; return; }
+    byId('pinMsg').textContent = kindMsg + '… veuillez poser votre ' + (kindMsg === 'Visage' ? 'visage' : 'doigt');
+    try {
+      const json = await window.BioAuth.verify();
+      if (!handleBioResult(json, kindMsg)) {
+        pin = '';
+        byId('pinMsg').textContent = json.message || 'Ouverture biométrique refusée';
+        speak(json.message || 'Refusé');
+      }
+    } catch (e) {
+      byId('pinMsg').textContent = e.message || 'Erreur biométrique';
+    }
+  }
+
+  byId('bioFace').addEventListener('click', () => biometricUnlock('Visage'));
+  byId('bioFinger').addEventListener('click', () => biometricUnlock('Empreinte'));
+
+  // ---------- MQTT / Socket.io ----------
+  function connectSocket() {
+    socket = io(API_BASE, { path: '/socket.io' });
+
+    socket.on('iot:telemetry', (msg) => {
+      if (!msg.topic.includes('/telemetry')) return;
+      const d = msg.data || {};
+      if (d.temperature !== undefined) {
+        if (window.CabinMotion) CabinMotion.smoothNumber(byId('temp'), d.temperature, { decimals: 1, suffix: ' °C' });
+        else byId('temp').textContent = d.temperature + ' °C';
+        if (window.CabinMotion) {
+          CabinMotion.pulseData(byId('temp'));
+          CabinMotion.setAmbient(d.temperature);
+        }
+      }
+      if (d.humidity !== undefined) {
+        if (window.CabinMotion) CabinMotion.smoothNumber(byId('humidity'), d.humidity, { decimals: 1, suffix: ' %' });
+        else byId('humidity').textContent = d.humidity + ' %';
+        if (window.CabinMotion) CabinMotion.pulseData(byId('humidity'));
+      }
+      if (d.presence !== undefined) {
+        byId('presence').textContent = d.presence ? 'Détectée' : 'Absente';
+        if (window.CabinMotion) CabinMotion.pulseData(byId('presence'));
+      }
+    });
+
+    socket.on('cabine:warning', (data) => { toast(data.message); speak(data.message); });
+    socket.on('cabine:session_ended', () => { endSession(); });
+    socket.on('iot:voice_command', (cmd) => speak('Commande : ' + cmd.text));
+  }
+
+  async function loadCabinState() {
+    const serial = (session && session.cabinSerial) || (cabinSpecified ? cabinId : null);
+    if (!serial) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/access/cabin/${serial}/status`);
+      const json = await res.json();
+      if (json.success) {
+        const s = json.cabin.status === 'OCCUPIED_BY_GUEST' ? 'Occupée' :
+                  json.cabin.status === 'AVAILABLE' ? 'Libre' :
+                  json.cabin.status === 'CLEANING_REQUIRED' ? 'Nettoyage requis' :
+                  json.cabin.status === 'MAINTENANCE' ? 'Maintenance' : 'Mode personnel';
+        const guest = json.cabin.guestState === 'INSIDE' ? 'Client à l’intérieur' :
+                      json.cabin.guestState === 'OUTSIDE' ? 'Client sorti — éclairage coupé' : '';
+        byId('cabinState').textContent = 'Cabine : ' + s + (guest ? ' · ' + guest : '');
+      }
+    } catch (e) {}
+  }
+
+  // ---------- Vocale ----------
+  function speak(message) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(message);
+    u.lang = 'fr-FR';
+    window.speechSynthesis.speak(u);
+  }
+
+  function setupVoice() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      byId('micBtn').textContent = '⛔';
+      return;
+    }
+    recognition = new SR();
+    recognition.lang = 'fr-FR';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onresult = (event) => {
+      const text = event.results[0][0].transcript.trim();
+      if (socket) socket.emit('iot:voice_command', { text });
+      handleLocalVoice(text);
+    };
+    recognition.onerror = () => byId('micBtn').classList.remove('listening', 'breathing');
+    recognition.onend = () => byId('micBtn').classList.remove('listening', 'breathing');
+
+    byId('micBtn').onclick = () => {
+      byId('micBtn').classList.add('listening', 'breathing');
+      try { recognition.start(); } catch (e) {}
+    };
+  }
+
+  const VOICE_MAP = {
+    lighting:   { label: 'lumière',   btn: 'btnLight'   },
+    ventilation:{ label: 'ventilation', btn: 'btnVent'   },
+    speaker:    { label: 'audio',     btn: 'btnSpeaker' },
+    lock:       { label: 'serrure',   btn: 'btnLock'    }
+  };
+
+  function setThermoFromVoice(device, expected) {
+    deviceStates[device] = expected >= 0 ? 'ON' : 'OFF';
+    if (expected >= 0) {
+      const cfg = THERMO[device];
+      const value = Math.min(cfg.max, Math.max(cfg.min, expected));
+      thermoVal[device] = value;
+      const btn = byId(thermoBtnId(device));
+      const valEl = btn.querySelector('.thermo-val');
+      valEl.textContent = value + cfg.unit;
+      btn.classList.add('on');
+      sendCommand(device, value);
+      const unitWord = cfg.unit === 'K' ? 'kelvins' : cfg.unit === '%' ? 'pour cent' : 'degrés';
+      speak(cfg.labelFR + ' réglé à ' + value + ' ' + unitWord);
+    } else {
+      const btn = byId(thermoBtnId(device));
+      if (btn) btn.classList.remove('on');
+      sendCommand(device, { off: true });
+      speak((THERMO[device].labelFR || device) + ' éteint');
+    }
+  }
+
+  function handleLocalVoice(text) {
+    const t = text.toLowerCase();
+
+    if (t.includes('accueil') || t.includes('état')) {
+      loadCabinState();
+      speak('État chargé');
+      return;
+    }
+
+    if (t.includes('visage') && (t.includes('ouvre') || t.includes('déverrouille'))) {
+      biometricUnlock('Visage');
+      return;
+    }
+    if (t.includes('empreinte') && (t.includes('ouvre') || t.includes('déverrouille'))) {
+      biometricUnlock('Empreinte');
+      return;
+    }
+
+    for (const [device, cfg] of Object.entries(THERMO)) {
+      const matched = cfg.keys.some((k) => t.includes(k));
+      if (!matched) continue;
+      const m = cfg.unit === 'K'
+        ? t.match(/(\d{3,4})\s*(?:kelvins?|k|°)?/)
+        : cfg.unit === '%'
+          ? t.match(/(\d{1,3})\s*(?:%|pour cent|sur cent)?/)
+          : t.match(/(\d{1,2})\s*(?:degrés?|degres?|°)/);
+      if (m) {
+        setThermoFromVoice(device, Number(m[1]));
+        return;
+      }
+      if (cfg.number) continue;
+      const on = /allume|active|mets|met|ouvre|chauffe|refroidis/.test(t) ? 'ON' : /éteins?|désactive|ferme/.test(t) ? 'OFF' : null;
+      if (on) {
+        if (on === 'ON') {
+          const val = thermoVal[device];
+          deviceStates[device] = 'ON';
+          const btn = byId(thermoBtnId(device));
+          btn.classList.add('on');
+          sendCommand(device, val);
+          speak((cfg.labelFR || device) + ' activé');
+        } else {
+          setThermoFromVoice(device, -1);
+        }
+        return;
+      }
+    }
+
+    for (const [device, info] of Object.entries(VOICE_MAP)) {
+      if (t.includes(info.label)) {
+        const on = /allume|active|ouvre/.test(t) ? 'ON' : /éteins?|désactive|ferme/.test(t) ? 'OFF' : null;
+        if (!on) continue;
+        deviceStates[device] = on;
+        const btn = byId(info.btn);
+        if (btn) btn.classList.toggle('on', on === 'ON');
+        sendCommand(device, on);
+        speak(info.label + (on === 'ON' ? ' activé' : ' coupé'));
+        return;
+      }
+    }
+  }
+
+  // ---------- Init ----------
+  afterPaint(() => {
+    buildKeypad();
+    connectSocket();
+    loadCabinState();
+    setupVoice();
+  });
+
+  function afterPaint(fn) {
+    if (window.CabinMotion) { window.CabinMotion.init(document); }
+    requestAnimationFrame(() => requestAnimationFrame(fn));
+  }
+})();
+</script>
+<footer class="app-footer">© pixelsoftwaredesign 2026 · Cabine Intelligente</footer>
+</body>
+</html>
