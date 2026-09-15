@@ -33,7 +33,20 @@ const biometricRoutes = require('./src/routes/biometricRoutes');
 const { router: paymentRoutes, webhookHandler } = require('./src/routes/paymentRoutes');
 
 const app = express();
-app.use(cors());
+
+const ALLOWED_ORIGINS = [
+  'https://cabine.pixelsoftwaredesign.xyz',
+  'https://cabine-9qr.pages.dev',
+  'https://cabine-backend.onrender.com',
+  'http://localhost:3000'
+];
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    return cb(new Error('Origin non autorisée'));
+  },
+  credentials: true
+}));
 
 // Hébergement virtuel : maps.pixelsoftwaredesign.xyz → Carte des cabines
 const path = require('path');
