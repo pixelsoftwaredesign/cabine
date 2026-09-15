@@ -36,7 +36,11 @@ const app = express();
 
 const ALLOWED_ORIGINS = [
   'http://localhost:3000',
-  'http://127.0.0.1:3000'
+  'http://127.0.0.1:3000',
+  'https://cabine.pixelsoftwaredesign.xyz',
+  'https://cabine-9qr.pages.dev',
+  'https://cabine-backend.onrender.com',
+  ...(process.env.EXTRA_ORIGINS ? process.env.EXTRA_ORIGINS.split(',') : [])
 ];
 app.use(cors({
   origin: (origin, cb) => {
