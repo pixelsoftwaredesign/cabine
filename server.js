@@ -35,10 +35,8 @@ const { router: paymentRoutes, webhookHandler } = require('./src/routes/paymentR
 const app = express();
 
 const ALLOWED_ORIGINS = [
-  'https://cabine.pixelsoftwaredesign.xyz',
-  'https://cabine-9qr.pages.dev',
-  'https://cabine-backend.onrender.com',
-  'http://localhost:3000'
+  'http://localhost:3000',
+  'http://127.0.0.1:3000'
 ];
 app.use(cors({
   origin: (origin, cb) => {
