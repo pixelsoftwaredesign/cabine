@@ -61,6 +61,15 @@ app.use((req, res, next) => {
   next();
 });
 
+// URLs propres : /map → /map.html, /book → /book.html, etc.
+const CLEAN_URLS = ['/map', '/book', '/bim', '/editor', '/viewer', '/demo', '/kiosk', '/install', '/logistics', '/maintenance', '/partner', '/plan', '/usine', '/workforce'];
+app.use((req, res, next) => {
+  if (CLEAN_URLS.includes(req.path)) {
+    return res.sendFile(path.join(__dirname, 'public', req.path.slice(1) + '.html'));
+  }
+  next();
+});
+
 app.use(express.static('public'));
 
 const server = http.createServer(app);
