@@ -39,6 +39,7 @@ const ALLOWED_ORIGINS = [
   'http://127.0.0.1:3000',
   'https://cabine.pixelsoftwaredesign.xyz',
   'https://cabine-9qr.pages.dev',
+  'https://mycabine.pages.dev',
   'https://cabine-backend.onrender.com',
   ...(process.env.EXTRA_ORIGINS ? process.env.EXTRA_ORIGINS.split(',') : [])
 ];
