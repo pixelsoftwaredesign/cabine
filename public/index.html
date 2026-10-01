@@ -43,6 +43,10 @@
   a.card:hover .go{opacity:1}
   .foot{padding:40px 22px calc(20px + env(safe-area-inset-bottom));text-align:center;color:var(--muted);font-size:.72rem;letter-spacing:.4px;opacity:.75}
   .foot .dotts{letter-spacing:2px;margin-bottom:6px}
+  .foot .site-links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+  .foot .site-links a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent;transition:color .2s var(--ease-out),border-color .2s var(--ease-out)}
+  .foot .site-links a:hover{color:var(--ember);border-bottom-color:var(--ember-dim)}
+  .foot .site-links a:focus-visible{outline:2px solid var(--ember);outline-offset:2px}
   @media(max-width:520px){header{padding-top:38px}}
 </style>
 </head>
@@ -141,11 +145,10 @@
     </div>
   </section>
 </main>
-
 <footer class="foot">
-  <div class="dotts">··</div>
-  © pixelsoftwaredesign 2026 — Plateforme cabines intelligentes
+  <div class="dotts">&middot;&middot;</div>
+  &copy; pixelsoftwaredesign 2026 &mdash; Plateforme cabines intelligentes
+  <div class="site-links"><a href="/">Accueil</a><a href="https://pixelsoftwaredesign.xyz" target="_blank" rel="noopener">pixelsoftwaredesign.xyz</a><a href="https://atlascabine.pages.dev" target="_blank" rel="noopener">atlascabine.pages.dev</a></div>
 </footer>
-
 </body>
 </html>

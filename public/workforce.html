@@ -61,6 +61,10 @@
   .chip.active{background:linear-gradient(155deg,var(--ember),var(--ember-dim));color:#241202;font-weight:600;border-color:transparent}
   .filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
   .footnote{text-align:center;color:var(--muted);font-size:.7rem;margin-top:18px}
+  .footnote .site-links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+  .footnote .site-links a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent;transition:color .2s var(--ease-out),border-color .2s var(--ease-out)}
+  .footnote .site-links a:hover{color:var(--ember);border-bottom-color:var(--ember-dim)}
+  .footnote .site-links a:focus-visible{outline:2px solid var(--ember);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -150,7 +154,9 @@
       </div>
     </div>
   </div>
-  <div class="footnote">© pixelsoftwaredesign 2026</div>
+  <div class="footnote">&copy; pixelsoftwaredesign 2026
+    <div class="site-links"><a href="/">Accueil</a><a href="https://pixelsoftwaredesign.xyz" target="_blank" rel="noopener">pixelsoftwaredesign.xyz</a><a href="https://atlascabine.pages.dev" target="_blank" rel="noopener">atlascabine.pages.dev</a></div>
+  </div>
 </main>
 
 <div class="toast" id="toast"></div>
