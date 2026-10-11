@@ -9,7 +9,7 @@
 const CLEAN_URLS = new Set([
   '/map', '/book', '/bim', '/editor', '/viewer', '/demo', '/kiosk',
   '/install', '/logistics', '/maintenance', '/partner', '/plan',
-  '/usine', '/workforce'
+  '/usine', '/workforce', '/franchise'
 ]);
 
 export async function onRequest(context) {

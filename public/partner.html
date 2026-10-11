@@ -686,6 +686,13 @@
     loadRoomCatalog();
     showApp();
   }
+  // Mode franchise : arrivé depuis /franchise (ou ?mode=register), on ouvre
+  // directement le formulaire d'inscription en tant que partenaire.
+  if (!token && new URLSearchParams(location.search).get('mode') === 'register') {
+    loginMode = false;
+    $('authTitle').textContent = 'Créer un compte partenaire';
+    $('authSubmit').textContent = 'S\'inscrire';
+  }
   bootstrap();
 })();
 </script>
