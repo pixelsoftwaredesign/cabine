@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#10161a">
+<meta name="author" content="pixelsoftwaredesign">
+<!-- © pixelsoftwaredesign 2026 -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Contrat de location de cabine — Cabines Intelligentes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<script src="/animations.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--ambient),var(--bg);color:var(--text);font-family:var(--font-ui);
+    min-height:100vh;background-attachment:fixed;font-size:15px;line-height:1.6;
+  }
+  header{max-width:860px;margin:0 auto;padding:56px 22px 8px;text-align:center}
+  header .eyebrow{font-size:.72rem;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
+  header h1{font-family:var(--font-display);font-weight:600;font-size:clamp(1.7rem,4.5vw,2.6rem);line-height:1.06}
+  header h1 span{color:var(--pine)}
+  header .meta-line{color:var(--muted);font-size:.8rem;margin-top:12px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  header .meta-line .pill{padding:2px 10px;border-radius:99px;border:1px solid var(--border);background:var(--surface)}
+  .notice{max-width:860px;margin:18px auto 0;padding:12px 16px;border:1px solid var(--border);border-left:3px solid var(--pine);border-radius:10px;color:var(--muted);font-size:.82rem}
+  main{max-width:860px;margin:0 auto;padding:24px 22px 60px}
+  .doc{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:34px 30px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .doc-title{font-family:var(--font-display);font-size:1.25rem;font-weight:600;text-align:center;margin-bottom:6px}
+  .doc-sub{text-align:center;color:var(--muted);font-size:.8rem;margin-bottom:26px}
+  .parties{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px}
+  .parties .box{border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--surface-2);font-size:.88rem}
+  .parties .box b{display:block;font-family:var(--font-display);margin-bottom:6px}
+  .parties .box span{color:var(--muted)}
+  article{margin-bottom:22px}
+  article h2{font-family:var(--font-display);font-size:1rem;font-weight:600;color:var(--pine);margin-bottom:8px;display:flex;gap:10px;align-items:baseline}
+  article h2 .n{color:var(--muted);font-size:.82rem}
+  article p{color:var(--text);font-size:.92rem;margin-bottom:8px}
+  article ul{list-style:none;margin:4px 0 10px}
+  article ul li{padding-left:20px;position:relative;font-size:.9rem;color:var(--text);margin-bottom:6px}
+  article ul li::before{content:'—';position:absolute;left:2px;color:var(--pine)}
+  article .key{border:1px solid rgba(107,191,156,.4);border-left:4px solid var(--pine);background:linear-gradient(90deg,rgba(107,191,156,.08),transparent);border-radius:10px;padding:14px 16px;margin:10px 0}
+  article .key b{color:var(--pine)}
+  .term{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:10px 0 16px}
+  .term .cell{border:1px solid var(--border);border-radius:12px;padding:14px;background:var(--surface-2);text-align:center}
+  .term .cell .v{font-family:var(--font-display);font-size:1.25rem;font-weight:600;color:var(--pine)}
+  .term .cell .l{font-size:.72rem;color:var(--muted);margin-top:2px}
+  .sig{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:34px;padding-top:26px;border-top:1px solid var(--border)}
+  .sig .side .who{font-family:var(--font-display);font-size:.95rem;font-weight:600;margin-bottom:4px}
+  .sig .side .role{color:var(--muted);font-size:.78rem;margin-bottom:30px}
+  .sig .side .line{border-bottom:1px dashed var(--border);height:44px}
+  .sig .side .cap{font-size:.72rem;color:var(--muted);margin-top:6px}
+  .row-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:28px}
+  .cta{background:linear-gradient(135deg,var(--pine),#4da080);color:#10161a;border:none;border-radius:12px;padding:13px 20px;font-family:var(--font-ui);font-weight:700;font-size:.9rem;cursor:pointer;text-decoration:none;transition:filter .2s var(--ease-out)}
+  .cta:hover{filter:brightness(1.08)}
+  .cta.secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
+  .cta.secondary:hover{border-color:rgba(107,191,156,.6)}
+  .back{margin-top:16px;text-align:center}
+  .back a{color:var(--muted);font-size:.82rem;text-decoration:none;border-bottom:1px solid var(--border)}
+  .back a:hover{color:var(--pine);border-color:rgba(107,191,156,.6)}
+  .foot{text-align:center;color:var(--muted);font-size:.72rem;letter-spacing:.4px;opacity:.75;padding:22px 8px calc(10px + env(safe-area-inset-bottom))}
+  .foot .site-links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+  .foot .site-links a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent;transition:color .2s var(--ease-out),border-color .2s var(--ease-out)}
+  .foot .site-links a:hover{color:var(--pine);border-bottom-color:rgba(107,191,156,.6)}
+  @media(max-width:620px){.parties{grid-template-columns:1fr}.sig{grid-template-columns:1fr;gap:26px}.term{grid-template-columns:1fr}.doc{padding:24px 18px}}
+  @media print{
+    body{background:#fff;color:#000;font-size:12px}
+    header,main{max-width:100%;padding:8mm}
+    .notice,.row-actions,.back,.foot,.no-print{display:none!important}
+    .doc{border:none;box-shadow:none;padding:0;background:#fff}
+    article h2{color:#000}
+    article h2 .n{color:#555}
+    article .key{border-left:4px solid #4da080;background:#f4faf7}
+    article .key b{color:#2e7d5f}
+    .term .cell{background:#fff;border:1px solid #999}
+    .term .cell .v{color:#2e7d5f}
+    .parties .box{background:#fff;border:1px solid #999}
+    .sig .line{border-bottom:1px solid #000}
+    .doc-title{font-size:14pt}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Contrat type</div>
+  <h1>Contrat de <span>location de cabine</span></h1>
+  <div class="meta-line"><span class="pill">Avec engagement de durée</span><span class="pill">Version 1.0 — 2026</span><span class="pill">Cabine intelligente équipée</span></div>
+</header>
+
+<div class="notice">📋 Document type présenté à titre informatif par pixelsoftwaredesign. Il ne constitue pas un engagement contractuel avant signature par les deux parties et validation juridique.</div>
+
+<main>
+  <div class="doc">
+
+    <div class="doc-title">CONTRAT DE LOCATION DE CABINE AVEC ENGAGEMENT</div>
+    <div class="doc-sub">Location d'une cabine intelligente équipée — réservation, kiosque, supervision IoT</div>
+
+    <div class="parties">
+      <div class="box">
+        <b>ENTRE</b>
+        <span>Le bailleur : l'exploitant <b>partenaire</b> (propriétaire de la cabine, opérateur du réseau « Cabines Intelligentes »), ou pixelsoftwaredesign en qualité d'exploitant, ci-après « le Bailleur ».</span>
+      </div>
+      <div class="box">
+        <b>ET</b>
+        <span>Le locataire : le client souscrivant la location avec engagement de durée, identifié par son compte plateforme, ci-après « le Locataire ».</span>
+      </div>
+    </div>
+
+    <article>
+      <h2><span class="n">Article 1.</span> Objet</h2>
+      <p>Le Bailleur loue au Locataire une cabine intelligente équipée (éclairage, mobiliers, ventilation, système IoT, alimentation), désignée en annexe par son numéro de série, pour un usage professionnel ou personnel conforme à sa destination, avec engagement de durée.</p>
+    </article>
+
+    <article>
+      <h2><span class="n">Article 2.</span> Engagement de durée</h2>
+      <p>La location est conclue avec un <b>engagement de durée ferme et incompressible</b>, non résiliable avant son terme, sauf cas visés à l'Article 8.</p>
+      <div class="term">
+        <div class="cell"><div class="v">12</div><div class="l">mois (Option Starter)</div></div>
+        <div class="cell"><div class="v">24</div><div class="l">mois (Option Standard)</div></div>
+        <div class="cell"><div class="v">36</div><div class="l">mois (Option Pro)</div></div>
+      </div>
+      <p>À l'issue de la période d'engagement, le contrat se poursuit par tacite reconduction par période mensuelle, résiliable à tout moment avec un préavis de 30 jours.</p>
+    </article>
+
+    <article>
+      <h2><span class="n">Article 3.</span> Loyer et conditions de paiement</h2>
+      <ul>
+        <li>Le loyer mensuel est payable d'avance, par prélèvement automatique ou carte bancaire, le 1er de chaque mois ;</li>
+        <li>Le premier loyer et le dépôt de garantie sont versés à la prise d'effet du contrat ;</li>
+        <li>Tout retard de paiement ouvre droit à des pénalités et peut entraîner la suspension de l'accès à la cabine.</li>
+      </ul>
+    </article>
+
+    <article>
+      <h2><span class="n">Article 4.</span> Caution et garantie</h2>
+      <p>Un dépôt de garantie équivalent à <b>un mois de loyer</b> est versé à la signature. Il sera restitué sous 30 jours après la fin du contrat, déduction faite des sommes dues et des réparations locatives.</p>
+    </article>
+
+    <article>
+      <h2><span class="n">Article 5.</span> Fabrication après financement</h2>
+      <div class="key">
+        <p><b>Condition de fabrication.</b> Lorsque la cabine louée est une cabine neuve à produire, sa <b>fabrication ne démarre qu'après réception intégrale du financement</b> : premier loyer et dépôt de garantie payés, option d'engagement confirmée.</p>
+        <p>Aucun lancement de production ni réservation de planning usine n'intervient avant confirmation du paiement. Le délai de livraison annoncé court à compter de la réception effective des fonds, le Bailleur informant le Locataire de chaque étape (assemblage, contrôle banc, expédition, installation).</p>
+      </div>
+    </article>
+
+    <article>
+      <h2><span class="n">Article 6.</span> Entretien et maintenance</h2>
+      <ul>
+        <li>Le Bailleur assure la maintenance préventive et curative de la cabine (housekeeping, mises à jour OTA, supervision) ;</li>
+        <li>Le Locataire doit utiliser la cabine avec soin et signaler immédiatement toute anomalie via l'application ;</li>
+        <li>Les dégradations non couvertes par l'usage normal sont à la charge du Locataire.</li>
+      </ul>
+    </article>
+
+    <article>
+      <h2><span class="n">Article 7.</span> Utilisation</h2>
+      <p>La cabine est destinée à un usage de bureau, télétravail, repos ou activité conforme à sa fiche technique. Les usages interdits (hébergement permanent, activités illicites, sous-location) entraînent la résiliation de plein droit.</p>
+    </article>
+
+    <article>
+      <h2><span class="n">Article 8.</span> Résiliation anticipée</h2>
+      <p>En cas de résiliation anticipée par le Locataire avant l'échéance de l'engagement, ce dernier reste redevable de l'intégralité des loyers dus jusqu'au terme de la période d'engagement, sans préjudice des pénalités prévues.</p>
+      <p>Le Bailleur peut résilier de plein droit en cas de défaut de paiement après mise en demeure restée sans effet pendant 15 jours, d'usage contraire au contrat ou de cessation d'activité.</p>
+    </article>
+
+    <article>
+      <h2><span class="n">Article 9.</span> Restitution</h2>
+      <p>À la fin du contrat, la cabine est restituée dans son état d'origine (usure normale exceptée), nettoyée et avec ses équipements complets, selon la procédure de sortie définie par le Bailleur. Le défaut de restitution ouvre droit à une indemnité d'occupation égale à 1,5 fois le loyer mensuel.</p>
+    </article>
+
+    <div class="sig">
+      <div class="side">
+        <div class="who">Le Bailleur</div>
+        <div class="role">Exploitant partenaire<br>Cabine n° ______</div>
+        <div class="line"></div>
+        <div class="cap">Fait à ______, le ______ — Signature et cachet</div>
+      </div>
+      <div class="side">
+        <div class="who">Le Locataire</div>
+        <div class="role">Compte plateforme : ______<br>Option : <b>12 / 24 / 36 mois</b></div>
+        <div class="line"></div>
+        <div class="cap">Fait à ______, le ______ — Signature (lu et approuvé, engagement de durée)</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="row-actions no-print">
+    <button class="cta" onclick="window.print()">🖨️ Imprimer / PDF</button>
+    <a class="cta secondary" href="/book.html">Réserver une cabine</a>
+    <a class="cta secondary" href="/">← Retour au portail</a>
+  </div>
+  <div class="back no-print"><a href="/partner.html">← Portail partenaire (bailleur)</a></div>
+</main>
+
+<footer class="foot">
+  <div>&copy; pixelsoftwaredesign 2026 &mdash; Contrat de location type</div>
+  <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
+</footer>
+
+</body>
+</html>
