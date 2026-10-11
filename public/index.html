@@ -47,6 +47,37 @@
   .foot .site-links a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent;transition:color .2s var(--ease-out),border-color .2s var(--ease-out)}
   .foot .site-links a:hover{color:var(--ember);border-bottom-color:var(--ember-dim)}
   .foot .site-links a:focus-visible{outline:2px solid var(--ember);outline-offset:2px}
+  .franchise{
+    background:linear-gradient(180deg,rgba(242,166,90,.1),transparent 42%),var(--surface);
+    border:1px solid var(--border);border-radius:24px;padding:36px 28px;
+  }
+  .franchise-head{text-align:center;margin-bottom:24px}
+  .franchise-head .eyebrow2{font-size:.72rem;letter-spacing:3px;color:var(--ember);text-transform:uppercase;margin-bottom:10px}
+  .franchise-head h2{font-family:var(--font-display);font-weight:600;font-size:clamp(1.5rem,3.5vw,2.2rem);line-height:1.1}
+  .franchise-head h2 em{color:var(--ember);font-style:normal}
+  .franchise-head p{color:var(--muted);font-size:.9rem;margin-top:12px;max-width:580px;margin-left:auto;margin-right:auto;line-height:1.6}
+  .franchise-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .fcard{
+    position:relative;display:flex;flex-direction:column;gap:9px;
+    text-decoration:none;color:var(--text);background:var(--surface-2);
+    border:1px solid var(--border);border-radius:18px;padding:22px;overflow:hidden;
+    transition:transform .22s var(--ease-out),border-color .22s,box-shadow .25s;
+    box-shadow:0 4px 14px rgba(0,0,0,.25);
+  }
+  .fcard:hover{transform:translateY(-4px);border-color:rgba(242,166,90,.5);box-shadow:0 14px 30px rgba(0,0,0,.45)}
+  .fcard:active{transform:scale(.98)}
+  .fcard .flag{font-size:2rem;line-height:1}
+  .fcard b{font-family:var(--font-display);font-size:1.08rem;font-weight:600}
+  .fcard p{color:var(--muted);font-size:.83rem;line-height:1.55;flex:1}
+  .fcard .fgo{color:var(--ember);font-size:.83rem;font-weight:700;display:flex;align-items:center;gap:6px}
+  .fcard .fgo::after{content:'→';transition:transform .2s var(--ease-out)}
+  .fcard:hover .fgo::after{transform:translateX(4px)}
+  .franchise-foot{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+  .cta{background:linear-gradient(135deg,var(--ember),var(--ember-dim));color:#10161a;border:none;border-radius:12px;padding:13px 20px;font-weight:700;font-size:.9rem;text-decoration:none;transition:filter .2s var(--ease-out)}
+  .cta:hover{filter:brightness(1.08)}
+  .cta.ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+  .cta.ghost:hover{border-color:var(--ember-dim)}
+  @media(max-width:620px){.franchise-cards{grid-template-columns:1fr}}
   @media(max-width:520px){header{padding-top:38px}}
 </style>
 </head>
@@ -73,16 +104,31 @@
           <p>Exploration des cabines sur plan extérieur : statut, disponibilité et réservation directe.</p>
           <div class="meta"><span class="who">Sans compte</span></div><div class="go">→</div>
         </a>
-        <a class="card" href="/franchise.html" style="animation:fadeSlideUp .4s var(--ease-out) .1s both">
-          <div class="ico">🤝</div><b>Franchise Afrique</b>
-          <p>Contrat de franchise par territoire : s'inscrire comme partenaire, déployer et exploiter des cabines en Afrique.</p>
-          <div class="meta"><span class="who">Candidat</span></div><div class="go">→</div>
+      </div>
+    </div>
+
+    <div class="franchise" id="franchise" style="animation:fadeSlideUp .4s var(--ease-out) .1s both">
+      <div class="franchise-head">
+        <div class="eyebrow2">Développement international — Afrique &amp; Europe</div>
+        <h2>Devenez <em>franchise</em></h2>
+        <p>Territoire exclusif, plateforme IoT, production locale et contrat avec fabrication après financement. Choisissez votre zone :</p>
+      </div>
+      <div class="franchise-cards">
+        <a class="fcard" href="/franchise.html">
+          <div class="flag">🌍</div><b>Franchise Afrique</b>
+          <p>Déploiement par pays ou zone urbaine prioritaire : marque, réseau IoT, production et services, contrat signé après financement.</p>
+          <span class="fgo">Explorer</span>
         </a>
-        <a class="card" href="/franchise-europe.html" style="animation:fadeSlideUp .4s var(--ease-out) .15s both">
-          <div class="ico">🇪🇺</div><b>Franchise Europe</b>
-          <p>Contrat de franchise par pays ou région : s'inscrire comme partenaire, déployer et exploiter des cabines en Europe.</p>
-          <div class="meta"><span class="who">Candidat</span></div><div class="go">→</div>
+        <a class="fcard" href="/franchise-europe.html">
+          <div class="flag">🇪🇺</div><b>Franchise Europe</b>
+          <p>Pays, régions et métropoles : RGPD, TVA intracommunautaire, royalties 10–15 %, engagement de 5 ans, fabrication après financement.</p>
+          <span class="fgo">Explorer</span>
         </a>
+      </div>
+      <div class="franchise-foot">
+        <a class="cta" href="/partner.html?mode=register">S'inscrire comme partenaire</a>
+        <a class="cta ghost" href="/contrat-franchise.html">📄 Contrat type</a>
+        <a class="cta ghost" href="/contrat-location.html">🔑 Location cabine</a>
       </div>
     </div>
 
