@@ -56,7 +56,7 @@
   .franchise-head h2{font-family:var(--font-display);font-weight:600;font-size:clamp(1.5rem,3.5vw,2.2rem);line-height:1.1}
   .franchise-head h2 em{color:var(--ember);font-style:normal}
   .franchise-head p{color:var(--muted);font-size:.9rem;margin-top:12px;max-width:580px;margin-left:auto;margin-right:auto;line-height:1.6}
-  .franchise-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .franchise-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
   .fcard{
     position:relative;display:flex;flex-direction:column;gap:9px;
     text-decoration:none;color:var(--text);background:var(--surface-2);
@@ -109,7 +109,7 @@
 
     <div class="franchise" id="franchise" style="animation:fadeSlideUp .4s var(--ease-out) .1s both">
       <div class="franchise-head">
-        <div class="eyebrow2">Développement international — Afrique &amp; Europe</div>
+        <div class="eyebrow2">Développement international — Afrique · Europe · Amérique</div>
         <h2>Devenez <em>franchise</em></h2>
         <p>Territoire exclusif, plateforme IoT, production locale et contrat avec fabrication après financement. Choisissez votre zone :</p>
       </div>
@@ -122,6 +122,11 @@
         <a class="fcard" href="/franchise-europe.html">
           <div class="flag">🇪🇺</div><b>Franchise Europe</b>
           <p>Pays, régions et métropoles : RGPD, TVA intracommunautaire, royalties 10–15 %, engagement de 5 ans, fabrication après financement.</p>
+          <span class="fgo">Explorer</span>
+        </a>
+        <a class="fcard" href="/franchise-america.html">
+          <div class="flag">🌎</div><b>Franchise Amérique</b>
+          <p>États-Unis, Canada, Mexique, Amérique latine et Caraïbes : accompagnement réglementaire local, paiement en USD, fabrication après financement.</p>
           <span class="fgo">Explorer</span>
         </a>
       </div>

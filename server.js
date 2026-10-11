@@ -63,7 +63,7 @@ app.use((req, res, next) => {
 });
 
 // URLs propres : /map → /map.html, /book → /book.html, etc.
-const CLEAN_URLS = ['/map', '/book', '/bim', '/editor', '/viewer', '/demo', '/kiosk', '/install', '/logistics', '/maintenance', '/partner', '/plan', '/usine', '/workforce', '/franchise', '/franchise-europe', '/contrat-franchise', '/contrat-location'];
+const CLEAN_URLS = ['/map', '/book', '/bim', '/editor', '/viewer', '/demo', '/kiosk', '/install', '/logistics', '/maintenance', '/partner', '/plan', '/usine', '/workforce', '/franchise', '/franchise-europe', '/franchise-america', '/contrat-franchise', '/contrat-location'];
 app.use((req, res, next) => {
   if (CLEAN_URLS.includes(req.path)) {
     return res.sendFile(path.join(__dirname, 'public', req.path.slice(1) + '.html'));
