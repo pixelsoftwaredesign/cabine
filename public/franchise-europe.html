@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#10161a">
+<meta name="author" content="pixelsoftwaredesign">
+<!-- © pixelsoftwaredesign 2026 -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Franchise — Cabines Intelligentes en Europe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<script src="/animations.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--ambient),var(--bg);color:var(--text);font-family:var(--font-ui);
+    min-height:100vh;background-attachment:fixed;
+  }
+  header{max-width:1080px;margin:0 auto;padding:64px 22px 14px;text-align:center}
+  header .eyebrow{font-size:.78rem;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:14px}
+  header h1{font-family:var(--font-display);font-weight:600;font-size:clamp(1.9rem,5vw,3rem);line-height:1.06}
+  header h1 span{color:var(--ember)}
+  header .tag{color:var(--muted);max-width:640px;margin:16px auto 0;line-height:1.55;font-size:1rem}
+  main{max-width:1080px;margin:0 auto;padding:20px 22px 60px;display:grid;gap:34px}
+  .role-title{font-size:.78rem;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:14px;font-weight:600}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;text-decoration:none;color:var(--text);display:block;transition:transform .25s var(--ease-out),border-color .25s var(--ease-out)}
+  .card:hover{transform:translateY(-3px);border-color:var(--ember-dim)}
+  .card .ico{font-size:1.5rem;margin-bottom:10px}
+  .card b{font-family:var(--font-display);font-weight:600;font-size:1.06rem;display:block;margin-bottom:6px}
+  .card p{color:var(--muted);font-size:.88rem;line-height:1.5}
+  .card .money{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);font-size:.82rem}
+  .card .money .v{color:var(--pine);font-weight:700;font-variant-numeric:tabular-nums}
+  .step{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start}
+  .step .n{font-family:var(--font-display);color:var(--ember);font-size:1.5rem;line-height:1;padding-top:2px;min-width:40px}
+  .step .t{font-family:var(--font-display);font-weight:600;margin-bottom:4px}
+  .step p{color:var(--muted);font-size:.9rem;line-height:1.5}
+  ul.check{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:.9rem;line-height:1.45}
+  ul.check li::before{content:"✓";color:var(--pine);font-weight:700;flex:0 0 auto}
+  .cta{background:linear-gradient(135deg,var(--ember),var(--ember-dim));color:#10161a;border:none;border-radius:12px;padding:15px 22px;font-family:var(--font-ui);font-weight:700;font-size:.95rem;cursor:pointer;transition:filter .2s var(--ease-out)}
+  .cta:hover{filter:brightness(1.08)}
+  .cta.secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
+  .cta.secondary:hover{border-color:var(--ember-dim)}
+  .banner{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:18px}
+  .banner small{color:var(--muted);font-size:.78rem;letter-spacing:1px;text-transform:uppercase}
+  .banner .big{font-family:var(--font-display);font-size:clamp(1.4rem,3vw,2rem);line-height:1.15}
+  .banner .big em{color:var(--ember);font-style:normal}
+  .row-actions{display:flex;gap:12px;flex-wrap:wrap}
+  .foot{text-align:center;color:var(--muted);font-size:.72rem;letter-spacing:.4px;opacity:.75;padding:22px 8px calc(10px + env(safe-area-inset-bottom))}
+  .foot .site-links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+  .foot .site-links a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent;transition:color .2s var(--ease-out),border-color .2s var(--ease-out)}
+  .foot .site-links a:hover{color:var(--ember);border-bottom-color:var(--ember-dim)}
+  .foot .site-links a:focus-visible{outline:2px solid var(--ember);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Cabines Intelligentes</div>
+  <h1>Contrat de franchise <span>Europe</span></h1>
+  <p class="tag">Devenez franchise de la plateforme de cabines intelligentes en Europe : marque, plateforme IoT, réseau de production et services, territoire exclusif. Le candidat s'inscrit comme partenaire sur la plateforme avant la signature du contrat.</p>
+</header>
+
+<main>
+
+  <section>
+    <div class="role-title">Ce que couvre un contrat de franchise</div>
+    <div class="grid">
+      <a class="card" href="/map.html" style="animation:fadeSlideUp .4s var(--ease-out) both">
+        <div class="ico">🗺️</div><b>Territoire exclusif</b>
+        <p>Exclusivité par pays, région ou métropole (France, Allemagne, Belgique, Suisse, Luxembourg, Italie, Espagne, Portugal, Pays-Bas…), avec plan de développement validé.</p>
+        <div class="money"><span>Extension</span><span class="v">Par zone</span></div>
+      </a>
+      <div class="card" style="animation:fadeSlideUp .4s var(--ease-out) .05s both">
+        <div class="ico">🏭</div><b>Chaîne de production</b>
+        <p>Kits d'assemblage, outillage de banc QC, QR de traçabilité et process usine clé en main pour produire localement.</p>
+        <div class="money"><span>Essentials</span><span class="v">×10 cabines</span></div>
+      </div>
+      <div class="card" style="animation:fadeSlideUp .4s var(--ease-out) .1s both">
+        <div class="ico">📟</div><b>Logiciel &amp; IoT</b>
+        <p>Backend de réservation, kiosque cabine, MQTT, supervision et mises à jour OTA hébergés en Europe et entretenus par la plateforme.</p>
+        <div class="money"><span>Licence</span><span class="v">Incluse</span></div>
+      </div>
+      <div class="card" style="animation:fadeSlideUp .4s var(--ease-out) .15s both">
+        <div class="ico">🤝</div><b>Conformité &amp; accompagnement</b>
+        <p>Conformité RGPD, TVA intracommunautaire et accompagnement réglementaire, formation et support technique des équipes.</p>
+        <div class="money"><span>Support</span><span class="v">24/7</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="role-title">Conditions du contrat</div>
+    <div class="grid">
+      <div class="card" style="animation:fadeSlideUp .4s var(--ease-out) both">
+        <b>Droit d'entrée</b>
+        <p>Frais unique d'ouverture du territoire, versés à la signature. Selon la taille du marché et du réseau cible.</p>
+        <div class="money"><span>Droit d'entrée</span><span class="v">Sur devis</span></div>
+      </div>
+      <div class="card" style="animation:fadeSlideUp .4s var(--ease-out) .05s both">
+        <b>Royalties</b>
+        <p>Redevance mensuelle sur le chiffre d'affaires généré par les cabines du réseau du franchise, plateforme incluse.</p>
+        <div class="money"><span>Royalties</span><span class="v">10–15 %</span></div>
+      </div>
+      <div class="card" style="animation:fadeSlideUp .4s var(--ease-out) .1s both">
+        <b>Engagement</b>
+        <p>Objectifs de déploiement par paliers, volume minimum de cabines et qualité de service contractuels.</p>
+        <div class="money"><span>Durée</span><span class="v">5 ans</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="role-title">Processus de signature</div>
+    <div style="display:grid;gap:16px">
+      <div class="step" style="animation:fadeSlideUp .4s var(--ease-out) both">
+        <div class="n">01</div>
+        <div><div class="t">Inscription comme partenaire</div><p>Le candidat crée son compte sur la plateforme avec le rôle partenaire, depuis le portail partenaire.</p></div>
+      </div>
+      <div class="step" style="animation:fadeSlideUp .4s var(--ease-out) .06s both">
+        <div class="n">02</div>
+        <div><div class="t">Demande de territoire</div><p>Le partenaire dépose sa demande de franchise pour un pays, une région ou une métropole en Europe.</p></div>
+      </div>
+      <div class="step" style="animation:fadeSlideUp .4s var(--ease-out) .12s both">
+        <div class="n">03</div>
+        <div><div class="t">Étude de dossier</div><p>Étude marché, plan d'affaires prévisionnel et capacité d'investissement du candidat.</p></div>
+      </div>
+      <div class="step" style="animation:fadeSlideUp .4s var(--ease-out) .18s both">
+        <div class="n">04</div>
+        <div><div class="t">Signature du contrat</div><p>Contrat de franchise, annexes territoire, conformité RGPD et première commande de kits validées ensemble.</p></div>
+      </div>
+      <div class="step" style="animation:fadeSlideUp .4s var(--ease-out) .24s both">
+        <div class="n">05</div>
+        <div><div class="t">Lancement du réseau</div><p>Livraison des cabines, formation des équipes et mise en production du réseau sur votre territoire.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="role-title">Ce que le franchise reçoit</div>
+    <ul class="check">
+      <li>Licence de marque Cabines Intelligentes</li>
+      <li>Accès au portail partenaire et au kiosque</li>
+      <li>Backend de réservation + MQTT + supervision</li>
+      <li>Kits d'assemblage et chaîne de production</li>
+      <li>Formation initiale et continue des équipes</li>
+      <li>Support technique et updates OTA</li>
+      <li>Conformité RGPD &amp; TVA intracommunautaire</li>
+      <li>Système de paiement &amp; caisse intégré</li>
+    </ul>
+  </section>
+
+  <section class="banner" style="animation:fadeSlideUp .4s var(--ease-out) both">
+    <div>
+      <small>Développement international</small>
+      <div class="big">Devenez franchise sur un <em>territoire européen</em> et ouvrez le premier réseau local de cabines intelligentes.</div>
+    </div>
+    <div class="row-actions">
+      <a class="cta" href="/partner.html?mode=register">S'inscrire comme partenaire</a>
+      <a class="cta secondary" href="/partner.html">Se connecter au portail</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div>&copy; pixelsoftwaredesign 2026 &mdash; Franchise Europe</div>
+  <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
+</footer>
+
+</body>
+</html>
