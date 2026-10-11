@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#10161a">
 <meta name="author" content="pixelsoftwaredesign">
 <!-- © pixelsoftwaredesign 2026 -->
-<title>Cabine Intelligente</title>
+<title>Atlas Cabine — Kiosque</title>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/biometrics.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -138,6 +138,16 @@
     display: none;
   }
   .toast.show { display: block; }
+  .lock-hint { text-align: center; color: var(--muted); font-size: .9rem; margin-bottom: 12px; }
+  .open-screen { text-align: center; padding-top: 6vh; }
+  .open-icon { font-size: 5.2rem; display: block; animation: doorOpen .9s var(--ease-out) both; }
+  .open-title { font-family: var(--font-display); font-size: 2rem; margin: 14px 0 6px; }
+  .open-sub { color: var(--muted); font-size: .95rem; }
+  @keyframes doorOpen {
+    0% { transform: scale(.4) rotate(-14deg); opacity: 0; }
+    60% { transform: scale(1.15) rotate(4deg); }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
 </style>
 </head>
 <body>
@@ -149,6 +159,7 @@
   </div>
   <div class="status-chip" id="cabinState">Cabine : vérification...</div>
   <div class="card">
+    <p class="lock-hint">🔓 Entrez votre code de réservation pour ouvrir la cabine</p>
     <div class="pin-display" id="pinDisplay"></div>
     <div class="keypad" id="keypad"></div>
     <p class="status-msg" id="pinMsg" style="margin-top:12px"></p>
@@ -160,6 +171,12 @@
       <button class="btn" id="bioFinger">🫆 Empreinte digitale</button>
     </div>
   </div>
+</div>
+
+<div id="openScreen" class="screen hidden open-screen">
+  <span class="open-icon">🔓</span>
+  <div class="open-title">Cabine ouverte</div>
+  <div class="open-sub">La porte est déverrouillée — bienvenue</div>
 </div>
 
 <div id="dashScreen" class="screen hidden">
@@ -178,6 +195,7 @@
         <div class="ring-time" id="countdown">--:--</div>
         <div class="session-line"><span>Cliente :</span><b id="guestName">invité</b></div>
         <div class="session-line"><span>Fin :</span><b id="endTimeTxt">--:--</b></div>
+        <div class="session-line"><span>Porte :</span><b id="doorState">Ouverte</b></div>
       </div>
     </div>
   </div>
@@ -305,6 +323,7 @@
   let session = null;
   let pin = '';
   let countdownTimer = null;
+  let unlockTimer = null;
   let recognition = null;
   const deviceStates = {};
 
@@ -400,16 +419,31 @@
     }
   }
 
+  // ---------- Ouverture (code ou biométrie) ----------
+  function showUnlocked(reservation) {
+    pin = '';
+    clearTimeout(unlockTimer);
+    byId('lockScreen').classList.add('hidden');
+    byId('openScreen').classList.remove('hidden');
+    unlockTimer = setTimeout(() => {
+      byId('openScreen').classList.add('hidden');
+      openSession(reservation);
+    }, 2600);
+  }
+
   // ---------- Session ----------
   function openSession(reservation) {
     session = reservation;
     pin = '';
+    clearTimeout(unlockTimer);
+    byId('openScreen').classList.add('hidden');
     byId('lockScreen').classList.add('hidden');
     byId('dashScreen').classList.remove('hidden');
     byId('dashScreen').classList.add('view-enter');
     const welcomeCard = byId('dashScreen').querySelector('.card');
     if (welcomeCard) welcomeCard.classList.add('glow-wash');
     byId('guestName').textContent = reservation.clientName || 'invité';
+    byId('doorState').textContent = 'Ouverte';
     const endTxt = new Date(reservation.endTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
     byId('endTimeTxt').textContent = endTxt;
     startCountdown(reservation.startTime ? new Date(reservation.startTime) : null, new Date(reservation.endTime));
@@ -437,8 +471,11 @@
 
   function endSession() {
     clearInterval(countdownTimer);
+    clearTimeout(unlockTimer);
     byId('dashScreen').classList.add('hidden');
+    byId('openScreen').classList.add('hidden');
     byId('lockScreen').classList.remove('hidden');
+    byId('doorState').textContent = 'Verrouillée';
     session = null;
     speak('Votre créneau est terminé');
   }
@@ -512,6 +549,9 @@
       const state = deviceStates[device] === 'ON' ? 'OFF' : 'ON';
       deviceStates[device] = state;
       byId(id).classList.toggle('on', state === 'ON');
+      if (device === 'lock' && byId('doorState')) {
+        byId('doorState').textContent = state === 'ON' ? 'Ouverte' : 'Verrouillée';
+      }
       if (state === 'ON') {
         byId(id).classList.remove('glow-wash');
         void byId(id).offsetWidth;
@@ -536,7 +576,7 @@
   // ---------- Biométrie (visage / empreinte) ----------
   function handleBioResult(json, kindMsg) {
     if (json && json.success) {
-      if (json.reservation) { openSession(json.reservation); speak(kindMsg + ' reconnu, bienvenue'); return true; }
+      if (json.reservation) { showUnlocked(json.reservation); speak(kindMsg + ' reconnu, la cabine s\'ouvre'); return true; }
     }
     return false;
   }
@@ -582,6 +622,13 @@
       if (d.presence !== undefined) {
         byId('presence').textContent = d.presence ? 'Détectée' : 'Absente';
         if (window.CabinMotion) CabinMotion.pulseData(byId('presence'));
+      }
+      const lockVal = d.lock !== undefined ? d.lock : d.lockStatus;
+      if (lockVal !== undefined) {
+        const open = String(lockVal).toUpperCase() === 'UNLOCKED' || String(lockVal).toUpperCase() === 'OPEN' || lockVal === true || lockVal === 'ON';
+        if (byId('doorState')) byId('doorState').textContent = open ? 'Ouverte' : 'Verrouillée';
+        const lb = byId('btnLock');
+        if (lb) lb.classList.toggle('on', open);
       }
     });
 
@@ -745,7 +792,7 @@
   }
 })();
 </script>
-<footer class="app-footer">&copy; pixelsoftwaredesign 2026 &mdash; Cabine Intelligente
+<footer class="app-footer">&copy; pixelsoftwaredesign 2026 &mdash; Atlas Cabine
   <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
 </footer>
 </body>
