@@ -47,6 +47,10 @@
   .badge.warn{ background:#451a03; color:var(--warn); }
   .badge.red{ background:#7f1d1d; color:var(--danger); }
   .badge.blue{ background:#0c4a6e; color:var(--accent); }
+  .badge.off{ background:#27272a; color:var(--muted); }
+  .chips{ display:flex; gap:8px; margin:10px 0 14px; overflow-x:auto; }
+  .chip{ background:var(--card2); border:1px solid var(--border); color:var(--muted); padding:7px 13px; border-radius:99px; font-size:.82rem; cursor:pointer; white-space:nowrap; }
+  .chip.active{ background:linear-gradient(155deg, var(--ember), var(--ember-dim)); color:#241202; font-weight:600; border-color:transparent; }
   .btn {
     display:block; width:100%; border:none; border-radius:14px; padding:14px; font-size:1rem;
     font-weight:600; background:linear-gradient(155deg, var(--ember), var(--ember-dim)); box-shadow:0 4px 16px rgba(242,166,90,.28); color:#241202; cursor:pointer; margin-top:8px;
@@ -148,9 +152,22 @@
           <p class="meta" id="stripeStatus">Vérification du compte de paiement...</p>
           <button class="btn ghost" id="btnOnboard">Configurer les paiements (Stripe)</button>
         </div>
+        <div class="card"><h2>Réseau — mode location &amp; connectivité</h2>
+          <div class="row">
+            <div class="kpi"><b id="kLoc">--</b><span>En location</span></div>
+            <div class="kpi"><b id="kConn">--</b><span>Connectées</span></div>
+            <div class="kpi"><b id="kOff">--</b><span>Hors ligne</span></div>
+          </div>
+          <p class="meta" style="margin-top:10px">Cabines publiées en mode location (réservation à la séance) et cabines connectées au réseau IoT. Répartition par séance : 65 % exploitant · 15 % app · 12 % Atlas Cabine · 8 % pixelsoftwaredesign.</p>
+        </div>
       </div>
       <div id="tabCabins" class="hidden">
         <button class="btn" id="btnAddCabin">+ Associer une cabine (numéro de série)</button>
+        <div class="chips" id="cabinFilters">
+          <button class="chip active" data-f="all">Toutes</button>
+          <button class="chip" data-f="rental">💼 En location</button>
+          <button class="chip" data-f="online">📡 Connectées</button>
+        </div>
         <div id="cabinList" class="stagger-in"></div>
       </div>
       <div id="tabBookings" class="hidden"><div id="bookingList" class="stagger-in"></div></div>
@@ -202,6 +219,8 @@
   let selectedCabinTab = 'overview';
   let roomCatalog = [];
   let addSelectedRooms = new Set();
+  let cabinsCache = null;
+  let cabinFilter = 'all';
 
   async function loadRoomCatalog() {
     if (roomCatalog.length) return roomCatalog;
@@ -358,19 +377,30 @@
   }
   document.querySelectorAll('#homeTabs .tab').forEach((b) => b.onclick = () => switchHomeTab(b.dataset.v));
 
+  document.querySelectorAll('#cabinFilters .chip').forEach((b) => b.onclick = () => {
+    cabinFilter = b.dataset.f;
+    document.querySelectorAll('#cabinFilters .chip').forEach((x) => x.classList.toggle('active', x === b));
+    renderCabins();
+  });
+
   async function renderHome() {
     if (selectedCabinTab !== 'overview') switchHomeTab('overview');
     try {
-      const [fin, occ] = await Promise.all([
+      const [fin, occ, nets] = await Promise.all([
         api('/api/partner/dashboard/finances'),
-        api('/api/partner/dashboard/occupancy')
+        api('/api/partner/dashboard/occupancy'),
+        api('/api/partner/cabins')
       ]);
+      cabinsCache = nets.cabins;
       countUp($('kGross'), fin.finance.gross, { format: fmt });
       countUp($('kNet'), fin.finance.net, { format: fmt });
       countUp($('kBook'), fin.finance.bookings, { format: (n) => Math.round(n) });
       countUp($('kOcc'), occ.occupancy.rate, { format: (n) => Math.round(n) + '%' });
       countUp($('kCabins'), occ.occupancy.totalCabins, { format: (n) => Math.round(n) });
       countUp($('kHours'), occ.occupancy.hoursBooked, { format: (n) => Math.round(n) });
+      countUp($('kLoc'), nets.cabins.filter((c) => c.operatingMode === 'HOST_RENTAL').length, { format: (n) => Math.round(n) });
+      countUp($('kConn'), nets.cabins.filter((c) => c.connected).length, { format: (n) => Math.round(n) });
+      countUp($('kOff'), nets.cabins.filter((c) => !c.connected).length, { format: (n) => Math.round(n) });
       $('stripeStatus').textContent = fin.finance.cabinCount === undefined ? '' : '';
     } catch (e) {}
     try {
@@ -422,20 +452,28 @@
     const wrap = $('cabinList');
     wrap.innerHTML = skeletonRows(3, 84);
     try {
-      const json = await api('/api/partner/cabins');
+      if (!cabinsCache) { const json = await api('/api/partner/cabins'); cabinsCache = json.cabins; }
       wrap.innerHTML = '';
-      if (!json.cabins.length) { wrap.innerHTML = '<p class="muted">Aucune cabine. Passez en mode "Boutique" pour en acheter une.</p>'; return; }
-      for (const c of json.cabins) {
+      let list = cabinsCache;
+      if (cabinFilter === 'rental') list = list.filter((c) => c.operatingMode === 'HOST_RENTAL');
+      if (cabinFilter === 'online') list = list.filter((c) => c.connected);
+      if (!list.length) {
+        wrap.innerHTML = '<p class="muted">' + (cabinFilter === 'all' ? 'Aucune cabine. Passez en mode "Boutique" pour en acheter une.' : 'Aucune cabine ne correspond à ce filtre.') + '</p>';
+        return;
+      }
+      for (const c of list) {
         const el = document.createElement('div');
         el.className = 'card cabin clickable';
         const statusBadge = statusOf(c.status);
+        const modeBadge = c.operatingMode === 'HOST_RENTAL' ? '<span class="badge blue">💼 Mode location</span>' : '<span class="badge">Mode personnel</span>';
+        const connBadge = c.connected ? '<span class="badge ok">● Connectée</span>' : '<span class="badge off">○ Hors ligne</span>';
         el.innerHTML = `
           <div class="cabin">
             <div class="dot">🏠</div>
             <div class="info">
               <b>${c.name}</b>
               <small>${c.serialNumber} · <span class="badge ${statusBadge.cls}">${statusBadge.txt}</span></small>
-              <small>${c.operatingMode === 'PERSONAL' ? 'Mode personnel' : 'Mode location'} · ${fmt(c.rentalSettings.pricePerHour)}/h</small>
+              <small>${modeBadge} ${connBadge} · ${fmt(c.rentalSettings.pricePerHour)}/h</small>
             </div>
           </div>`;
         el.onclick = () => openCabin(c._id);
@@ -511,7 +549,7 @@
       wrap.innerHTML = `
         <div class="card">
           <h2>${c.name}</h2>
-          <p class="meta">${c.serialNumber} · <span class="badge ${st.cls}">${st.txt}</span></p>
+          <p class="meta">${c.serialNumber} · <span class="badge ${st.cls}">${st.txt}</span> · <span class="badge ${c.connected ? 'ok' : 'off'}">${c.connected ? '● Connectée' : '○ Hors ligne'}</span></p>
           <div class="room-tags" style="margin-top:8px">${roomTags(c.rooms)}</div>
           <div class="toggle-row" style="margin-top:8px">
             <div><b>Mode Location</b><div class="meta">Publier la cabine sur la plateforme de réservation</div></div>
@@ -561,7 +599,7 @@
         const becoming = isPersonal ? 'HOST_RENTAL' : 'PERSONAL';
         if (c.status === 'OCCUPIED_BY_GUEST') { toast('Cabine occupée : changement impossible'); $('modeToggle').checked = isPersonal; return; }
         api('/api/partner/cabins/' + id + '/mode', { method: 'PATCH', body: JSON.stringify({ targetMode: becoming }) })
-          .then((r) => { toast(r.message); renderCabin(id); })
+          .then((r) => { toast(r.message); cabinsCache = null; renderCabin(id); })
           .catch((e) => { toast(e.message); $('modeToggle').checked = isPersonal; });
       };
 
@@ -570,6 +608,7 @@
         try {
           await api('/api/partner/cabins/' + id + '/mode', { method: 'PATCH', body: JSON.stringify({ targetMode: 'HOST_RENTAL', pricePerHour: Number($('priceInput').value), isListed: $('listedToggle').checked }) });
           toast('Paramètres enregistrés');
+          cabinsCache = null;
           renderCabin(id);
         } catch (e) { toast(e.message); }
       };

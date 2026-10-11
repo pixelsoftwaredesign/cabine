@@ -39,6 +39,11 @@
   .step .n{font-family:var(--font-display);color:var(--ember);font-size:1.5rem;line-height:1;padding-top:2px;min-width:40px}
   .step .t{font-family:var(--font-display);font-weight:600;margin-bottom:4px}
   .step p{color:var(--muted);font-size:.9rem;line-height:1.5}
+  .split-bar{display:flex;height:14px;border-radius:99px;overflow:hidden;margin:10px 0 14px}
+  .split-legend{display:grid;gap:2px}
+  .split-row{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;padding:7px 0;border-bottom:1px solid var(--border)}
+  .split-row:last-child{border-bottom:none}
+  .split-row b{color:var(--accent);font-family:var(--font-display);font-size:1rem}
   ul.check{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
   ul.check li{display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:.9rem;line-height:1.45}
   ul.check li::before{content:"✓";color:var(--pine);font-weight:700;flex:0 0 auto}
@@ -122,6 +127,30 @@
   </section>
 
   <section>
+    <div class="role-title">Répartition des revenus — mode location</div>
+    <div class="card">
+      <b>Par séance louée sur la plateforme de réservation</b>
+      <div class="split-bar">
+        <i style="width:65%;background:linear-gradient(155deg,var(--ember),var(--ember-dim))"></i>
+        <i style="width:15%;background:var(--accent)"></i>
+        <i style="width:12%;background:var(--pine)"></i>
+        <i style="width:8%;background:var(--surface-2)"></i>
+      </div>
+      <div class="split-legend">
+        <div class="split-row"><span>🏠 Partenaire de franchise — exploitant local</span><b>65 %</b></div>
+        <div class="split-row"><span>📱 App my cabine — réservation, paiement, IoT</span><b>15 %</b></div>
+        <div class="split-row"><span>🌍 Atlas Cabine (Atlas Working) — royalties marque</span><b>12 %</b></div>
+        <div class="split-row"><span>⚙️ pixelsoftwaredesign — partenaire technologique</span><b>8 %</b></div>
+      </div>
+      <p style="color:var(--muted);font-size:.82rem;margin-top:12px;line-height:1.5">Total 100 % · royalties Atlas Cabine dans la fourchette contractuelle 10–15 % · frais de plateforme 15 %.</p>
+      <div class="row-actions" style="margin-top:14px">
+        <a class="cta secondary" href="/contrat-franchise.html">📄 Contrat de franchise</a>
+        <a class="cta secondary" href="/contrat-location.html">🔑 Location avec engagement</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
     <div class="role-title">Processus de signature</div>
     <div style="display:grid;gap:16px">
       <div class="step" style="animation:fadeSlideUp .4s var(--ease-out) both">
@@ -144,6 +173,10 @@
         <div class="n">05</div>
         <div><div class="t">Lancement du réseau</div><p>Livraison des cabines, formation des équipes et mise en production du réseau sur votre territoire.</p></div>
       </div>
+      <div class="step" style="animation:fadeSlideUp .4s var(--ease-out) .3s both">
+        <div class="n">06</div>
+        <div><div class="t">Mode location</div><p>Vos cabines passent en mode location sur la plateforme de réservation : tarif à l'heure, sessions autonomes, code d'accès pour ouvrir la cabine et revenus suivis en temps réel. Option : contrat de location avec engagement 12/24/36 mois.</p></div>
+      </div>
     </div>
   </section>
 
@@ -156,6 +189,7 @@
       <li>Kits d'assemblage et chaîne de production</li>
       <li>Formation initiale et continue des équipes</li>
       <li>Support technique et updates OTA</li>
+      <li>Mode location : publication des cabines sur la plateforme de réservation — tarif à l'heure, séances autonomes, code d'accès et paiement intégré</li>
       <li>Accompagnement réglementaire local</li>
       <li>Système de paiement &amp; caisse intégré</li>
     </ul>
@@ -171,6 +205,7 @@
       <a class="cta" href="/partner.html?mode=register">S'inscrire comme partenaire</a>
       <a class="cta secondary" href="/partner.html">Se connecter au portail</a>
       <a class="cta secondary" href="/contrat-franchise.html">📄 Contrat type</a>
+      <a class="cta secondary" href="/contrat-location.html">🔑 Location cabine</a>
     </div>
   </section>
 

@@ -6,6 +6,16 @@ const { resolveRooms } = require('../config/rooms');
 
 const router = express.Router();
 
+const CONNECTED_WINDOW_MS = 3 * 60 * 1000; // 3 minutes sans télémétrie = hors ligne
+
+const withConnected = (c) => {
+  const obj = c && typeof c.toObject === 'function' ? c.toObject() : c;
+  if (!obj) return obj;
+  const last = obj.telemetry && obj.telemetry.lastUpdate ? new Date(obj.telemetry.lastUpdate).getTime() : 0;
+  obj.connected = last > 0 && Date.now() - last < CONNECTED_WINDOW_MS;
+  return obj;
+};
+
 router.post('/cabins', authMiddleware, requireRole('PARTNER', 'ADMIN'), async (req, res) => {
   try {
     const { serialNumber, name, address, pricePerHour, location, pricing, rooms } = req.body;
@@ -59,7 +69,7 @@ router.post('/cabins', authMiddleware, requireRole('PARTNER', 'ADMIN'), async (r
 router.get('/cabins', authMiddleware, requireRole('PARTNER', 'ADMIN'), async (req, res) => {
   try {
     const cabins = await Cabin.find({ ownerId: req.user._id });
-    return res.json({ success: true, cabins });
+    return res.json({ success: true, cabins: cabins.map(withConnected) });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
@@ -74,7 +84,7 @@ router.get('/cabins/:cabinId', authMiddleware, async (req, res) => {
       return res.status(403).json({ success: false, message: 'Accès refusé' });
     }
 
-    return res.json({ success: true, cabin });
+    return res.json({ success: true, cabin: withConnected(cabin) });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
