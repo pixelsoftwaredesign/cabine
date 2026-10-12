@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#10161a">
 <meta name="author" content="pixelsoftwaredesign">
 <!-- © pixelsoftwaredesign 2026 -->
-<title>Installation — Atlas Cabine</title>
+<title data-i18n="install.titleTag">Installation — Atlas Cabine</title>
 <script src="/socket.io/socket.io.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -57,34 +57,34 @@
 </style>
 </head>
 <body>
-<header><h1>🗺️ Installation & <span>Mise en service</span></h1><div class="sub">Technicien terrain · de la sortie d’usine à la livraison opérationnelle</div></header>
+<header><h1 data-i18n-html="install.title">🗺️ Installation & <span>Mise en service</span></h1><div class="sub" data-i18n="install.subtitle">Technicien terrain · de la sortie d’usine à la livraison opérationnelle</div><div data-i18n-switcher style="display:flex;justify-content:center;margin-top:10px"></div></header>
 
 <main>
   <div id="authCard" class="card">
-    <h2>Connexion technicien</h2>
-    <label>Email</label><input class="input" id="email" type="email" placeholder="technicien@exemple.com">
-    <label>Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
-    <button class="btn" id="loginBtn">Se connecter</button>
+    <h2 data-i18n="install.authTitle">Connexion technicien</h2>
+    <label data-i18n="install.email">Email</label><input class="input" id="email" type="email" placeholder="technicien@exemple.com">
+    <label data-i18n="install.password">Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
+    <button class="btn" id="loginBtn" data-i18n="install.login">Se connecter</button>
   </div>
 
   <div id="appView" class="hidden">
     <div class="steps" id="steps">
-      <div class="step active" data-s="1"><span class="num">1</span> Scan</div>
-      <div class="step" data-s="2"><span class="num">2</span> Tests</div>
-      <div class="step" data-s="3"><span class="num">3</span> Recette</div>
+      <div class="step active" data-s="1"><span class="num">1</span> <span data-i18n="install.step.scan">Scan</span></div>
+      <div class="step" data-s="2"><span class="num">2</span> <span data-i18n="install.step.tests">Tests</span></div>
+      <div class="step" data-s="3"><span class="num">3</span> <span data-i18n="install.step.recette">Recette</span></div>
     </div>
 
     <!-- STEP 1 : scan -->
     <div id="step1">
       <div class="card">
-        <h2>📷 Prendre en charge la cabine</h2>
-        <p class="meta">Scannez le QR Code usine collé dans l’armoire électrique ou saisissez le numéro de série.</p>
-        <label>Numéro de série</label>
+        <h2 data-i18n="install.take.title">📷 Prendre en charge la cabine</h2>
+        <p class="meta" data-i18n="install.take.desc">Scannez le QR Code usine collé dans l’armoire électrique ou saisissez le numéro de série.</p>
+        <label data-i18n="install.take.serial">Numéro de série</label>
         <input class="input" id="serial" placeholder="CAB-2026-TN-0089">
-        <label>Code QR usine (token — optionnel)</label>
-        <input class="input" id="token" placeholder="Code d’appairage imprimé">
-        <button class="btn" id="loadBtn">Charger le profil</button>
-        <button class="btn ghost" id="scanBtn">📷 Ouvrir la caméra</button>
+        <label data-i18n="install.take.token">Code QR usine (token — optionnel)</label>
+        <input class="input" id="token" data-i18n-ph="install.take.tokenPh" placeholder="Code d’appairage imprimé">
+        <button class="btn" id="loadBtn" data-i18n="install.take.load">Charger le profil</button>
+        <button class="btn ghost" id="scanBtn" data-i18n="install.take.camera">📷 Ouvrir la caméra</button>
         <video id="video" class="hidden" style="width:100%;border-radius:12px;border:1px solid var(--border)" autoplay playsinline></video>
         <p class="meta hidden" id="scanStatus" style="margin-top:6px"></p>
       </div>
@@ -93,13 +93,13 @@
     <!-- STEP 2 : tests -->
     <div id="step2" class="hidden">
       <div class="card">
-        <h2 id="unitName">Cabine</h2>
+        <h2 id="unitName" data-i18n="install.unit.default">Cabine</h2>
         <p class="meta" id="unitMeta"></p>
         <div id="unitRooms" style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px"></div>
       </div>
       <div class="card">
-        <h2>🔌 Banc de test terrain</h2>
-        <p class="meta">Forcez chaque relais pour valider le câblage (serrure, lumière, capteurs).</p>
+        <h2 data-i18n="install.test.title">🔌 Banc de test terrain</h2>
+        <p class="meta" data-i18n="install.test.desc">Forcez chaque relais pour valider le câblage (serrure, lumière, capteurs).</p>
         <div id="testList"></div>
       </div>
     </div>
@@ -107,41 +107,46 @@
     <!-- STEP 3 : recette -->
     <div id="step3" class="hidden">
       <div class="card">
-        <h2>📍 Position GPS</h2>
-        <button class="btn ghost" id="gpsBtn">🛰️ Prendre la position actuelle</button>
-        <p class="meta" id="gpsInfo" style="margin-top:6px">Latitude / longitude vide.</p>
+        <h2 data-i18n="install.gps.title">📍 Position GPS</h2>
+        <button class="btn ghost" id="gpsBtn" data-i18n="install.gps.btn">🛰️ Prendre la position actuelle</button>
+        <p class="meta" id="gpsInfo" style="margin-top:6px" data-i18n="install.gps.empty">Latitude / longitude vide.</p>
       </div>
       <div class="card">
-        <h2>🧰 Check-list technique</h2>
-        <p class="meta">À cocher lors de la vérification câblage / raccordements.</p>
+        <h2 data-i18n="install.check.title">🧰 Check-list technique</h2>
+        <p class="meta" data-i18n="install.check.desc">À cocher lors de la vérification câblage / raccordements.</p>
         <div id="checklist"></div>
       </div>
       <div class="card">
-        <h2>📸 Illustrations obligatoires (3 photos)</h2>
+        <h2 data-i18n="install.photo.title">📸 Illustrations obligatoires (3 photos)</h2>
         <div class="photo-grid" id="photoGrid"></div>
       </div>
       <div class="card">
-        <h2>📝 Notes & PV</h2>
-        <label>Notes d’installation</label>
-        <textarea class="input" id="notes" rows="3" placeholder="Vérifié : 220V, terre, disjoncteur différentiel, serrure…"></textarea>
-        <label>Signature du technicien / client</label>
+        <h2 data-i18n="install.notes.title">📝 Notes & PV</h2>
+        <label data-i18n="install.notes.label">Notes d’installation</label>
+        <textarea class="input" id="notes" rows="3" data-i18n-ph="install.notes.ph" placeholder="Vérifié : 220V, terre, disjoncteur différentiel, serrure…"></textarea>
+        <label data-i18n="install.sign.label">Signature du technicien / client</label>
         <canvas id="sig" class="sig" width="520" height="160"></canvas>
-        <button class="btn ghost" id="sigClear" style="margin-top:0">Effacer la signature</button>
-        <button class="btn" id="submitBtn">✔ Valider la mise en service</button>
+        <button class="btn ghost" id="sigClear" style="margin-top:0" data-i18n="install.sign.clear">Effacer la signature</button>
+        <button class="btn" id="submitBtn" data-i18n="install.submit">✔ Valider la mise en service</button>
       </div>
     </div>
 
     <!-- SUCCESS -->
     <div id="doneView" class="card card-hero hidden" style="text-align:center">
       <div style="font-size:3rem;margin:8px 0">✅</div>
-      <h2>Cabine LIVRÉE & PRÊTE</h2>
+      <h2 data-i18n="install.done.title">Cabine LIVRÉE & PRÊTE</h2>
       <p class="meta" id="doneInfo"></p>
-      <button class="btn" id="newBtn">Nouvelle installation</button>
+      <button class="btn" id="newBtn" data-i18n="install.done.new">Nouvelle installation</button>
     </div>
   </div>
 </main>
 
 <div class="toast" id="toast"></div>
+
+<script src="/vendor/i18n/translations.js"></script>
+<script src="/vendor/i18n/i18n.js"></script>
+<script src="/vendor/i18n/pages/install.js"></script>
+<script>I18N.init();</script>
 
 <script>
 (function(){
@@ -154,17 +159,18 @@
   let gps=null;
   let stream=null;
   let tools=null;
-  let checkMeta=[]; let checked={};
-  const FB={IN_ASSEMBLY:{t:'Montage',c:'warn'},TESTED:{t:'Testée',c:'blue'},READY_FOR_SHIPPING:{t:'Prête envoi',c:'ok'},SHIPPED:{t:'Expédiée',c:'blue'},INSTALLED:{t:'Installée',c:'blue'},DELIVERED_AND_COMMISSIONED:{t:'Livrée & prête',c:'ok'}};
-  const LC={FACTORY_PURCHASED:['Achetée usine','warn'],READY_FOR_SHIPPING:['Prête envoi','blue'],IN_TRANSIT:['En transit','blue'],ASSEMBLY_IN_PROGRESS:['Assemblage','warn'],OPERATIONAL:['En service','ok'],DECOMPOSITION_REQUESTED:['Décomposition','red'],DECOMPOSED_IN_STORAGE:['Stockée','muted']};
+  let checkMeta=[]; let checked={}; let testedComps=new Set();
+  const T=(k,fb)=>(window.I18N&&window.I18N.t)?window.I18N.t(k):fb;
+  function fbOf(code){ const m={ IN_ASSEMBLY:['Montage','install.status.inAssembly','warn'], TESTED:['Testée','install.status.tested','blue'], READY_FOR_SHIPPING:['Prête envoi','install.status.readyShipping','ok'], SHIPPED:['Expédiée','install.status.shipped','blue'], INSTALLED:['Installée','install.status.installed','blue'], DELIVERED_AND_COMMISSIONED:['Livrée & prête','install.status.delivered','ok'] }; const e=m[code]; return e?{t:T(e[1],e[0]),c:e[2]}:{t:code,c:''}; }
+  function lcOf(code){ const m={ FACTORY_PURCHASED:['Achetée usine','install.lc.factoryPurchased','warn'], READY_FOR_SHIPPING:['Prête envoi','install.status.readyShipping','blue'], IN_TRANSIT:['En transit','install.lc.inTransit','blue'], ASSEMBLY_IN_PROGRESS:['Assemblage','install.lc.assembly','warn'], OPERATIONAL:['En service','install.lc.operational','ok'], DECOMPOSITION_REQUESTED:['Décomposition','install.lc.decomposition','red'], DECOMPOSED_IN_STORAGE:['Stockée','install.lc.stored','muted'] }; const e=m[code]; return e?[T(e[1],e[0]),e[2]]:[code||'—','muted']; }
   const auth=(h={})=>({'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{}),...h});
-  async function api(path,opts={}){const res=await fetch(API+path,{...opts,headers:auth(opts.headers)});const json=await res.json().catch(()=>({success:false,message:'Réponse invalide'}));if(!res.ok&&!json.success)throw new Error(json.message||('Erreur '+res.status));return json;}
+  async function api(path,opts={}){const res=await fetch(API+path,{...opts,headers:auth(opts.headers)});const json=await res.json().catch(()=>({success:false,message:T('install.err.invalidResponse','Réponse invalide')}));if(!res.ok&&!json.success)throw new Error(json.message||T('install.err.status','Erreur {n}').replace('{n}',res.status));return json;}
   function toast(m){ if(window.CabinMotion&&CabinMotion.toast) return CabinMotion.toast(m,{duration:3200}); const el=$('toast'); el.textContent=m; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3200); }
   function setStep(n){ document.querySelectorAll('.steps .step').forEach(s=>{const sn=+s.dataset.s;s.classList.toggle('active',sn===n);s.classList.toggle('done',sn<n);}); [1,2,3].forEach(i=>$('step'+i).classList.toggle('hidden',i!==n)); $('doneView').classList.add('hidden'); }
 
   $('loginBtn').onclick=async()=>{
     const email=$('email').value.trim(),password=$('password').value;
-    if(!email||!password) return toast('Email et mot de passe requis');
+    if(!email||!password) return toast(T('install.toast.emailPass','Email et mot de passe requis'));
     try{ const j=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email,password})}); token=j.token; localStorage.setItem('install_token',token); $('authCard').classList.add('hidden'); $('appView').classList.remove('hidden'); loadChecklist(); }catch(e){ toast(e.message); }
   };
 
@@ -173,7 +179,7 @@
     try{
       const ready=('BarcodeDetector' in window);
       $('scanStatus').classList.remove('hidden');
-      $('scanStatus').textContent=ready?'Caméra active — visez le QR code.':'Scan caméra non supporté — saisissez la série manuellement.';
+      $('scanStatus').textContent=ready?T('install.scan.active','Caméra active — visez le QR code.'):T('install.scan.unsupported','Scan caméra non supporté — saisissez la série manuellement.');
       $('video').classList.remove('hidden');
       stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
       $('video').srcObject=stream; await $('video').play();
@@ -187,14 +193,14 @@
               const tx=codes[0].rawValue;
               const m=tx.match(/serial=([^&]+)/);
               const t=tx.match(/[?&]t=([^&]+)/);
-              if(m){ $('serial').value=decodeURIComponent(m[1]); if(t)$('token').value=decodeURIComponent(t[1]); toast('QR détecté ✓'); stopScan(); loadUnit(); }
+              if(m){ $('serial').value=decodeURIComponent(m[1]); if(t)$('token').value=decodeURIComponent(t[1]); toast(T('install.scan.detected','QR détecté ✓')); stopScan(); loadUnit(); }
             }
           }catch(e){}
           requestAnimationFrame(tick);
         };
         tick();
       }
-    }catch(e){ toast('Caméra inaccessible : '+e.message); }
+    }catch(e){ toast(T('install.scan.error','Caméra inaccessible : ')+e.message); }
   }
   function stopScan(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } $('video').classList.add('hidden'); $('scanStatus').classList.add('hidden'); }
   $('scanBtn').onclick=async()=>{ if(stream) stopScan(); else startScan(); };
@@ -204,7 +210,7 @@
   $('serial').addEventListener('keydown',e=>{ if(e.key==='Enter') loadUnit(); });
   async function loadUnit(){
     const serial=$('serial').value.trim();
-    if(!serial) return toast('Numéro de série requis');
+    if(!serial) return toast(T('install.toast.serial','Numéro de série requis'));
     try{
       const j=await api('/api/installer/unit/'+encodeURIComponent(serial));
       unit=j.unit;
@@ -214,42 +220,45 @@
   }
 
   function renderUnit(){
-    const st=FB[unit.factoryStatus]||{t:unit.factoryStatus,c:''};
-    const lc=LC[unit.lifecycle]||[unit.lifecycle||'—','muted'];
+    const st=fbOf(unit.factoryStatus);
+    const lc=lcOf(unit.lifecycle);
     $('unitName').textContent=unit.name||unit.serialNumber;
-    $('unitMeta').innerHTML=unit.serialNumber+' · <span class="badge '+st.c+'">'+st.t+'</span> <span class="badge '+lc[1]+'">'+lc[0]+'</span> · carte '+(unit.hardware?.hardwareVersion||'--')+' · MAC '+(unit.hardware?.esp32MacAddress||'--')+' · MQTT '+(unit.hardware?.mqttUsername||'--');
+    $('unitMeta').innerHTML=unit.serialNumber+' · <span class="badge '+st.c+'">'+st.t+'</span> <span class="badge '+lc[1]+'">'+lc[0]+'</span> · '+T('install.unit.card','carte')+' '+(unit.hardware?.hardwareVersion||'--')+' · MAC '+(unit.hardware?.esp32MacAddress||'--')+' · MQTT '+(unit.hardware?.mqttUsername||'--');
     $('unitRooms').innerHTML=(unit.rooms||[]).map(c=>({chambre:'🛏️',cuisine:'🍳',salon:'🛋️',salle_a_manger:'🍽️',salle_de_bain:'🚿',toilettes:'🚽',bureau:'💼',garage:'🚗',terrasse:'🌿',buanderie:'👕',couloir:'🚪',dressing:'👗',cave:'🍷',grenier:'🏠'}[c]||'🚪')).join('');
+    const oldBtn=$('arrivalBtn'); if(oldBtn) oldBtn.remove();
     if(unit.lifecycle==='IN_TRANSIT'){
-      const btn=document.createElement('button'); btn.className='btn ghost'; btn.style.marginTop='8px';
-      btn.textContent='📍 Enregistrer l\'arrivée sur site';
+      const btn=document.createElement('button'); btn.id='arrivalBtn'; btn.className='btn ghost'; btn.style.marginTop='8px';
+      btn.textContent=T('install.arrival.btn',"📍 Enregistrer l'arrivée sur site");
       btn.onclick=async()=>{
         btn.disabled=true;
         try{ const j=await api('/api/lifecycle/cabins/'+unit._id+'/site-arrival',{method:'POST',body:JSON.stringify({})});
-          toast(j.message||'Arrivée enregistrée'); unit.lifecycle='ASSEMBLY_IN_PROGRESS'; renderUnit();
+          toast(j.message||T('install.arrival.saved','Arrivée enregistrée')); unit.lifecycle='ASSEMBLY_IN_PROGRESS'; renderUnit();
         }catch(e){ toast(e.message); btn.disabled=false; }
       };
       $('unitName').parentElement.appendChild(btn);
     }
     const TESTS=[
-      {serial:'la serrure (test serrure)',component:'lock'},
-      {serial:'les lumières (test éclairage)',component:'lighting'},
-      {serial:'les capteurs / température',component:'sensors'}
+      {component:'lock',labelKey:'install.test.lock',fallback:'la serrure (test serrure)'},
+      {component:'lighting',labelKey:'install.test.light',fallback:'les lumières (test éclairage)'},
+      {component:'sensors',labelKey:'install.test.sensors',fallback:'les capteurs / température'}
     ];
     $('testList').innerHTML='';
     TESTS.forEach(t=>{
+      const label=T(t.labelKey,t.fallback);
+      const done=testedComps.has(t.component);
       const el=document.createElement('div'); el.className='test';
-      let state='⏳ Aucun test';
-      const btn=document.createElement('button'); btn.className='btn ghost small'; btn.textContent='Tester';
-      const badge=document.createElement('span'); badge.className='badge warn'; badge.textContent=state;
+      const badge=document.createElement('span'); badge.className='badge '+(done?'ok':'warn'); badge.textContent=done?T('install.test.done','Testé ✓'):T('install.test.none','⏳ Aucun test');
+      const btn=document.createElement('button'); btn.className='btn ghost small'; btn.textContent=T('install.test.btn','Tester');
       btn.onclick=async()=>{
         btn.disabled=true; btn.textContent='…';
         try{
           await api('/api/installer/self-test',{method:'POST',body:JSON.stringify({serialNumber:unit.serialNumber,component:t.component})});
-          badge.className='badge ok'; badge.textContent='Testé ✓'; toast('Commande envoyée : '+t.serial);
-          btn.textContent='Tester'; btn.disabled=false;
-        }catch(e){ toast(e.message); btn.textContent='Tester'; btn.disabled=false; }
+          testedComps.add(t.component);
+          badge.className='badge ok'; badge.textContent=T('install.test.done','Testé ✓'); toast(T('install.test.sent','Commande envoyée : ')+label);
+          btn.textContent=T('install.test.btn','Tester'); btn.disabled=false;
+        }catch(e){ toast(e.message); btn.textContent=T('install.test.btn','Tester'); btn.disabled=false; }
       };
-      el.innerHTML='<div style="display:flex;gap:10px;align-items:center"><span class="dot">🔌</span><div><b style="font-size:.9rem">'+t.serial+'</b></div></div>';
+      el.innerHTML='<div style="display:flex;gap:10px;align-items:center"><span class="dot">🔌</span><div><b style="font-size:.9rem">'+label+'</b></div></div>';
       const right=document.createElement('div'); right.style.display='flex'; right.style.alignItems='center'; right.style.gap='8px';
       right.appendChild(badge); right.appendChild(btn);
       el.appendChild(right);
@@ -259,12 +268,12 @@
 
   // --- GPS ---
   $('gpsBtn').onclick=()=>{
-    if(!navigator.geolocation) { toast('Géolocalisation non supportée'); return; }
+    if(!navigator.geolocation) { toast(T('install.gps.unsupported','Géolocalisation non supportée')); return; }
     navigator.geolocation.getCurrentPosition(pos=>{
       gps={lat:+pos.coords.latitude.toFixed(6),lng:+pos.coords.longitude.toFixed(6)};
       $('gpsInfo').textContent='📍 '+gps.lat+', '+gps.lng;
-      toast('Position enregistrée');
-    },err=>toast('Erreur GPS : '+err.message),{enableHighAccuracy:true,timeout:8000});
+      toast(T('install.gps.saved','Position enregistrée'));
+    },err=>toast(T('install.gps.error','Erreur GPS : ')+err.message),{enableHighAccuracy:true,timeout:8000});
   };
 
   // --- Check-list technique ---
@@ -280,10 +289,15 @@
   }
 
   // --- Photos ---
-  const PHOTOS=[{key:'armoire',label:'📦 Armoire électrique'},{key:'globale',label:'🏠 Vue globale'},{key:'interieur',label:'🛏️ Intérieur'}];
-  function photoHTML(key,label){
+  const PHOTOS=[
+    {key:'armoire',labelKey:'install.photo.electrical',label:'📦 Armoire électrique'},
+    {key:'globale',labelKey:'install.photo.global',label:'🏠 Vue globale'},
+    {key:'interieur',labelKey:'install.photo.interior',label:'🛏️ Intérieur'}
+  ];
+  function photoHTML(p){
+    const key=p.key; const label=T(p.labelKey,p.label);
     const w=document.createElement('div'); w.className='photo-wrap'; w.id='pw-'+key;
-    w.innerHTML='<div style="font-size:.85rem;font-weight:600">'+label+'</div><input class="input" type="file" accept="image/*" id="pf-'+key+'" style="font-size:.8rem;padding:8px">';
+    w.innerHTML='<div style="font-size:.85rem;font-weight:600" data-i18n="'+p.labelKey+'">'+label+'</div><input class="input" type="file" accept="image/*" id="pf-'+key+'" style="font-size:.8rem;padding:8px">';
     w.querySelector('input').onchange=(e)=>{
       const f=e.target.files[0]; if(!f) return;
       const rd=new FileReader(); rd.onload=()=>{ photos[key]=rd.result; w.classList.add('done'); const img=w.querySelector('img')||document.createElement('img'); img.src=rd.result; w.appendChild(img); };
@@ -292,7 +306,7 @@
     return w;
   }
   $('photoGrid').innerHTML='';
-  PHOTOS.forEach(p=>$('photoGrid').appendChild(photoHTML(p.key,p.label)));
+  PHOTOS.forEach(p=>$('photoGrid').appendChild(photoHTML(p)));
 
   // --- Signature ---
   const canvas=$('sig'); const ctx=canvas.getContext('2d'); let drawing=false;
@@ -305,9 +319,9 @@
   // --- Submit ---
   $('submitBtn').onclick=async()=>{
     const missing=PHOTOS.filter(p=>!photos[p.key]);
-    if(missing.length) return toast('Photos obligatoires manquantes : '+missing.length+' / 3');
+    if(missing.length) return toast(T('install.submit.missingPhotos','Photos obligatoires manquantes : {n} / 3').replace('{n}',missing.length));
     const unchecked=checkMeta.filter(c=>!checked[c.key]);
-    if(unchecked.length){ const first=unchecked.map(c=>c.label.split('(')[0].trim()).join('; '); return toast('Check-list technique incomplète : '+first); }
+    if(unchecked.length){ const first=unchecked.map(c=>c.label.split('(')[0].trim()).join('; '); return toast(T('install.submit.incomplete','Check-list technique incomplète : {first}').replace('{first}',first)); }
     const sigData=canvas.toDataURL('image/png');
     try{
       const pv=await api('/api/installer/unit/'+encodeURIComponent(unit.serialNumber)+'/pv',{method:'POST',body:JSON.stringify({
@@ -325,18 +339,28 @@
         signature:sigData
       })});
       $('step3').classList.add('hidden'); $('doneView').classList.remove('hidden');
-      $('doneInfo').innerHTML=unit.serialNumber+' · '+j.message+'<br><a href="/api/installer/report/pv/'+encodeURIComponent(unit.serialNumber)+'" style="color:var(--accent);text-decoration:underline">📄 Télécharger le PV (PDF)</a>';
+      $('doneInfo').innerHTML=unit.serialNumber+' · '+j.message+'<br><a href="/api/installer/report/pv/'+encodeURIComponent(unit.serialNumber)+'" style="color:var(--accent);text-decoration:underline">'+T('install.done.pdf','📄 Télécharger le PV (PDF)')+'</a>';
       setStep(1); $('doneView').classList.remove('hidden');
       toast(j.message);
     }catch(e){ toast(e.message); }
   };
-  $('newBtn').onclick=()=>{ setStep(1); unit=null; gps=null; photos={}; checked={}; $('serial').value=''; $('token').value=''; $('notes').value=''; ctx.clearRect(0,0,canvas.width,canvas.height); renderChecklist(); PHOTOS.forEach(p=>{ document.getElementById('pw-'+p.key).innerHTML=photoHTML(p.key,p.label).innerHTML; document.getElementById('pw-'+p.key).querySelector('input').onchange=document.getElementById('pf-'+p.key).onchange; }); };
+  $('newBtn').onclick=()=>{ setStep(1); unit=null; gps=null; photos={}; checked={}; testedComps.clear(); $('serial').value=''; $('token').value=''; $('notes').value=''; ctx.clearRect(0,0,canvas.width,canvas.height); renderChecklist(); $('photoGrid').innerHTML=''; PHOTOS.forEach(p=>$('photoGrid').appendChild(photoHTML(p))); };
+
+  // Re-render language-dependent dynamic content on language switch.
+  window.addEventListener('i18n:change',()=>{
+    if(unit) renderUnit();
+    if(gps) $('gpsInfo').textContent='📍 '+gps.lat+', '+gps.lng;
+    document.querySelectorAll('#photoGrid .photo-wrap').forEach(w=>{
+      const key=w.id.replace('pw-',''); const p=PHOTOS.find(x=>x.key===key);
+      const lab=w.querySelector('div'); if(lab&&p) lab.textContent=T(p.labelKey,p.label);
+    });
+  });
 
   (async()=>{ if(token){ $('authCard').classList.add('hidden'); $('appView').classList.remove('hidden'); loadChecklist(); } })();
 })();
 </script>
-<footer class="app-footer">&copy; pixelsoftwaredesign 2026 &middot; Installation &mdash; Atlas Cabine
-  <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
+<footer class="app-footer"><span data-i18n="install.footer">&copy; pixelsoftwaredesign 2026 &middot; Installation &mdash; Atlas Cabine</span>
+  <div class="site-links"><a href="/" data-i18n="nav.home">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a><span data-i18n-switcher></span></div>
 </footer>
 </body>
 </html>

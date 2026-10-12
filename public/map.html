@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#10161a">
 <meta name="author" content="pixelsoftwaredesign">
 <!-- © pixelsoftwaredesign 2026 -->
-<title>Atlas Cabine — Carte</title>
+<title data-i18n="map.titleTag">Atlas Cabine — Carte</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -132,6 +132,16 @@
   }
   .curr-badge b{color:var(--accent)}
 
+  /* --- KPIs exploitation : mode location + connectivité --- */
+  .ops-stats{
+    position:fixed;top:104px;right:14px;z-index:1000;
+    background:rgba(16,22,26,.82);backdrop-filter:blur(8px);
+    border:1px solid var(--border);border-radius:12px;padding:8px 12px;
+    display:flex;gap:10px;font-size:.68rem;color:var(--muted);align-items:center;flex-wrap:wrap;
+  }
+  .ops-stats .it{display:flex;align-items:center;gap:4px}
+  .ops-stats b{color:var(--accent);font-weight:700}
+
   /* --- Legend chips (overlay en direct) --- */
   .legend-chips{
     position:fixed;top:104px;left:14px;z-index:1000;
@@ -166,54 +176,62 @@
 
 <!-- Top bar -->
 <div class="topbar" id="topbar">
-  <div class="brand">🏠 Cabine <span>Carte</span></div>
+  <div class="brand" data-i18n-html="map.brandHtml">🏠 Cabine <span>Carte</span></div>
   <div class="filter">
-    <input type="text" id="fQ" placeholder="🔍 Cabine..." autocomplete="off">
-    <input type="text" id="fCity" placeholder="Ville (ex: Tunis)" autocomplete="off">
-    <select id="fCountry"><option value="">Tous les pays</option></select>
+    <input type="text" id="fQ" placeholder="🔍 Cabine..." autocomplete="off" data-i18n-ph="map.phSearch">
+    <input type="text" id="fCity" placeholder="Ville (ex: Tunis)" autocomplete="off" data-i18n-ph="map.phCity">
+    <select id="fCountry"><option value="" data-i18n="map.allCountries">Tous les pays</option></select>
     <select id="fCurrency"></select>
-    <input type="number" id="fMin" class="num" placeholder="Prix min" min="0" step="0.5">
-    <input type="number" id="fMax" class="num" placeholder="Prix max" min="0" step="0.5">
+    <input type="number" id="fMin" class="num" placeholder="Prix min" min="0" step="0.5" data-i18n-ph="map.phMin">
+    <input type="number" id="fMax" class="num" placeholder="Prix max" min="0" step="0.5" data-i18n-ph="map.phMax">
     <input type="date" id="fDate">
-    <button class="btn-search" id="btnSearch">Rechercher</button>
+    <button class="btn-search" id="btnSearch" data-i18n="map.btnSearch">Rechercher</button>
   </div>
   <div class="chips" id="legendChips">
-    <span class="capchip g">Prête</span><span class="capchip o">Nettoyage</span>
-    <span class="capchip r">Maintenance / hors-ligne</span><span class="capchip b">Occupée</span>
+    <span class="capchip g" data-i18n="map.chip.ready">Prête</span><span class="capchip o" data-i18n="map.chip.clean">Nettoyage</span>
+    <span class="capchip r" data-i18n="map.chip.maint">Maintenance / hors-ligne</span><span class="capchip b" data-i18n="map.chip.occupied">Occupée</span>
   </div>
   <div class="login-chip">
-    <button class="btn-search" id="p3dBtn" title="Vue 3D du Maghreb (WebGL)">🌍 3D</button>
-    <button class="btn-search" id="satBtn" title="Fond vectoriel ↔ Imagerie satellite">🛰️ Satellite</button>
-    <button class="btn-search" style="background:linear-gradient(155deg,#5b7cfa,#4c63d8);color:#fff" onclick="window.open('/viewer.html','_blank')" title="Viewer 3D du plan d'étage">🧊 Viewer</button>
-    <button id="btnLogin">🔐 Opérations</button>
+    <button class="btn-search" id="p3dBtn" title="Vue 3D du Maghreb (WebGL)" data-i18n-title="map.t3d">🌍 3D</button>
+    <button class="btn-search" id="satBtn" title="Fond vectoriel ↔ Imagerie satellite" data-i18n-title="map.tSat">🛰️ Satellite</button>
+    <button class="btn-search" style="background:linear-gradient(155deg,#5b7cfa,#4c63d8);color:#fff" onclick="window.open('/viewer.html','_blank')" title="Viewer 3D du plan d'étage" data-i18n-title="map.tViewer">🧊 Viewer</button>
+    <button id="btnLogin" data-i18n="map.login">🔐 Opérations</button>
   </div>
-  <a class="btn-link" href="/book.html">Réserver →</a>
+  <span data-i18n-switcher></span>
+  <a class="btn-link" href="/book.html" data-i18n="map.bookLink">Réserver →</a>
 </div>
 
 <!-- Legend live -->
 <div class="legend-chips">
-  <span class="it"><span class="dot" style="background:#6bbf9c"></span>Disponible</span>
-  <span class="it"><span class="dot" style="background:#f2a65a"></span>Nettoyage</span>
-  <span class="it"><span class="dot" style="background:#e8735f"></span>Panne</span>
-  <span class="it"><span class="dot" style="background:#5aa9f2"></span>Occupée</span>
-  <span class="live">● Temps réel <b class="live-count" id="liveCount">0</b>/<span id="liveTot">0</span></span>
+  <span class="it"><span class="dot" style="background:#6bbf9c"></span><span data-i18n="map.legend.available">Disponible</span></span>
+  <span class="it"><span class="dot" style="background:#f2a65a"></span><span data-i18n="map.legend.clean">Nettoyage</span></span>
+  <span class="it"><span class="dot" style="background:#e8735f"></span><span data-i18n="map.legend.panne">Panne</span></span>
+  <span class="it"><span class="dot" style="background:#5aa9f2"></span><span data-i18n="map.legend.occupied">Occupée</span></span>
+  <span class="live" data-i18n-html="map.legend.live">● Temps réel <b class="live-count" id="liveCount">0</b>/<span id="liveTot">0</span></span>
 </div>
 
-<div class="curr-badge" id="currBadge">Devise : <b id="currCode">TND</b> <a class="btn-link" id="toBook" href="/book.html" style="margin-left:6px">réserver en TND →</a></div>
+<div class="curr-badge" id="currBadge"><span data-i18n="map.currLabel">Devise :</span> <b id="currCode">TND</b> <a class="btn-link" id="toBook" href="/book.html" style="margin-left:6px">réserver en TND →</a></div>
+
+<!-- Exploitation : mode location + connectivité -->
+<div class="ops-stats" id="opsStats">
+  <span class="it" data-i18n-html="map.opsLoc">💼 <b id="stLoc">0</b> en location</span>
+  <span class="it" data-i18n-html="map.opsConn">📡 <b id="stConn">0</b> connectées</span>
+  <span class="it" data-i18n-html="map.opsOff">○ <b id="stOff">0</b> hors ligne</span>
+</div>
 
 <!-- Bandeau WebGL indisponible -->
-<div class="webgl-note" id="webglNote">⚠️ Vue 3D indisponible — WebGL est désactivé par votre navigateur. Le fond vectoriel reste affiché.</div>
+<div class="webgl-note" id="webglNote" data-i18n="map.webglNote">⚠️ Vue 3D indisponible — WebGL est désactivé par votre navigateur. Le fond vectoriel reste affiché.</div>
 
 <!-- Modal login ops -->
 <div class="modal" id="loginModal">
   <div class="box">
-    <h3>🔐 Connexion opérations</h3>
-    <p class="meta" style="font-size:.74rem;color:var(--muted)">Accès superviseurs / housekeeping / techniciens : actions rapides sur les marqueurs (accès, nettoyage, diagnostic).</p>
-    <label>Email</label><input type="email" id="mEmail" placeholder="admin@cabine.com">
-    <label>Mot de passe</label><input type="password" id="mPass" placeholder="••••••">
-    <button class="btn" id="mLogin">Se connecter</button>
+    <h3 data-i18n="map.modal.title">🔐 Connexion opérations</h3>
+    <p class="meta" style="font-size:.74rem;color:var(--muted)" data-i18n="map.modal.desc">Accès superviseurs / housekeeping / techniciens : actions rapides sur les marqueurs (accès, nettoyage, diagnostic).</p>
+    <label data-i18n="map.modal.email">Email</label><input type="email" id="mEmail" placeholder="admin@cabine.com" data-i18n-ph="map.modal.phEmail">
+    <label data-i18n="map.modal.pass">Mot de passe</label><input type="password" id="mPass" placeholder="••••••" data-i18n-ph="map.modal.phPass">
+    <button class="btn" id="mLogin" data-i18n="map.modal.login">Se connecter</button>
     <div id="mWrap" style="display:flex">
-      <button class="btn ghost" data-close style="background:var(--surface-2);color:var(--text);box-shadow:none;flex:1">Fermer</button>
+      <button class="btn ghost" data-close style="background:var(--surface-2);color:var(--text);box-shadow:none;flex:1" data-i18n="map.modal.close">Fermer</button>
     </div>
   </div>
 </div>
@@ -224,9 +242,16 @@
 <!-- Result count -->
 <div class="result-count" id="resultCount"></div>
 
+<script src="/vendor/i18n/translations.js"></script>
+<script src="/vendor/i18n/i18n.js"></script>
+<script src="/vendor/i18n/pages/map.js"></script>
+<script>I18N.init();</script>
+
 <script>
 (function(){
   'use strict';
+
+  const T = (k, v) => (window.I18N ? window.I18N.t(k, v) : k);
 
   const API = location.origin;
   const MAP_DEFAULT_CENTER = [35.8256, 10.6369];
@@ -241,8 +266,8 @@
     const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
     if (TOKEN) headers['Authorization'] = 'Bearer ' + TOKEN;
     const res = await fetch(API + path, { ...opts, headers });
-    const j = await res.json().catch(() => ({ success: false, message: 'Erreur réseau' }));
-    if (res.status === 401 && TOKEN) { logoutOps(); throw new Error('Session expirée'); }
+    const j = await res.json().catch(() => ({ success: false, message: T('map.networkErr') }));
+    if (res.status === 401 && TOKEN) { logoutOps(); throw new Error(T('map.sessionExp')); }
     return j;
   }
   function toast(m, d) {
@@ -256,7 +281,7 @@
   }
   function uiOplog(on) {
     const b = document.getElementById('btnLogin');
-    b.textContent = on ? ('👤 ' + (USER?.name || USER?.email || 'Opérateur')) : '🔐 Opérations';
+    b.textContent = on ? ('👤 ' + (USER?.name || USER?.email || T('map.operator'))) : T('map.login');
     b.classList.toggle('logged', !!on);
   }
 
@@ -291,6 +316,7 @@
     liveRenderTimer = setTimeout(() => {
       document.getElementById('liveCount').textContent = Object.keys(liveSeen).length;
       renderMarkers(currentCabins, true);
+      updateOpsStats();
     }, 600);
   }
   if (socket) {
@@ -300,7 +326,7 @@
   // --- Currency symbols ---
   const CURRENCY_SYMBOLS = { EUR:'€', TND:'TND', USD:'$', GBP:'£', MAD:'MAD', DZD:'DA' };
   const CURRENCY_LABELS  = { EUR:'Euro', TND:'Dinar tunisien', USD:'Dollar US', GBP:'Livre sterling', MAD:'Dirham marocain', DZD:'Dinar algérien' };
-  const STATUS_LABELS = { AVAILABLE:'Prête', OCCUPIED_BY_GUEST:'Occupée', OCCUPIED_BY_OWNER:'Usage perso.', CLEANING_REQUIRED:'À nettoyer', MAINTENANCE:'Maintenance' };
+  const STATUS_LABELS = { AVAILABLE:T('map.status.AVAILABLE'), OCCUPIED_BY_GUEST:T('map.status.OCCUPIED_BY_GUEST'), OCCUPIED_BY_OWNER:T('map.status.OCCUPIED_BY_OWNER'), CLEANING_REQUIRED:T('map.status.CLEANING_REQUIRED'), MAINTENANCE:T('map.status.MAINTENANCE') };
 
   // --- Init Leaflet map ---
   const map = L.map('map', {
@@ -348,7 +374,7 @@
 
   (new GraticuleLayer({ tileSize: 256, keepBuffer: 1, noWrap: true })).addTo(map);
   map.attributionControl.setPrefix('');
-  map.attributionControl.addAttribution('&copy; Pixel Software Design 2026 — Cabines intelligentes');
+  map.attributionControl.addAttribution(T('map.attribution'));
 
   // ── Bascule Satellite (imagerie Esri World Imagery, gratuite, sans clé) ──
   const satCss = document.createElement('style');
@@ -369,13 +395,13 @@
       map.removeLayer(pxWorld);
       map.removeLayer(pxProv);
       satBtn.classList.add('ok');
-      satBtn.textContent = '🛰️ Satellite ON';
+      satBtn.textContent = T('map.sat.on');
     } else {
       map.removeLayer(satLayer);
       map.addLayer(pxWorld);
       map.addLayer(pxProv);
       satBtn.classList.remove('ok');
-      satBtn.textContent = '🛰️ Satellite';
+      satBtn.textContent = T('map.sat.off');
     }
   };
 
@@ -390,7 +416,7 @@
   })();
   if (!webglOk) {
     p3dBtn.disabled = true;
-    p3dBtn.title = 'Vue 3D indisponible — WebGL désactivé';
+    p3dBtn.title = T('map.noWebgl');
     const note = document.getElementById('webglNote');
     if (note) note.classList.add('show');
   }
@@ -409,19 +435,19 @@
         pix3d = Pix3D.create(document.getElementById('map'), buildPix3dData(), { lat: map.getCenter().lat, lng: map.getCenter().lng, zoom: map.getZoom() });
       }
       if (!pix3d) { p3dOn = false; return; }
-      if (satOn) { satOn = false; satBtn.classList.remove('ok'); satBtn.textContent = '🛰️ Satellite'; map.removeLayer(satLayer); }
+      if (satOn) { satOn = false; satBtn.classList.remove('ok'); satBtn.textContent = T('map.sat.off'); map.removeLayer(satLayer); }
       const lc = document.querySelector('.leaflet-container');
       if (lc) lc.style.opacity = '0';
       pix3d.setView(map.getCenter().lat, map.getCenter().lng, map.getZoom());
       pix3d.enable();
       p3dBtn.classList.add('ok');
-      p3dBtn.textContent = '🌍 3D ON';
+      p3dBtn.textContent = T('map.p3d.on');
     } else {
       if (pix3d) pix3d.disable();
       const lc = document.querySelector('.leaflet-container');
       if (lc) lc.style.opacity = '';
       p3dBtn.classList.remove('ok');
-      p3dBtn.textContent = '🌍 3D';
+      p3dBtn.textContent = T('map.p3d.off');
       map.invalidateSize();
     }
   };
@@ -578,7 +604,7 @@
     const date = document.getElementById('fDate').value;
     selectedCurrency = currency;
     document.getElementById('currCode').textContent = currency;
-    document.getElementById('toBook').textContent = 'réserver en ' + (CURRENCY_SYMBOLS[currency] || currency) + ' →';
+    document.getElementById('toBook').textContent = T('map.reserveIn', { sym: CURRENCY_SYMBOLS[currency] || currency });
 
     const params = new URLSearchParams();
     if (country) params.set('country', country);
@@ -603,11 +629,13 @@
       currentCabins = list;
       renderMarkers(currentCabins);
       updateCount(currentCabins.length, currency, date);
+      updateOpsStats();
       document.getElementById('liveTot').textContent = currentCabins.length;
     } catch (e) {
       currentCabins = [];
       renderMarkers([]);
       updateCount(0, currency, date);
+      updateOpsStats();
       document.getElementById('liveTot').textContent = 0;
     }
   }
@@ -643,15 +671,15 @@ const sym = CURRENCY_SYMBOLS[cabin.pricing.displayCurrency] || '';
       const origPrice = cabin.pricing.originalPrice;
       const origCurr  = cabin.pricing.originalCurrency;
       const origLabel = origCurr === cabin.pricing.displayCurrency ? '' :
-        '<div class="orig">Prix d\'origine : ' + origPrice + ' ' + (CURRENCY_SYMBOLS[origCurr]||origCurr) + '/h</div>';
+        '<div class="orig">' + T('map.origPrice') + ' ' + origPrice + ' ' + (CURRENCY_SYMBOLS[origCurr]||origCurr) + '/h</div>';
 
-      const statusDot  = cabin.status === 'AVAILABLE' ? 'Prête' : STATUS_LABELS[cabin.status] || cabin.status;
+      const statusDot  = cabin.status === 'AVAILABLE' ? T('map.status.AVAILABLE') : STATUS_LABELS[cabin.status] || cabin.status;
       const statusCls  = mcl === 'ms-guest' || mcl === 'ms-ok' ? 'ok' : (mcl === 'ms-down' ? 'bad' : 'warn');
       const onlineCls  = cabin.isOnline ? 'online' : 'offline';
-      const onlineTxt  = cabin.isOnline ? '● En ligne' : '○ Hors ligne';
+      const onlineTxt  = cabin.isOnline ? T('map.online') : T('map.offline');
       const tempTxt    = cabin.telemetry?.temperature != null ? cabin.telemetry.temperature.toFixed(1) + '°C' : '--';
-      const guestTxt   = cabin.guestState === 'INSIDE' ? '<div class="meta">🧍 Client à l’intérieur · éclairage allumé</div>' :
-                         cabin.guestState === 'OUTSIDE' ? '<div class="meta">🧍 Client sorti · éclairage éteint</div>' : '';
+      const guestTxt   = cabin.guestState === 'INSIDE' ? '<div class="meta">' + T('map.guestInside') + '</div>' :
+                         cabin.guestState === 'OUTSIDE' ? '<div class="meta">' + T('map.guestOutside') + '</div>' : '';
       const _role = USER?.role || '';
       const isAdmin = _role === 'ADMIN';
       const canClean = isAdmin || _role === 'HOUSEKEEPER' || _role === 'HOUSEKEEPER_GOVERNANT';
@@ -661,25 +689,25 @@ const sym = CURRENCY_SYMBOLS[cabin.pricing.displayCurrency] || '';
       const canReview = isAdmin || _role === 'HOUSEKEEPER_GOVERNANT' || _role === 'MANAGER';
       const actions = TOKEN
         ? '<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">' +
-          '<button class="btn-book qa" data-action="access" data-id="' + cabin.id + '" data-lock="' + (cabin.telemetry?.lockStatus || 'LOCKED') + '">🔓 Accès</button>' +
+          '<button class="btn-book qa" data-action="access" data-id="' + cabin.id + '" data-lock="' + (cabin.telemetry?.lockStatus || 'LOCKED') + '">' + T('map.act.access') + '</button>' +
           (canClean
-            ? '<button class="btn-book qa" data-action="clean" data-id="' + cabin.id + '">🧹 Nettoyer</button>'
+            ? '<button class="btn-book qa" data-action="clean" data-id="' + cabin.id + '">' + T('map.act.clean') + '</button>'
             : '') +
           (canReview
-            ? '<button class="btn-book qa" data-action="review" data-id="' + cabin.id + '">⭐ Qualité</button>'
+            ? '<button class="btn-book qa" data-action="review" data-id="' + cabin.id + '">' + T('map.act.review') + '</button>'
             : '') +
           (canMaint
-            ? '<button class="btn-book qa" data-action="panne" data-serial="' + cabin.serialNumber + '">🔧 Panne</button>' +
-              '<button class="btn-book qa" data-action="fix" data-serial="' + cabin.serialNumber + '">✅ Fixée</button>'
+            ? '<button class="btn-book qa" data-action="panne" data-serial="' + cabin.serialNumber + '">' + T('map.act.panne') + '</button>' +
+              '<button class="btn-book qa" data-action="fix" data-serial="' + cabin.serialNumber + '">' + T('map.act.fix') + '</button>'
             : '') +
           (canQC
-            ? '<button class="btn-book qa" data-action="qc" data-serial="' + cabin.serialNumber + '">🩺 Réception</button>'
+            ? '<button class="btn-book qa" data-action="qc" data-serial="' + cabin.serialNumber + '">' + T('map.act.qc') + '</button>'
             : '') +
           (canOcc
-            ? '<button class="btn-book qa" data-action="occ" data-id="' + cabin.id + '">👤 Client</button>' +
-              '<button class="btn-book qa" data-action="ready" data-id="' + cabin.id + '">✅ Prête</button>'
+            ? '<button class="btn-book qa" data-action="occ" data-id="' + cabin.id + '">' + T('map.act.occ') + '</button>' +
+              '<button class="btn-book qa" data-action="ready" data-id="' + cabin.id + '">' + T('map.act.ready') + '</button>'
             : '') +
-          '<button class="btn-book qa" data-action="diag" data-serial="' + cabin.serialNumber + '">🔌 Diagnostic</button>' +
+          '<button class="btn-book qa" data-action="diag" data-serial="' + cabin.serialNumber + '">' + T('map.act.diag') + '</button>' +
           '</div>'
         : '';
 
@@ -695,7 +723,7 @@ const sym = CURRENCY_SYMBOLS[cabin.pricing.displayCurrency] || '';
           roomTags(cabin.rooms) +
           guestTxt +
           actions +
-          '<button class="btn-book" data-cabin-id="' + cabin.id + '">Réserver cette cabine</button>' +
+          '<button class="btn-book" data-cabin-id="' + cabin.id + '">' + T('map.bookThis') + '</button>' +
         '</div>',
         { maxWidth: 280, className: 'dark-popup' }
       );
@@ -715,9 +743,19 @@ const sym = CURRENCY_SYMBOLS[cabin.pricing.displayCurrency] || '';
   function updateCount(n, curr, date) {
     const el = document.getElementById('resultCount');
     const sym = CURRENCY_SYMBOLS[curr] || curr;
-    let txt = '<span>' + n + '</span> cabine' + (n>1?'s':'' ) + ' trouvée' + (n>1?'s':'') + (curr ? ' · prix en ' + sym : '');
-    if (date) txt += ' · ' + new Date(date + 'T00:00:00').toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+    const loc = (window.I18N && I18N.locale) || 'fr-FR';
+    let txt = n > 1 ? T('map.found.many', { n: '<span>' + n + '</span>' }) : T('map.found.one', { n: '<span>' + n + '</span>' });
+    if (curr) txt += ' · ' + T('map.inCurr', { sym });
+    if (date) txt += ' · ' + new Date(date + 'T00:00:00').toLocaleDateString(loc, { day: '2-digit', month: 'short' });
     el.innerHTML = txt;
+  }
+
+  function updateOpsStats() {
+    const list = currentCabins || [];
+    const conn = list.filter((c) => c.isOnline).length;
+    document.getElementById('stLoc').textContent = list.length;
+    document.getElementById('stConn').textContent = conn;
+    document.getElementById('stOff').textContent = list.length - conn;
   }
 
   // --- Verification before booking ---
@@ -725,25 +763,25 @@ const sym = CURRENCY_SYMBOLS[cabin.pricing.displayCurrency] || '';
     const original = btn.textContent;
     if (btn.disabled) return;
     btn.disabled = true;
-    btn.textContent = '⏳ Vérification...';
+    btn.textContent = T('map.verify');
 
     try {
       const json = await fetch(API + '/api/cabins/' + cabinId + '/status').then(r => r.json());
-      if (!json.success || !json.cabin) throw new Error(json.message || 'Cabine introuvable');
+      if (!json.success || !json.cabin) throw new Error(json.message || T('map.cabinNotFound'));
 
       const c = json.cabin;
       if (!c.bookable) {
         btn.disabled = false;
         btn.textContent = original;
-        const reason = !c.verification.checks.mode ? 'Cabine hors location'
-          : !c.verification.checks.listed ? 'Cabine non publiée'
-          : !c.verification.checks.available ? 'Cabine ' + (c.verification.statusText || 'indisponible')
-          : 'Créneau déjà réservé';
+        const reason = !c.verification.checks.mode ? T('map.reason.notRental')
+          : !c.verification.checks.listed ? T('map.reason.notListed')
+          : !c.verification.checks.available ? T('map.reason.unavailable', { status: c.verification.statusText || T('map.unavailable') })
+          : T('map.reason.slot');
         if (window.CabinMotion && CabinMotion.toast) {
           CabinMotion.toast('⚠️ ' + reason, { duration: 4000 });
         }
         btn.classList.add('blocked');
-        btn.textContent = 'Indisponible';
+        btn.textContent = T('map.unavailable');
         setTimeout(() => { btn.classList.remove('blocked'); btn.textContent = original; }, 4000);
         return;
       }
@@ -752,7 +790,7 @@ const sym = CURRENCY_SYMBOLS[cabin.pricing.displayCurrency] || '';
         btn.disabled = false;
         btn.textContent = original;
         if (window.CabinMotion && CabinMotion.toast) {
-          CabinMotion.toast('Cabine réservable mais hors ligne — accès possible sur place', { duration: 4000 });
+          CabinMotion.toast(T('map.toast.offline'), { duration: 4000 });
         }
       }
 
@@ -760,7 +798,7 @@ const sym = CURRENCY_SYMBOLS[cabin.pricing.displayCurrency] || '';
     } catch (err) {
       btn.disabled = false;
       btn.textContent = original;
-      if (window.CabinMotion && CabinMotion.toast) CabinMotion.toast('Erreur de vérification : ' + err.message, { duration: 4000 });
+      if (window.CabinMotion && CabinMotion.toast) CabinMotion.toast(T('map.errVerify', { msg: err.message }), { duration: 4000 });
     }
   }
 
@@ -776,48 +814,48 @@ const sym = CURRENCY_SYMBOLS[cabin.pricing.displayCurrency] || '';
     const value = current === 'UNLOCKED' ? 'LOCK' : 'UNLOCK';
     try {
       const j = await api('/api/control/' + cabinId + '/control', { method: 'POST', body: JSON.stringify({ device: 'lock', value }) });
-      toast(j.message || (j.success ? 'Commande envoyée' : 'Erreur'));
+      toast(j.message || (j.success ? T('map.toast.commandSent') : T('map.toast.error')));
     } catch (e) { toast(e.message); }
   }
   async function opsClean(cabinId) {
     try {
       const j = await api('/api/housekeeping/tasks', { method: 'POST', body: JSON.stringify({ cabinId, assignedAgent: 'Carte temps réel' }) });
       if (!j.success) throw new Error(j.message);
-      toast('Mission créée — ' + (j.task?.cabinSerial || ''));
+      toast(T('map.toast.mission', { serial: j.task?.cabinSerial || '' }));
     } catch (e) { toast(e.message); }
   }
   async function opsDiag(serial) {
     try {
       const j = await api('/api/installer/self-test', { method: 'POST', body: JSON.stringify({ serialNumber: serial, component: 'lock' }) });
-      toast(j.message || (j.success ? 'Self-test envoyé' : 'Erreur'));
+      toast(j.message || (j.success ? T('map.toast.selfTest') : T('map.toast.error')));
     } catch (e) { toast(e.message); }
   }
   async function opsPanne(serial) {
     try {
       const j = await api('/api/tickets', { method: 'POST', body: JSON.stringify({ serialNumber: serial, title: 'Cabine en panne (carte temps réel)', priority: 'HIGH' }) });
       if (!j.success) throw new Error(j.message);
-      toast('Ticket panne créé — ' + (j.ticket?._id || ''));
+      toast(T('map.toast.ticket', { id: j.ticket?._id || '' }));
     } catch (e) { toast(e.message); }
   }
   async function opsFix(serial) {
     try {
       const j = await api('/api/tickets/cabin/' + encodeURIComponent(serial)).catch(() => ({ success: false, tickets: [] }));
       const open = (j.tickets || []).filter(t => t.status !== 'RESOLVED' && t.status !== 'COMPLETED')[0];
-      if (!open) { toast('Aucune panne ouverte pour cette cabine'); return; }
+      if (!open) { toast(T('map.toast.noOpen')); return; }
       const r = await api('/api/tickets/' + open._id, { method: 'PATCH', body: JSON.stringify({ status: 'RESOLVED', resolution: 'Réparée (carte temps réel)' }) });
       if (!r.success) throw new Error(r.message);
-      toast('Panne fixée — cabine de nouveau ' + (r.cabinStatus || 'disponible'));
+      toast(T('map.toast.fixed', { status: r.cabinStatus || T('map.status.AVAILABLE') }));
     } catch (e) { toast(e.message); }
   }
   async function opsReview(cabinId) {
     try {
       const list = await api('/api/housekeeping/tasks?cabinId=' + encodeURIComponent(cabinId));
       const done = (list.tasks || []).find(t => t.status === 'COMPLETED' && !t.reviewedBy);
-      if (!done) { toast('Aucun nettoyage complété à relire pour cette cabine'); return; }
-      const scoreRaw = prompt('Note qualité (0-5) pour ' + (done.cabinSerial || 'tâche') + ' :');
+      if (!done) { toast(T('map.toast.noClean')); return; }
+      const scoreRaw = prompt(T('map.prompt.score', { serial: done.cabinSerial || '' }));
       const score = Number(scoreRaw);
-      if (scoreRaw === null || Number.isNaN(score) || score < 0 || score > 5) { toast('Note annulée ou invalide'); return; }
-      const approved = confirm('Approuver ce nettoyage ?  (OK = approuver / Annuler = refuser)');
+      if (scoreRaw === null || Number.isNaN(score) || score < 0 || score > 5) { toast(T('map.prompt.invalid')); return; }
+      const approved = confirm(T('map.prompt.approve'));
       const r = await api('/api/housekeeping/tasks/' + done._id + '/review', { method: 'POST', body: JSON.stringify({ qualityScore: score, approved }) });
       if (!r.success) throw new Error(r.message);
       toast(r.message);
@@ -827,7 +865,7 @@ const sym = CURRENCY_SYMBOLS[cabin.pricing.displayCurrency] || '';
     try {
       const j = await api('/api/control/' + cabinId + '/status', { method: 'POST', body: JSON.stringify({ status }) });
       if (!j.success) throw new Error(j.message);
-      toast(j.message || 'Statut mis à jour');
+      toast(j.message || T('map.toast.status'));
     } catch (e) { toast(e.message); }
   }
   document.addEventListener('click', function(e) {
@@ -848,7 +886,7 @@ const sym = CURRENCY_SYMBOLS[cabin.pricing.displayCurrency] || '';
   // --- Login opérations ---
   const loginModal = document.getElementById('loginModal');
   function openLogin() {
-    if (TOKEN) { logoutOps(); toast('Déconnecté'); return; }
+    if (TOKEN) { logoutOps(); toast(T('map.toast.deconnected')); return; }
     loginModal.classList.add('open');
   }
   document.getElementById('btnLogin').onclick = openLogin;
@@ -858,14 +896,14 @@ const sym = CURRENCY_SYMBOLS[cabin.pricing.displayCurrency] || '';
     const password = document.getElementById('mPass').value;
     try {
       const j = await api('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
-      if (!j.success || !j.token) throw new Error(j.message || 'Identifiants invalides');
+      if (!j.success || !j.token) throw new Error(j.message || T('map.identifiants'));
       TOKEN = j.token; USER = j.user || null;
       localStorage.setItem('map_token', TOKEN);
       if (USER) localStorage.setItem('map_user', JSON.stringify(USER));
       uiOplog(true);
       loginModal.classList.remove('open');
       renderMarkers(currentCabins, true);
-      toast('Connecté — actions rapides actives');
+      toast(T('map.toast.connected'));
     } catch (e) { toast(e.message); }
   };
 
@@ -908,10 +946,24 @@ const sym = CURRENCY_SYMBOLS[cabin.pricing.displayCurrency] || '';
   loadRoomCatalog();
   loadFilters().then(search);
 
+  // Re-rendu après changement de langue
+  window.addEventListener('i18n:change', function() {
+    satBtn.textContent = satOn ? T('map.sat.on') : T('map.sat.off');
+    p3dBtn.textContent = p3dOn ? T('map.p3d.on') : T('map.p3d.off');
+    uiOplog(!!TOKEN);
+    renderMarkers(currentCabins);
+    updateCount(currentCabins.length, selectedCurrency, document.getElementById('fDate').value);
+    updateOpsStats();
+    const lt = document.getElementById('liveTot');
+    if (lt) lt.textContent = currentCabins.length;
+    const lc = document.getElementById('liveCount');
+    if (lc) lc.textContent = Object.keys(liveSeen).length;
+  });
+
 })();
 </script>
-<footer class="app-footer">&copy; pixelsoftwaredesign 2026 &middot; Carte &mdash; Atlas Cabine
-  <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
+<footer class="app-footer"><span data-i18n="map.foot">&copy; pixelsoftwaredesign 2026 &middot; Carte &mdash; Atlas Cabine</span>
+  <div class="site-links"><a href="/" data-i18n="nav.home">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a><span data-i18n-switcher></span></div>
 </footer>
 </body>
 </html>

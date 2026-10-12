@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#10161a">
 <meta name="author" content="pixelsoftwaredesign">
 <!-- © pixelsoftwaredesign 2026 -->
-<title>Plan Intérieur des Cabines</title>
+<title data-i18n="plan.titleTag">Plan Intérieur des Cabines</title>
 <script src="/socket.io/socket.io.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -87,12 +87,13 @@
 
 <header>
   <div class="row">
-    <h1>🧭 Plan Intérieur <span>Cabines</span></h1>
-    <select class="input" id="spaceSel" style="min-width:170px"><option value="">— Sélectionner un bâtiment —</option></select>
-    <button class="btn ghost" id="btnDrawer">Gérer / Éditer</button>
-    <button class="btn" id="btnLogin">Connexion</button>
+    <h1 data-i18n-html="plan.h1">🧭 Plan Intérieur <span>Cabines</span></h1>
+    <select class="input" id="spaceSel" style="min-width:170px"><option value="" data-i18n="plan.placeholder.building">— Sélectionner un bâtiment —</option></select>
+    <button class="btn ghost" id="btnDrawer" data-i18n="plan.btn.manage">Gérer / Éditer</button>
+    <button class="btn" id="btnLogin" data-i18n="plan.btn.login">Connexion</button>
+    <span data-i18n-switcher></span>
   </div>
-  <div class="sub" id="spaceDesc">Moteur de cartographie intérieure — Leaflet CRS.Simple (aucun service externe).</div>
+  <div class="sub" id="spaceDesc" data-i18n="plan.sub">Moteur de cartographie intérieure — Leaflet CRS.Simple (aucun service externe).</div>
   <div id="stats" class="stats"></div>
 </header>
 
@@ -101,84 +102,84 @@
 <div id="mapWrap">
   <div id="indoor-map"></div>
   <div class="legend">
-    <span><i style="background:#6bbf9c"></i>Prête</span>
-    <span><i style="background:#f2a65a"></i>Nettoyage</span>
-    <span><i style="background:#e8735f"></i>Maintenance</span>
-    <span><i style="background:#5aa9f2"></i>Occupée</span>
-    <span><i style="background:#b57df2"></i>Usine</span>
+    <span><i style="background:#6bbf9c"></i><span data-i18n="plan.legend.ready">Prête</span></span>
+    <span><i style="background:#f2a65a"></i><span data-i18n="plan.legend.clean">Nettoyage</span></span>
+    <span><i style="background:#e8735f"></i><span data-i18n="plan.legend.maintenance">Maintenance</span></span>
+    <span><i style="background:#5aa9f2"></i><span data-i18n="plan.legend.occupied">Occupée</span></span>
+    <span><i style="background:#b57df2"></i><span data-i18n="plan.legend.factory">Usine</span></span>
   </div>
 </div>
 
 <div class="drawer-backdrop" id="backdrop"></div>
 <aside id="drawer">
-  <h3 id="drawerTitle">Gestion du bâtiment</h3>
+  <h3 id="drawerTitle" data-i18n="plan.drawer.title">Gestion du bâtiment</h3>
 
   <div id="authBlock">
-    <label>Email</label><input class="input" id="email" type="email" placeholder="admin@cabine.com">
-    <label>Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
-    <button class="btn" id="loginBtn">Se connecter</button>
+    <label data-i18n="plan.email">Email</label><input class="input" id="email" type="email" placeholder="admin@cabine.com">
+    <label data-i18n="plan.password">Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
+    <button class="btn" id="loginBtn" data-i18n="plan.login.btn">Se connecter</button>
   </div>
 
   <div id="adminBlock" class="hidden">
     <div class="drawer-block">
-      <label>Nouveau bâtiment (espace privé)</label>
-      <input class="input" id="newName" placeholder="Nom du bâtiment">
+      <label data-i18n="plan.new.label">Nouveau bâtiment (espace privé)</label>
+      <input class="input" id="newName" placeholder="Nom du bâtiment" data-i18n-ph="plan.ph.buildingName">
       <select class="input" id="newType">
-        <option value="BUILDING">Bâtiment</option><option value="MALL">Centre commercial</option>
-        <option value="AIRPORT">Aéroport</option><option value="FACTORY">Usine</option>
-        <option value="HOTEL">Hôtel</option><option value="PRIVATE">Espace privé</option>
+        <option value="BUILDING" data-i18n="plan.opt.building">Bâtiment</option><option value="MALL" data-i18n="plan.opt.mall">Centre commercial</option>
+        <option value="AIRPORT" data-i18n="plan.opt.airport">Aéroport</option><option value="FACTORY" data-i18n="plan.opt.factory">Usine</option>
+        <option value="HOTEL" data-i18n="plan.opt.hotel">Hôtel</option><option value="PRIVATE" data-i18n="plan.opt.private">Espace privé</option>
       </select>
-      <input class="input" id="newAddress" placeholder="Adresse (optionnel)">
-      <button class="btn" id="createSpaceBtn">Créer le bâtiment</button>
+      <input class="input" id="newAddress" placeholder="Adresse (optionnel)" data-i18n-ph="plan.ph.address">
+      <button class="btn" id="createSpaceBtn" data-i18n="plan.btn.createSpace">Créer le bâtiment</button>
     </div>
 
     <div class="drawer-block" id="spaceOps">
-      <label>Étage courant : <b id="curLevelLabel">—</b></label>
+      <label><span data-i18n="plan.curLevel">Étage courant :</span> <b id="curLevelLabel">—</b></label>
       <div class="row" style="display:flex;gap:6px;margin-top:4px">
-        <input class="input" id="lvlKey" placeholder="key (ex: rdc)" style="flex:2">
-        <input class="input" id="lvlLabel" placeholder="label (ex: RDC)" style="flex:2">
+        <input class="input" id="lvlKey" placeholder="key (ex: rdc)" style="flex:2" data-i18n-ph="plan.ph.lvlKey">
+        <input class="input" id="lvlLabel" placeholder="label (ex: RDC)" style="flex:2" data-i18n-ph="plan.ph.lvlLabel">
       </div>
-      <button class="btn tiny ghost" id="addLevelBtn">+ Ajouter cet étage</button>
-      <button class="btn tiny danger" id="delLevelBtn">Supprimer l'étage courant</button>
+      <button class="btn tiny ghost" id="addLevelBtn" data-i18n="plan.btn.addLevel">+ Ajouter cet étage</button>
+      <button class="btn tiny danger" id="delLevelBtn" data-i18n="plan.btn.delLevel">Supprimer l'étage courant</button>
     </div>
 
     <div class="drawer-block" id="planOps">
-      <label>Plan de l'étage courant (SVG/PNG/JPEG)</label>
+      <label data-i18n="plan.plan.label">Plan de l'étage courant (SVG/PNG/JPEG)</label>
       <input class="input" id="planFile" type="file" accept="image/svg+xml,image/png,image/jpeg">
       <div class="row" style="display:flex;gap:6px;margin:6px 0">
-        <input class="input" id="planW" placeholder="Largeur px (ex: 1200)" style="flex:1">
-        <input class="input" id="planH" placeholder="Hauteur px (ex: 800)" style="flex:1">
+        <input class="input" id="planW" placeholder="Largeur px (ex: 1200)" style="flex:1" data-i18n-ph="plan.ph.width">
+        <input class="input" id="planH" placeholder="Hauteur px (ex: 800)" style="flex:1" data-i18n-ph="plan.ph.height">
       </div>
-      <button class="btn ok" id="uploadPlanBtn">Enregistrer le plan</button>
+      <button class="btn ok" id="uploadPlanBtn" data-i18n="plan.btn.uploadPlan">Enregistrer le plan</button>
     </div>
 
     <div class="drawer-block" id="placeOps">
-      <label>Cabin placement (mode édition)</label>
-      <button class="btn ghost" id="placeToggle">✏️ Activer le placement par glisser</button>
-      <div id="unplaced" class="empty">Chargement des cabines…</div>
+      <label data-i18n="plan.place.label">Cabin placement (mode édition)</label>
+      <button class="btn ghost" id="placeToggle" data-i18n="plan.btn.placeOn">✏️ Activer le placement par glisser</button>
+      <div id="unplaced" class="empty" data-i18n="plan.unplaced.loading">Chargement des cabines…</div>
     </div>
 
     <div class="drawer-block" id="beaconOps">
-      <label>📍 Balises de l'étage (géolocalisation indoor)</label>
+      <label data-i18n="plan.beacon.label">📍 Balises de l'étage (géolocalisation indoor)</label>
       <div class="row" style="display:flex;gap:5px;margin-bottom:6px">
-        <input class="input" id="bcUuid" placeholder="uuid (ex: B1)" style="flex:2">
-        <input class="input" id="bcLabel" placeholder="label (ex: Nord)" style="flex:2">
+        <input class="input" id="bcUuid" placeholder="uuid (ex: B1)" style="flex:2" data-i18n-ph="plan.ph.uuid">
+        <input class="input" id="bcLabel" placeholder="label (ex: Nord)" style="flex:2" data-i18n-ph="plan.ph.beaconLabel">
       </div>
       <div class="row" style="display:flex;gap:5px;margin-bottom:6px">
         <input class="input" id="bcX" placeholder="x" type="number" style="flex:1">
         <input class="input" id="bcY" placeholder="y" type="number" style="flex:1">
       </div>
-      <button class="btn tiny ghost" id="addBeaconBtn">+ Ajouter la balise (QR auto IPS-XXXXXXXX)</button>
-      <div id="beaconList" class="empty">Aucune balise.</div>
-      <button class="btn ghost" id="simBtn" style="margin-top:10px">📡 Simuler ma position</button>
+      <button class="btn tiny ghost" id="addBeaconBtn" data-i18n="plan.btn.addBeacon">+ Ajouter la balise (QR auto IPS-XXXXXXXX)</button>
+      <div id="beaconList" class="empty" data-i18n="plan.beacon.none">Aucune balise.</div>
+      <button class="btn ghost" id="simBtn" style="margin-top:10px" data-i18n="plan.btn.sim">📡 Simuler ma position</button>
       <div id="simInfo" class="meta" style="margin-top:6px"></div>
-      <label style="margin-top:12px">Scan balise QR (position actuelle)</label>
+      <label style="margin-top:12px" data-i18n="plan.scan.label">Scan balise QR (position actuelle)</label>
       <div class="row" style="display:flex;gap:5px">
         <input class="input" id="scanCode" placeholder="IPS-XXXXXXXX" style="flex:2">
         <button class="btn tiny ghost" id="scanBtn">📷</button>
       </div>
       <div id="curPosInfo" class="meta" style="margin-top:6px"></div>
-      <button class="btn ghost" id="guideBtn" style="margin-top:10px">🧭 Guider vers la cabine la plus proche</button>
+      <button class="btn ghost" id="guideBtn" style="margin-top:10px" data-i18n="plan.btn.guide">🧭 Guider vers la cabine la plus proche</button>
       <div id="guideInfo" class="guide-info"></div>
     </div>
   </div>
@@ -186,10 +187,16 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="/vendor/i18n/translations.js"></script>
+<script src="/vendor/i18n/i18n.js"></script>
+<script src="/vendor/i18n/pages/plan.js"></script>
+<script>I18N.init();</script>
+
 <script>
 (function(){
   'use strict';
   const $ = (id) => document.getElementById(id);
+  const T = (k, v) => (window.I18N ? window.I18N.t(k, v) : k);
   let token = localStorage.getItem('plan_token') || '';
   let spaces = [], currentSpace = null, currentLevel = null;
   let map = null, overlay = null, markerLayer = null, markers = {};
@@ -207,8 +214,8 @@
   }
   async function api(path, opts = {}) {
     const res = await fetch(API + path, { ...opts, headers: auth(opts.headers) });
-    const json = await res.json().catch(() => ({ success: false, message: 'Réponse invalide' }));
-    if (!res.ok && !json.success) throw new Error(json.message || ('Erreur ' + res.status));
+    const json = await res.json().catch(() => ({ success: false, message: T('plan.errInvalid') }));
+    if (!res.ok && !json.success) throw new Error(json.message || T('plan.errApi', { status: res.status }));
     return json;
   }
   function toast(m){
@@ -233,9 +240,10 @@
     return 'st-available';
   }
   const STATUS_TEXT = {
-    AVAILABLE: 'Prête', CLEANING_REQUIRED: 'Nettoyage requise', MAINTENANCE: 'Maintenance',
-    OCCUPIED_BY_GUEST: 'Occupée (client)', OCCUPIED_BY_OWNER: 'Occupée (propriétaire)'
+    AVAILABLE: true, CLEANING_REQUIRED: true, MAINTENANCE: true,
+    OCCUPIED_BY_GUEST: true, OCCUPIED_BY_OWNER: true
   };
+  const statusText = (c) => STATUS_TEXT[c.status] ? T('plan.status.' + c.status) : c.status;
 
   // ============ LOAD ALL DATA ============
   async function loadAll(){
@@ -244,13 +252,13 @@
       spaces = s.spaces || [];
       const field = $('spaceSel');
       const prev = currentSpace ? currentSpace._id : field.value;
-      field.innerHTML = '<option value="">— Sélectionner un bâtiment —</option>' +
-        spaces.map(sp => `<option value="${sp._id}">${sp.name} (${sp.levels.length} étg.)</option>`).join('');
+      field.innerHTML = '<option value="">' + T('plan.placeholder.building') + '</option>' +
+        spaces.map(sp => `<option value="${sp._id}">${sp.name} (${T('plan.levelsAbbr', { n: sp.levels.length })})</option>`).join('');
       if (spaces.length) {
         field.value = spaces.some(sp => sp._id === prev) ? prev : spaces[0]._id;
         await selectSpace(field.value);
       } else {
-        $('spaceDesc').textContent = 'Aucun bâtiment — ouvrez "Gérer / Éditer" pour en créer un.';
+        $('spaceDesc').textContent = T('plan.noSpace');
         $('levelBar').innerHTML = '';
         statsRender([]);
       }
@@ -265,7 +273,7 @@
     currentSpace = sp;
     stopSim();
     currentLevel = sp.levels[0] ? sp.levels[0].key : null;
-    $('spaceDesc').textContent = (sp.type || 'BUILDING') + ' — ' + (sp.address || '') + (sp.levels.length ? ` — ${sp.levels.length} étage(s)` : ' — aucun étage');
+    $('spaceDesc').textContent = (sp.type || 'BUILDING') + ' — ' + (sp.address || '') + (sp.levels.length ? ` — ${T('plan.spaceLevels', { n: sp.levels.length })}` : ' — ' + T('plan.spaceNoLevels'));
     renderLevelTabs();
     renderMap();
     await loadCabins();
@@ -274,9 +282,9 @@
 
   function renderLevelTabs(){
     const bar = $('levelBar');
-    if (!currentSpace || !currentSpace.levels.length){ bar.innerHTML = '<span class="muted" style="font-size:.8rem">Ajoutez un étage puis son plan dans "Gérer / Éditer".</span>'; return; }
+    if (!currentSpace || !currentSpace.levels.length){ bar.innerHTML = '<span class="muted" style="font-size:.8rem">' + T('plan.levels.hint') + '</span>'; return; }
     bar.innerHTML = currentSpace.levels.map(l => {
-      const dim = l.planImage ? `${l.width}×${l.height}px` : 'sans plan';
+      const dim = l.planImage ? `${l.width}×${l.height}px` : T('plan.levels.noPlan');
       return `<button class="lvl ${l.key===currentLevel?'active':''}" data-k="${l.key}">${l.label} <span class="dim">· ${dim}</span></button>`;
     }).join('');
     bar.querySelectorAll('.lvl').forEach(b => b.onclick = async () => {
@@ -340,7 +348,7 @@
             method: 'PATCH',
             body: JSON.stringify({ spaceId: currentSpace._id, level: currentLevel, x: p.lng, y: p.lat })
           });
-          toast('Position enregistrée');
+          toast(T('plan.toast.posSaved'));
         } catch (e) { toast(e.message); await loadCabins(); }
       });
       const bind = () => m.bindPopup(popupHTML(c));
@@ -359,12 +367,12 @@
     const ticket = c.activeTicket;
     return `<div class="pop">
       <b>${c.name}</b>
-      <div class="meta">${c.serialNumber} · <span class="badge" style="background:${task?'#451a03;color:#f4c078':'#1c252b'}">● ${STATUS_TEXT[c.status] || c.status}</span>${task?'<br>🧹 Mission en cours':''}${ticket?'<br>🎫 Ticket #'+ticket.status:''}</div>
+      <div class="meta">${c.serialNumber} · <span class="badge" style="background:${task?'#451a03;color:#f4c078':'#1c252b'}">● ${statusText(c)}</span>${task?'<br>🧹 '+T('plan.pop.task'):''}${ticket?'<br>🎫 '+T('plan.pop.ticket', { status: ticket.status }):''}</div>
       <div class="actions">
-        ${task ? '' : '<button class="btn tiny ok" onclick="window.pa.clean(\'' + c._id + '\')">🧹 Nettoyer</button>'}
-        <button class="btn tiny ghost" onclick="window.pa.test(\'' + c.serialNumber + '\')">🔌 Self-test</button>
-        <button class="btn tiny ghost" onclick="window.pa.ticket(\'' + c.serialNumber + '\')">🎫 Ticket</button>
-        ${editMode ? '<button class="btn tiny danger" onclick="window.pa.unplace(\'' + c._id + '\')">Retirer</button>' : ''}
+        ${task ? '' : '<button class="btn tiny ok" onclick="window.pa.clean(\'' + c._id + '\')">🧹 ' + T('plan.pop.clean') + '</button>'}
+        ${'<button class="btn tiny ghost" onclick="window.pa.test(\'' + c.serialNumber + '\')">🔌 ' + T('plan.pop.test') + '</button>'}
+        ${'<button class="btn tiny ghost" onclick="window.pa.ticket(\'' + c.serialNumber + '\')">🎫 ' + T('plan.pop.ticketBtn') + '</button>'}
+        ${editMode ? '<button class="btn tiny danger" onclick="window.pa.unplace(\'' + c._id + '\')">' + T('plan.pop.remove') + '</button>' : ''}
       </div>
     </div>`;
   }
@@ -373,30 +381,30 @@
     const counts = {};
     data.forEach(c => { const k = statusClass(c).replace('st-',''); counts[k] = (counts[k]||0) + 1; });
     const defs = [
-      ['available','#6bbf9c','Prête'], ['dirty','#f2a65a','Nettoyage'], ['maintenance','#e8735f','Maintenance'],
-      ['guest','#5aa9f2','Occupée'], ['owner','#8fa2a9','Proprio'], ['factory','#b57df2','Usine']
+      ['available','#6bbf9c',()=>T('plan.stat.ready')], ['dirty','#f2a65a',()=>T('plan.stat.clean')], ['maintenance','#e8735f',()=>T('plan.stat.maint')],
+      ['guest','#5aa9f2',()=>T('plan.stat.occupied')], ['owner','#8fa2a9',()=>T('plan.stat.owner')], ['factory','#b57df2',()=>T('plan.stat.factory')]
     ];
-    $('stats').innerHTML = defs.map(([k,color,label]) => counts[k] ? `<span class="stat"><i style="background:${color}"></i>${counts[k]} ${label}</span>` : '').join('')
-      || '<span class="stat" style="opacity:.6">Aucune cabine placée</span>';
+    $('stats').innerHTML = defs.map(([k,color,label]) => counts[k] ? `<span class="stat"><i style="background:${color}"></i>${counts[k]} ${label()}</span>` : '').join('')
+      || '<span class="stat" style="opacity:.6">' + T('plan.stat.none') + '</span>';
   }
 
   async function renderUnplaced(){
     const box = $('unplaced');
-    if (!currentSpace){ box.innerHTML = '<span class="empty">Créez un bâtiment pour placer des cabines.</span>'; return; }
+    if (!currentSpace){ box.innerHTML = '<span class="empty">' + T('plan.unplaced.noSpace') + '</span>'; return; }
     try {
       const placed = new Set((cabinData||[]).map(c => c._id));
       const hk = await api('/api/housekeeping/parc');
       const all = hk.cabins || [];
       const free = all.filter(c => !placed.has(c._id));
-      if (!free.length){ box.innerHTML = '<span class="empty">Toutes les cabines sont placées.</span>'; return; }
-      box.innerHTML = free.map(c => `<div class="cabin-row"><b>${c.name}</b><span class="muted" style="font-size:.68rem">${c.serialNumber}</span><button class="btn tiny ghost" data-place="${c._id}">Placer</button></div>`).join('');
+      if (!free.length){ box.innerHTML = '<span class="empty">' + T('plan.unplaced.allPlaced') + '</span>'; return; }
+      box.innerHTML = free.map(c => `<div class="cabin-row"><b>${c.name}</b><span class="muted" style="font-size:.68rem">${c.serialNumber}</span><button class="btn tiny ghost" data-place="${c._id}">${T('plan.btn.place')}</button></div>`).join('');
       box.querySelectorAll('[data-place]').forEach(b => b.onclick = () =>
         api('/api/spaces/cabins/' + b.dataset.place + '/indoor-position', {
           method: 'PATCH',
           body: JSON.stringify({ spaceId: currentSpace._id, level: currentLevel, x: 500, y: 400 })
-        }).then(() => { toast('Cabine placée — glissez-la'); loadCabins(); }).catch(e => toast(e.message))
+        }).then(() => { toast(T('plan.toast.cabinPlaced')); loadCabins(); }).catch(e => toast(e.message))
       );
-    } catch (e) { box.innerHTML = '<span class="empty">Cabines indisponibles.</span>'; }
+    } catch (e) { box.innerHTML = '<span class="empty">' + T('plan.unplaced.unavailable') + '</span>'; }
   }
 
   async function addCabinAt(y, x) {}
@@ -405,29 +413,29 @@
   async function clean(cabinId){
     try {
       const r = await api('/api/housekeeping/tasks', { method: 'POST', body: JSON.stringify({ cabinId, assignedAgent: 'Plan intérieur' }) });
-      toast('Mission créée — ' + r.task.cabinSerial);
+      toast(T('plan.toast.mission', { serial: r.task.cabinSerial }));
       await loadCabins();
     } catch (e) { toast(e.message); }
   }
   async function test(serial){
     try {
       await api('/api/installer/self-test', { method: 'POST', body: JSON.stringify({ serialNumber: serial, component: 'lock' }) });
-      toast('Commande self-test envoyée');
+      toast(T('plan.toast.selfTest'));
     } catch (e) { toast(e.message); }
   }
   async function ticket(serial){
-    const title = prompt('Titre du ticket :');
+    const title = prompt(T('plan.prompt.ticket'));
     if (!title) return;
     try {
       await api('/api/tickets', { method: 'POST', body: JSON.stringify({ serialNumber: serial, title, description: 'Créé depuis le plan intérieur' }) });
-      toast('Ticket créé');
+      toast(T('plan.toast.ticketCreated'));
       await loadCabins();
     } catch (e) { toast(e.message); }
   }
   async function unplace(cabinId){
     try {
       await api('/api/spaces/cabins/' + cabinId + '/indoor-position', { method: 'PATCH', body: JSON.stringify({ spaceId: null }) });
-      toast('Cabine retirée du plan');
+      toast(T('plan.toast.cabinRemoved'));
       await loadCabins();
     } catch (e) { toast(e.message); }
   }
@@ -441,16 +449,16 @@
     planOps.classList.toggle('hidden', !on);
     placeOps.classList.toggle('hidden', !on);
     $('beaconOps').classList.toggle('hidden', !on);
-    if (on){ renderBeacons(); } else { $('beaconList').innerHTML = '<span class="empty">Aucun bâtiment sélectionné.</span>'; stopSim(); }
+    if (on){ renderBeacons(); } else { $('beaconList').innerHTML = '<span class="empty">' + T('plan.beacon.noSpace') + '</span>'; stopSim(); }
     const lvl = currentSpace ? currentSpace.levels.find(l => l.key === currentLevel) : null;
-    $('curLevelLabel').textContent = lvl ? (lvl.label + ' (' + lvl.key + ')') : '(aucun étage)';
-    if (lvl){ $('planW').placeholder = 'Largeur px (ex: ' + (lvl.width||1200) + ')'; $('planH').placeholder = 'Hauteur px (ex: ' + (lvl.height||800) + ')'; }
+    $('curLevelLabel').textContent = lvl ? (lvl.label + ' (' + lvl.key + ')') : T('plan.noLevel');
+    if (lvl){ $('planW').placeholder = T('plan.ph.widthEx', { n: (lvl.width||1200) }); $('planH').placeholder = T('plan.ph.heightEx', { n: (lvl.height||800) }); }
   }
 
   async function uploadPlan(){
     const file = $('planFile').files[0];
-    if (!file || !currentSpace) return toast('Choisissez un fichier plan d\u2019abord');
-    if (file.size > 3.5 * 1024 * 1024) return toast('Fichier trop lourd (max ~3,5 MB)');
+    if (!file || !currentSpace) return toast(T('plan.toast.chooseFile'));
+    if (file.size > 3.5 * 1024 * 1024) return toast(T('plan.toast.fileTooBig'));
     const reader = new FileReader();
     reader.onload = async e => {
       const body = { image: e.target.result };
@@ -458,7 +466,7 @@
       if (w) body.width = w; if (h) body.height = h;
       try {
         await api(`/api/spaces/${currentSpace._id}/levels/${currentLevel}/plan`, { method: 'POST', body: JSON.stringify(body) });
-        toast('Plan enregistré');
+        toast(T('plan.toast.planSaved'));
         const sp = await api('/api/spaces/' + currentSpace._id);
         currentSpace = sp.space;
         spaces = spaces.map(x => x._id === currentSpace._id ? sp.space : x);
@@ -481,7 +489,7 @@
   function setCurrentPos(x, y, label) {
     currentPos = { x: Number(x), y: Number(y) };
     const el = $('curPosInfo');
-    el.textContent = (label || 'Position') + ' : x=' + currentPos.x.toFixed(0) + ', y=' + currentPos.y.toFixed(0);
+    el.textContent = (label || T('plan.pos')) + ' : x=' + currentPos.x.toFixed(0) + ', y=' + currentPos.y.toFixed(0);
     if (!simLayer) simLayer = L.layerGroup().addTo(map);
     simLayer.clearLayers();
     L.circleMarker([currentPos.y, currentPos.x], { radius: 6, color: '#6bbf9c', fillOpacity: .95 }).addTo(simLayer);
@@ -490,11 +498,11 @@
 
   async function renderBeacons(){
     const box = $('beaconList');
-    if (!currentSpace){ box.innerHTML = '<span class="empty">Aucun bâtiment sélectionné.</span>'; return; }
+    if (!currentSpace){ box.innerHTML = '<span class="empty">' + T('plan.beacon.noSpace') + '</span>'; return; }
     try {
       const j = await api('/api/spaces/' + currentSpace._id + '/beacons?level=' + encodeURIComponent(currentLevel || ''));
       beacons = j.beacons || [];
-      if (!beacons.length){ box.innerHTML = '<span class="empty">Aucune balise sur cet étage — ajoutez-en au moins 3.</span>'; $('simInfo').textContent = ''; return; }
+      if (!beacons.length){ box.innerHTML = '<span class="empty">' + T('plan.beacon.empty') + '</span>'; $('simInfo').textContent = ''; return; }
       box.innerHTML = beacons.map((b) => `<div class="cabin-row">
         <span class="beacon-qr" id="qrb-${b._id}"></span>
         <div style="flex:1">
@@ -509,32 +517,33 @@
       box.querySelectorAll('[data-here]').forEach((b) => b.onclick = () => {
         const target = beacons.find(x => x._id === b.dataset.here);
         if (!target) return;
-        setCurrentPos(target.x, target.y, 'Balise « ' + (target.label || target.uuid) + ' » (QR scanné)');
-        toast('Position fixée sur la balise — puis "Guider vers la cabine"');
+        setCurrentPos(target.x, target.y, T('plan.pos.beacon', { label: (target.label || target.uuid) }));
+        toast(T('plan.toast.posFixed'));
       });
       box.querySelectorAll('[data-bdel]').forEach((b) => b.onclick = () =>
         api('/api/spaces/' + currentSpace._id + '/beacons/' + b.dataset.bdel, { method: 'DELETE' })
-          .then(() => { toast('Balise supprimée'); renderBeacons(); })
+          .then(() => { toast(T('plan.toast.beaconDeleted')); renderBeacons(); })
           .catch((e) => toast(e.message))
       );
-    } catch (e) { box.innerHTML = '<span class="empty">Balises indisponibles.</span>'; }
+    } catch (e) { box.innerHTML = '<span class="empty">' + T('plan.beacon.unavailable') + '</span>'; }
   }
 
   const bearing = (dx, dy) => {
     const deg = Math.atan2(dy, dx) * 180 / Math.PI;
-    const dirs = ['Est', 'Nord-Est', 'Nord', 'Nord-Ouest', 'Ouest', 'Sud-Ouest', 'Sud', 'Sud-Est'];
-    return dirs[Math.round(((deg % 360) + 360) % 360 / 45) % 8];
+    const dirs = ['E', 'NE', 'N', 'NW', 'W', 'SW', 'S', 'SE'];
+    const key = dirs[Math.round(((deg % 360) + 360) % 360 / 45) % 8];
+    return T('plan.dir.' + key);
   };
 
   function renderGuidance() {
     const info = $('guideInfo');
-    if (!currentPos) { info.innerHTML = 'Scannez une balise QR ou lancez la simulation pour obtenir votre position.'; return; }
+    if (!currentPos) { info.innerHTML = T('plan.guide.scan'); return; }
     if (!simLayer) simLayer = L.layerGroup().addTo(map);
     simLayer.clearLayers();
     L.circleMarker([currentPos.y, currentPos.x], { radius: 7, color: '#6bbf9c', fillOpacity: .95 }).addTo(simLayer);
 
     const onLevel = (cabinData || []).filter(c => c.level === currentLevel && c.x && c.y);
-    if (!onLevel.length) { info.innerHTML = 'Aucune cabine placée sur cet étage.'; return; }
+    if (!onLevel.length) { info.innerHTML = T('plan.guide.none'); return; }
 
     let nearest = null, best = Infinity;
     onLevel.forEach(c => {
@@ -548,18 +557,18 @@
     L.polyline([[currentPos.y, currentPos.x], to], { className: 'guide-line', color: '#f2a65a', weight: 2, dashArray: '6 5' }).addTo(simLayer);
 
     const cap = bearing(nearest.x - currentPos.x, nearest.y - currentPos.y);
-    info.innerHTML = `🎯 <b>${nearest.name}</b> (${String(nearest.serialNumber).slice(-5)}) · direction <b>${cap}</b> · distance ≈ <b>${best.toFixed(0)} px</b>`;
+    info.innerHTML = T('plan.guide.result', { name: nearest.name, serial: String(nearest.serialNumber).slice(-5), dir: cap, dist: best.toFixed(0) });
   }
   function clearGuidance() { $('guideInfo').innerHTML = ''; }
 
   function addBeacon(){
-    if (!currentSpace || !currentLevel) return toast('Sélectionnez un bâtiment et un étage');
+    if (!currentSpace || !currentLevel) return toast(T('plan.toast.selectSpaceLevel'));
     const uuid = $('bcUuid').value.trim(), x = parseFloat($('bcX').value), y = parseFloat($('bcY').value);
-    if (!uuid) return toast('uuid requis');
+    if (!uuid) return toast(T('plan.toast.uuidRequired'));
     api('/api/spaces/' + currentSpace._id + '/beacons', {
       method: 'POST',
       body: JSON.stringify({ uuid, label: $('bcLabel').value.trim(), level: currentLevel, x: x || 0, y: y || 0 })
-    }).then(() => { toast('Balise ajoutée'); $('bcUuid').value = ''; $('bcLabel').value = ''; $('bcX').value = ''; $('bcY').value = ''; renderBeacons(); })
+    }).then(() => { toast(T('plan.toast.beaconAdded')); $('bcUuid').value = ''; $('bcLabel').value = ''; $('bcX').value = ''; $('bcY').value = ''; renderBeacons(); })
       .catch((e) => toast(e.message));
   }
 
@@ -573,7 +582,7 @@
     clearInterval(simTimer);
     if (simLayer) simLayer.clearLayers();
     if ($('simBtn').classList.contains('ok')) $('simBtn').classList.remove('ok');
-    $('simBtn').textContent = '📡 Simuler ma position';
+    $('simBtn').textContent = T('plan.btn.sim');
   }
 
   function simTick(){
@@ -592,20 +601,20 @@
         L.circleMarker([ty, tx], { radius: 5, color: '#5aa9f2', fillOpacity: .9 }).addTo(simLayer);
         L.circleMarker([j.point.y, j.point.x], { radius: 5, color: '#6bbf9c', fillOpacity: .9 }).addTo(simLayer);
         L.polyline([[ty, tx], [j.point.y, j.point.x]], { color: '#f4c078', dashArray: '4 6', weight: 1 }).addTo(simLayer);
-        $('simInfo').textContent = `bleu: réelle (${tx.toFixed(0)},${tx.toFixed(0)}) · vert: estimée (${j.point.x.toFixed(0)},${j.point.y.toFixed(0)}) → erreur ≈ ${err.toFixed(0)} px`;
+        $('simInfo').textContent = T('plan.simInfo', { rx: tx.toFixed(0), ry: ty.toFixed(0), ex: j.point.x.toFixed(0), ey: j.point.y.toFixed(0), err: err.toFixed(0) });
         currentPos = { x: j.point.x, y: j.point.y };
-        $('curPosInfo').textContent = 'Position estimée : x=' + j.point.x.toFixed(0) + ', y=' + j.point.y.toFixed(0);
+        $('curPosInfo').textContent = T('plan.pos.estimated', { x: j.point.x.toFixed(0), y: j.point.y.toFixed(0) });
         clearGuidance();
       }).catch(() => { /* conserver la dernière estimation */ });
   }
 
   function toggleSim(){
-    if (!currentSpace || !currentLevel) return toast('Sélectionnez un bâtiment et un étage');
+    if (!currentSpace || !currentLevel) return toast(T('plan.toast.selectSpaceLevel'));
     if (simRunning){ stopSim(); return; }
-    if (beacons.length < 3) return toast('Ajoutez au moins 3 balises pour trianguler');
+    if (beacons.length < 3) return toast(T('plan.toast.need3'));
     stopSim();
     simRunning = true;
-    $('simBtn').textContent = '⏹ Arrêter la simulation';
+    $('simBtn').textContent = T('plan.btn.simStop');
     $('simBtn').classList.add('ok');
     simT = 0;
     if (!simLayer) simLayer = L.layerGroup().addTo(map);
@@ -625,26 +634,26 @@
   let refreshT = null;
 
   // ============ UI WIRING ============
-  $('btnLogin').onclick = () => { $('drawer').classList.add('open'); $('backdrop').classList.add('show'); $('drawerTitle').textContent = 'Connexion'; $('authBlock').classList.remove('hidden'); $('adminBlock').classList.add('hidden'); };
-  $('btnDrawer').onclick = () => { $('drawer').classList.add('open'); $('backdrop').classList.add('show'); $('drawerTitle').textContent = 'Gestion du bâtiment'; populatePlanField(); };
+  $('btnLogin').onclick = () => { $('drawer').classList.add('open'); $('backdrop').classList.add('show'); $('drawerTitle').textContent = T('plan.drawer.login'); $('authBlock').classList.remove('hidden'); $('adminBlock').classList.add('hidden'); };
+  $('btnDrawer').onclick = () => { $('drawer').classList.add('open'); $('backdrop').classList.add('show'); $('drawerTitle').textContent = T('plan.drawer.title'); populatePlanField(); };
   $('backdrop').onclick = () => { $('drawer').classList.remove('open'); $('backdrop').classList.remove('show'); };
   $('loginBtn').onclick = async () => {
     const email = $('email').value.trim(), password = $('password').value;
-    if (!email || !password) return toast('Email et mot de passe requis');
+    if (!email || !password) return toast(T('plan.toast.credsRequired'));
     try {
       const j = await api('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
-      if (!j.user || (j.user.role !== 'PARTNER' && j.user.role !== 'ADMIN')) return toast('Compte sans accès gestion');
+      if (!j.user || (j.user.role !== 'PARTNER' && j.user.role !== 'ADMIN')) return toast(T('plan.toast.noAccess'));
       token = j.token; localStorage.setItem('plan_token', token);
       setLoggedIn(true);
-      toast('Connecté');
+      toast(T('plan.toast.connected'));
     } catch (e) { toast(e.message); }
   };
   $('createSpaceBtn').onclick = async () => {
     const name = $('newName').value.trim();
-    if (!name) return toast('Nom requis');
+    if (!name) return toast(T('plan.toast.nameRequired'));
     try {
       const sp = await api('/api/spaces', { method: 'POST', body: JSON.stringify({ name, type: $('newType').value, address: $('newAddress').value.trim() }) });
-      toast('Bâtiment créé');
+      toast(T('plan.toast.spaceCreated'));
       $('newName').value = ''; $('newAddress').value = '';
       await loadAll();
       $('spaceSel').value = sp.space._id;
@@ -654,10 +663,10 @@
   $('addLevelBtn').onclick = async () => {
     if (!currentSpace) return;
     const key = $('lvlKey').value.trim(), label = $('lvlLabel').value.trim();
-    if (!key) return toast('Clé d\u2019étage requise');
+    if (!key) return toast(T('plan.toast.levelKeyRequired'));
     try {
       await api('/api/spaces/' + currentSpace._id + '/levels', { method: 'POST', body: JSON.stringify({ key, label: label || key }) });
-      toast('Étage ajouté');
+      toast(T('plan.toast.levelAdded'));
       const sp = await api('/api/spaces/' + currentSpace._id); currentSpace = sp.space;
       spaces = spaces.map(x => x._id === currentSpace._id ? sp.space : x);
       if (!currentLevel) currentLevel = key;
@@ -666,10 +675,10 @@
   };
   $('delLevelBtn').onclick = async () => {
     if (!currentSpace || !currentLevel) return;
-    if (!confirm('Supprimer l\u2019étage ' + currentLevel + ' et son plan ?')) return;
+    if (!confirm(T('plan.confirm.delLevel', { level: currentLevel }))) return;
     try {
       await api('/api/spaces/' + currentSpace._id + '/levels/' + currentLevel, { method: 'DELETE' });
-      toast('Étage supprimé');
+      toast(T('plan.toast.levelDeleted'));
       const sp = await api('/api/spaces/' + currentSpace._id); currentSpace = sp.space;
       spaces = spaces.map(x => x._id === currentSpace._id ? sp.space : x);
       currentLevel = currentSpace.levels[0] ? currentSpace.levels[0].key : null;
@@ -680,30 +689,42 @@
   $('addBeaconBtn').onclick = addBeacon;
   $('simBtn').onclick = toggleSim;
   $('scanBtn').onclick = async () => {
-    if (!currentSpace) return toast('Sélectionnez un bâtiment');
+    if (!currentSpace) return toast(T('plan.toast.selectSpace'));
     const code = $('scanCode').value.trim();
-    if (!code) return toast('Saisissez le code QR balise (IPS-XXXXXXXX)');
+    if (!code) return toast(T('plan.toast.enterCode'));
     try {
       const j = await api('/api/spaces/' + currentSpace._id + '/beacons/verify', { method: 'POST', body: JSON.stringify({ code }) });
       if (!j.success) throw new Error(j.message);
       if (j.beacon.level !== currentLevel) {
-        toast('La balise est sur l\'étage « ' + j.beacon.level + ' » — passez sur cet étage');
+        toast(T('plan.toast.otherLevel', { level: j.beacon.level }));
         currentLevel = j.beacon.level;
         renderLevelTabs();
         await loadCabins();
       }
-      setCurrentPos(j.beacon.x, j.beacon.y, 'Balise « ' + (j.beacon.label || j.beacon.code) + ' »');
-      toast('QR balise vérifié — position ' + j.beacon.x + ',' + j.beacon.y);
+      setCurrentPos(j.beacon.x, j.beacon.y, T('plan.pos.beacon2', { label: (j.beacon.label || j.beacon.code) }));
+      toast(T('plan.toast.qrVerified', { x: j.beacon.x, y: j.beacon.y }));
       $('scanCode').value = '';
     } catch (e) { toast(e.message); }
   };
   $('guideBtn').onclick = () => { renderGuidance(); };
   $('placeToggle').onclick = () => {
     editMode = !editMode;
-    $('placeToggle').textContent = editMode ? '✔ Placement actif — cliquez pour poser' : '✏️ Activer le placement par glisser';
+    $('placeToggle').textContent = editMode ? T('plan.btn.placeActive') : T('plan.btn.placeOn');
     $('placeToggle').classList.toggle('ok', editMode);
     loadCabins();
   };
+
+  // ============ I18N RE-RENDER ============
+  window.addEventListener('i18n:change', () => {
+    $('drawerTitle').textContent = $('authBlock').classList.contains('hidden') ? T('plan.drawer.title') : T('plan.drawer.login');
+    $('placeToggle').textContent = editMode ? T('plan.btn.placeActive') : T('plan.btn.placeOn');
+    $('simBtn').textContent = simRunning ? T('plan.btn.simStop') : T('plan.btn.sim');
+    statsRender(cabinData || []);
+    renderLevelTabs();
+    renderMarkers();
+    renderUnplaced();
+    populatePlanField();
+  });
 
   // ============ BOOT ============
   if (token) setLoggedIn(true);
@@ -712,8 +733,8 @@
   window.addEventListener('resize', () => { if (map) map.invalidateSize(); });
 })();
 </script>
-<footer class="app-footer">&copy; pixelsoftwaredesign 2026 &middot; Plan &mdash; Atlas Cabine
-  <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
+<footer class="app-footer"><span data-i18n="plan.foot">&copy; pixelsoftwaredesign 2026 &middot; Plan &mdash; Atlas Cabine</span>
+  <div class="site-links"><a href="/" data-i18n="nav.home">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener" data-i18n="nav.atlas">Atlas cabine</a><span data-i18n-switcher></span></div>
 </footer>
 </body>
 </html>

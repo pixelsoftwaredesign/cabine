@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#10161a">
 <meta name="author" content="pixelsoftwaredesign">
 <!-- © pixelsoftwaredesign 2026 -->
-<title>Workforce & KPI</title>
+<title data-i18n="workforce.titleTag">Workforce & KPI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -68,22 +68,22 @@
 </style>
 </head>
 <body>
-<header><h1>🎯 Workforce <span>& KPI</span> <a href="/plan.html" style="font-size:.66rem;font-weight:600;color:var(--accent);text-decoration:none;vertical-align:middle;margin-left:8px;border:1px solid var(--border);padding:3px 9px;border-radius:99px;">🧭 Plan intérieur ↗</a></h1><div class="sub">Supervision des agents, performance & rémunération hebdomadaire</div></header>
+<header><h1><span data-i18n-html="workforce.h1" style="color:var(--text)">🎯 Workforce <span>& KPI</span></span> <a href="/plan.html" style="font-size:.66rem;font-weight:600;color:var(--accent);text-decoration:none;vertical-align:middle;margin-left:8px;border:1px solid var(--border);padding:3px 9px;border-radius:99px;">🧭 <span data-i18n="workforce.planLink">Plan intérieur</span> ↗</a></h1><div class="sub" data-i18n="workforce.sub">Supervision des agents, performance & rémunération hebdomadaire</div><div style="display:flex;justify-content:flex-end;margin-top:6px"><span data-i18n-switcher></span></div></header>
 
 <main>
   <div id="authCard" class="card">
-    <h2>Connexion gestion</h2>
-    <label>Email</label><input class="input" id="email" type="email" placeholder="manager@exemple.com">
-    <label>Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
-    <button class="btn" id="loginBtn">Se connecter</button>
+    <h2 data-i18n="workforce.loginTitle">Connexion gestion</h2>
+    <label data-i18n="workforce.email">Email</label><input class="input" id="email" type="email" placeholder="manager@exemple.com" data-i18n-ph="workforce.emailPh">
+    <label data-i18n="workforce.password">Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
+    <button class="btn" id="loginBtn" data-i18n="workforce.loginBtn">Se connecter</button>
   </div>
 
   <div id="appView" class="hidden">
     <div class="tabs" id="mainTabs">
-      <button class="tab active" data-v="kpis">📊 KPIs</button>
-      <button class="tab" data-v="agents">👷 Agents</button>
-      <button class="tab" data-v="primes">💰 Primes</button>
-      <button class="tab" data-v="rating">⭐ Notation</button>
+      <button class="tab active" data-v="kpis" data-i18n="workforce.tabKpis">📊 KPIs</button>
+      <button class="tab" data-v="agents" data-i18n="workforce.tabAgents">👷 Agents</button>
+      <button class="tab" data-v="primes" data-i18n="workforce.tabPrimes">💰 Primes</button>
+      <button class="tab" data-v="rating" data-i18n="workforce.tabRating">⭐ Notation</button>
     </div>
 
     <div id="tabKpis">
@@ -91,35 +91,35 @@
         <div class="kpi" id="kpiGrid"></div>
       </div>
       <div class="card">
-        <h2>Performance par agent</h2>
+        <h2 data-i18n="workforce.perfTitle">Performance par agent</h2>
         <div id="kpiAgents"></div>
       </div>
     </div>
 
     <div id="tabAgents" class="hidden">
       <div class="card" id="agentFormCard">
-        <h2>➕ Ajouter un agent</h2>
+        <h2 data-i18n="workforce.agentFormTitle">➕ Ajouter un agent</h2>
         <div class="row">
-          <div><label>Nom complet</label><input class="input" id="agName" placeholder="Prénom Nom"></div>
-          <div><label>Email</label><input class="input" id="agEmail" type="email" placeholder="agent@exemple.com"></div>
+          <div><label data-i18n="workforce.agName">Nom complet</label><input class="input" id="agName" placeholder="Prénom Nom" data-i18n-ph="workforce.agNamePh"></div>
+          <div><label data-i18n="workforce.agEmail">Email</label><input class="input" id="agEmail" type="email" placeholder="agent@exemple.com" data-i18n-ph="workforce.agEmailPh"></div>
         </div>
         <div class="row">
-          <div><label>Mot de passe</label><input class="input" id="agPass" type="password" placeholder="••••••"></div>
-          <div><label>Téléphone</label><input class="input" id="agPhone" placeholder="+216 …"></div>
+          <div><label data-i18n="workforce.agPass">Mot de passe</label><input class="input" id="agPass" type="password" placeholder="••••••"></div>
+          <div><label data-i18n="workforce.agPhone">Téléphone</label><input class="input" id="agPhone" placeholder="+216 …" data-i18n-ph="workforce.agPhonePh"></div>
         </div>
         <div class="row">
-          <div><label>Rôle</label><select class="input" id="agRole"><option value="HOUSEKEEPER">🧽 Housekeeper</option><option value="TECHNICIAN">🛠️ Technicien</option><option value="MANAGER">🎯 Manager</option></select></div>
-          <div><label>Zone (ville)</label><input class="input" id="agZoneCity" placeholder="Tunis"></div>
+          <div><label data-i18n="workforce.agRole">Rôle</label><select class="input" id="agRole"><option value="HOUSEKEEPER" data-i18n="workforce.roleHousekeeper">🧽 Housekeeper</option><option value="TECHNICIAN" data-i18n="workforce.roleTechnician">🛠️ Technicien</option><option value="MANAGER" data-i18n="workforce.roleManager">🎯 Manager</option></select></div>
+          <div><label data-i18n="workforce.agZone">Zone (ville)</label><input class="input" id="agZoneCity" placeholder="Tunis" data-i18n-ph="workforce.agZonePh"></div>
         </div>
-        <label>Compétences (séparées par des virgules)</label>
-        <input class="input" id="agSkills" placeholder="nettoyage approfondi, petite plomberie…">
-        <button class="btn" id="agCreate">Créer l'agent</button>
+        <label data-i18n="workforce.agSkills">Compétences (séparées par des virgules)</label>
+        <input class="input" id="agSkills" placeholder="nettoyage approfondi, petite plomberie…" data-i18n-ph="workforce.agSkillsPh">
+        <button class="btn" id="agCreate" data-i18n="workforce.agCreate">Créer l'agent</button>
       </div>
       <div class="filter" id="agentFilter">
-        <button class="chip active" data-f="">Tous</button>
-        <button class="chip" data-f="HOUSEKEEPER">Housekeepers</button>
-        <button class="chip" data-f="TECHNICIAN">Techniciens</button>
-        <button class="chip" data-f="MANAGER">Managers</button>
+        <button class="chip active" data-f="" data-i18n="workforce.wfAll">Tous</button>
+        <button class="chip" data-f="HOUSEKEEPER" data-i18n="workforce.wfHousekeepers">Housekeepers</button>
+        <button class="chip" data-f="TECHNICIAN" data-i18n="workforce.wfTechnicians">Techniciens</button>
+        <button class="chip" data-f="MANAGER" data-i18n="workforce.wfManagers">Managers</button>
       </div>
       <div id="agentList" class="stagger-in"></div>
     </div>
@@ -127,35 +127,35 @@
     <div id="tabPrimes" class="hidden">
       <div class="card">
         <div class="row">
-          <div><label>Début de semaine</label><input class="input" id="weekStart" type="date"></div>
-          <div><label>Fin de semaine</label><input class="input" id="weekEnd" type="date"></div>
+          <div><label data-i18n="workforce.weekStart">Début de semaine</label><input class="input" id="weekStart" type="date"></div>
+          <div><label data-i18n="workforce.weekEnd">Fin de semaine</label><input class="input" id="weekEnd" type="date"></div>
         </div>
         <div class="row">
-          <button class="btn" id="primesLoad" style="flex:1">Calculer les primes</button>
-          <button class="btn ghost" id="primesPdf" style="flex:1">📄 Exporter le PDF</button>
+          <button class="btn" id="primesLoad" style="flex:1" data-i18n="workforce.calcPrimes">Calculer les primes</button>
+          <button class="btn ghost" id="primesPdf" style="flex:1" data-i18n="workforce.exportPdf">📄 Exporter le PDF</button>
         </div>
       </div>
       <div class="card" id="primesCard" style="display:none">
         <h2 id="primesTitle"></h2>
         <div id="primesTable"></div>
         <div class="item" id="primesTotals"></div>
-        <div class="meta">🧾 Forfaits : mission <b id="lblMission"></b> · maintenance <b id="lblMaint"></b> · photo <b id="lblPhoto"></b> · bonus qualité (≥4.5) <b id="lblQual"></b> · déplacement <b id="lblDisp"></b></div>
+        <div class="meta"><span data-i18n="workforce.feeLabel">🧾 Forfaits :</span> <span data-i18n="workforce.feeMission">mission</span> <b id="lblMission"></b> · <span data-i18n="workforce.feeMaint">maintenance</span> <b id="lblMaint"></b> · <span data-i18n="workforce.feePhoto">photo</span> <b id="lblPhoto"></b> · <span data-i18n="workforce.feeQual">bonus qualité (≥4.5)</span> <b id="lblQual"></b> · <span data-i18n="workforce.feeDisp">déplacement</span> <b id="lblDisp"></b></div>
       </div>
     </div>
 
     <div id="tabRating" class="hidden">
       <div class="card">
-        <h2>⭐ Noter la qualité d'une mission</h2>
-        <label>Mission terminée</label>
+        <h2 data-i18n="workforce.rateTitle">⭐ Noter la qualité d'une mission</h2>
+        <label data-i18n="workforce.rateTaskLabel">Mission terminée</label>
         <select class="input" id="rateTask"></select>
-        <label>Note (0 → 5)</label>
+        <label data-i18n="workforce.rateScoreLabel">Note (0 → 5)</label>
         <input class="input" id="rateScore" type="number" min="0" max="5" step="0.1" placeholder="4.8">
-        <button class="btn" id="rateSubmit">Enregistrer la note</button>
+        <button class="btn" id="rateSubmit" data-i18n="workforce.rateSubmit">Enregistrer la note</button>
       </div>
     </div>
   </div>
-  <div class="footnote">&copy; pixelsoftwaredesign 2026
-    <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
+  <div class="footnote"><span data-i18n="workforce.foot">&copy; pixelsoftwaredesign 2026</span>
+    <div class="site-links"><a href="/" data-i18n="nav.home">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a><span data-i18n-switcher></span></div>
   </div>
 </main>
 
@@ -169,10 +169,12 @@
   const $=id=>document.getElementById(id);
   const toast=(m,ok)=>{const t=$('toast');t.textContent=m;t.style.color=ok?'var(--ok)':'var(--danger)';t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2600);};
   const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const T=(k,fb,vars)=>{ if(!k) return fb!==undefined?fb:k; try{ if(window.I18N&&window.I18N.t){ const v=window.I18N.t(k,vars); if(v!==undefined&&v!==k) return v; } }catch(e){} let s=fb!==undefined?fb:k; if(vars) s=s.replace(/\{(\w+)\}/g,(m,x)=>vars[x]!==undefined?vars[x]:m); return s; };
+  const LOC=()=>((window.I18N&&window.I18N.locale)||'fr-FR');
 
   async function api(path,opt){
     const r=await fetch(API+path,Object.assign({headers:{'Content-Type':'application/json','Authorization':'Bearer '+TOKEN}},opt||{}));
-    const j=await r.json().catch(()=>({success:false,message:'Erreur réseau'}));
+    const j=await r.json().catch(()=>({success:false,message:T('workforce.errNetwork','Erreur réseau')}));
     if(!r.ok && j.status===401){authFail();throw new Error('401');}
     return j;
   }
@@ -192,44 +194,47 @@
   }
 
   // ---------- KPIS ----------
-  const fmtMin=m=>m!=null?Math.round(m)+' min':'—';
+  const fmtMin=m=>m!=null?Math.round(m)+' '+T('workforce.minUnit','min'):'—';
   async function loadKpis(){
     const j=await api('/api/workforce/kpis').catch(()=>null); if(!j)return;
     const g=j.global||{};
     const pct=v=>v!=null?v+'%':'—';
     $('kpiGrid').innerHTML=[
-      ['Note qualité moyenne',g.avgQuality!=null?g.avgQuality+'/5':'—'],
-      ['Missions terminées',g.totalMissions],
-      ['Tickets résolus',g.totalTickets],
-      ['Temps de nettoyage moyen',fmtMin(g.avgCleaningMin)],
-      ['Temps de maintenance moyen',fmtMin(g.avgMaintenanceMin)],
-      ['Conformité photos',pct(g.photoConformity)]
+      [T('workforce.kpiAvgQuality','Note qualité moyenne'),g.avgQuality!=null?g.avgQuality+'/5':'—'],
+      [T('workforce.kpiMissions','Missions terminées'),g.totalMissions],
+      [T('workforce.kpiTickets','Tickets résolus'),g.totalTickets],
+      [T('workforce.kpiCleanTime','Temps de nettoyage moyen'),fmtMin(g.avgCleaningMin)],
+      [T('workforce.kpiMaintTime','Temps de maintenance moyen'),fmtMin(g.avgMaintenanceMin)],
+      [T('workforce.kpiPhoto','Conformité photos'),pct(g.photoConformity)]
     ].map(([l,v])=>`<div class="cell"><b>${v}</b><span>${l}</span></div>`).join('');
-    $('kpiAgents').innerHTML=j.agents.length?`<table class="table"><tr><th>Agent</th><th>Missions</th><th>Tickets</th><th>Temps moy.</th><th>Qualité</th><th>Photos</th></tr>`+j.agents.map(a=>
-      `<tr><td><b>${esc(a.name)}</b><div class="meta">${esc(a.role)}${a.skills&&a.skills.length?` · ${a.skills.slice(0,3).map(esc).join(', ')}`:''}</div></td>
+    $('kpiAgents').innerHTML=j.agents.length?`<table class="table"><tr><th>${T('workforce.thAgent','Agent')}</th><th>${T('workforce.thMissions','Missions')}</th><th>${T('workforce.thTickets','Tickets')}</th><th>${T('workforce.thAvgTime','Temps moy.')}</th><th>${T('workforce.thQuality','Qualité')}</th><th>${T('workforce.thPhotos','Photos')}</th></tr>`+j.agents.map(a=>
+      `<tr><td><b>${esc(a.name)}</b><div class="meta">${esc(RL(a.role))}${a.skills&&a.skills.length?` · ${a.skills.slice(0,3).map(esc).join(', ')}`:''}</div></td>
       <td>${a.completedTasks||0}</td><td>${a.resolvedTickets||0}</td><td>${fmtMin(a.avgTimeMinutes)}</td>
-      <td>${a.qualityScore!=null?a.qualityScore+'/5':'—'}</td><td>${pct(a.photoValidationRate)}</td></tr>`).join('')+'</table>':'<div class="meta">Aucune activité enregistrée.</div>';
+      <td>${a.qualityScore!=null?a.qualityScore+'/5':'—'}</td><td>${pct(a.photoValidationRate)}</td></tr>`).join('')+'</table>':'<div class="meta">'+T('workforce.noActivity','Aucune activité enregistrée.')+'</div>';
   }
 
   // ---------- AGENTS ----------
-  const ROLE_LABEL={HOUSEKEEPER:'🧽 Housekeeper',TECHNICIAN:'🛠️ Technicien',MANAGER:'🎯 Manager'};
-  const STATUS_BADGE={AVAILABLE:'<span class="badge ok">Disponible</span>',ON_MISSION:'<span class="badge blue">En mission</span>',OFF_DUTY:'<span class="badge">Off</span>'};
+  const ROLE_LABEL={HOUSEKEEPER:{k:'workforce.roleHousekeeper',fb:'🧽 Housekeeper'},TECHNICIAN:{k:'workforce.roleTechnician',fb:'🛠️ Technicien'},MANAGER:{k:'workforce.roleManager',fb:'🎯 Manager'}};
+  const RL=(role)=>{ const e=ROLE_LABEL[role]; return e?T(e.k,e.fb):role; };
+  const STATUS_BADGE={AVAILABLE:{k:'workforce.statusAvailable',fb:'Disponible',c:'ok'},ON_MISSION:{k:'workforce.statusOnMission',fb:'En mission',c:'blue'},OFF_DUTY:{k:'workforce.statusOff',fb:'Off',c:''}};
   async function loadAgents(filter){
     const j=await api('/api/workforce'+(filter?'?role='+filter:'')).catch(()=>null); if(!j) return;
-    $('agentList').innerHTML=j.agents.length?j.agents.map(a=>`
+    $('agentList').innerHTML=j.agents.length?j.agents.map(a=>{
+      const sb=STATUS_BADGE[a.workforceStatus]||{fb:'',c:''};
+      return `
       <div class="item">
         <div class="top">
           <b>${esc(a.name)}</b>
-          ${STATUS_BADGE[a.workforceStatus]||''}
-          <span class="meta">${ROLE_LABEL[a.role]||a.role}</span>
-          <button class="btn small ghost" data-toggle="${a._id}" data-status="${a.workforceStatus==='AVAILABLE'?'ON_MISSION':'AVAILABLE'}">${a.workforceStatus==='AVAILABLE'?'En mission':'Dispo'}</button>
+          ${sb.c?`<span class="badge ${sb.c}">${T(sb.k,sb.fb)}</span>`:''}
+          <span class="meta">${RL(a.role)}</span>
+          <button class="btn small ghost" data-toggle="${a._id}" data-status="${a.workforceStatus==='AVAILABLE'?'ON_MISSION':'AVAILABLE'}">${a.workforceStatus==='AVAILABLE'?T('workforce.btnOnMission','En mission'):T('workforce.btnDispo','Dispo')}</button>
         </div>
         <div class="meta">✉️ ${esc(a.email)}${a.phone?' · 📞 '+esc(a.phone):''}${a.assignedZone?.city?' · 📍 '+esc(a.assignedZone.city):''}</div>
         ${a.skills&&a.skills.length?`<div style="margin-top:6px">${a.skills.map(s=>`<span class="tag">${esc(s)}</span>`).join('')}</div>`:''}
-      </div>`).join(''):'<div class="meta">Aucun agent. Créez-en un ci-dessus.</div>';
+      </div>`;}).join(''):'<div class="meta">'+T('workforce.noAgents','Aucun agent. Créez-en un ci-dessus.')+'</div>';
     document.querySelectorAll('[data-toggle]').forEach(b=>b.onclick=async()=>{
       const j=await api('/api/workforce/'+b.dataset.toggle,{method:'PATCH',body:JSON.stringify({workforceStatus:b.dataset.status})});
-      j.success&&toast('Statut mis à jour',true); loadAgents(filter);
+      j.success&&toast(T('workforce.statusUpdated','Statut mis à jour'),true); loadAgents(filter);
     });
   }
   $('agentFilter').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
@@ -242,13 +247,13 @@
     const j=await api('/api/workforce/primes'+(w?'?weekStart='+$('weekStart').value+'&weekEnd='+$('weekEnd').value:'')).catch(()=>null);
     if(!j)return;
     $('primesCard').style.display= j.detail&&j.detail.length?'':'none';
-    if(!j.detail||!j.detail.length){toast('Aucune prime pour la semaine');return;}
-    $('primesTitle').textContent=`Primes & indemnités — semaine du ${new Date(j.week.start).toLocaleDateString('fr-FR')} au ${new Date(j.week.end).toLocaleDateString('fr-FR')}`;
-    $('primesTable').innerHTML=`<table class="table"><tr><th>Agent</th><th>Missions</th><th>Mission</th><th>Photo</th><th>Qualité</th><th>Dépl.</th><th>Total</th></tr>`+
+    if(!j.detail||!j.detail.length){toast(T('workforce.noPrimes','Aucune prime pour la semaine'));return;}
+    $('primesTitle').textContent=T('workforce.primesTitle','Primes & indemnités — semaine du {start} au {end}',{start:new Date(j.week.start).toLocaleDateString(LOC()),end:new Date(j.week.end).toLocaleDateString(LOC())});
+    $('primesTable').innerHTML=`<table class="table"><tr><th>${T('workforce.thAgent','Agent')}</th><th>${T('workforce.thMissions','Missions')}</th><th>${T('workforce.thMission','Mission')}</th><th>${T('workforce.thPhoto','Photo')}</th><th>${T('workforce.thQuality','Qualité')}</th><th>${T('workforce.thDisplacement','Dépl.')}</th><th>${T('workforce.thTotal','Total')}</th></tr>`+
       j.detail.map(d=>`<tr><td><b>${esc(d.name)}</b></td><td>${d.missions}${d.clean?` <span class="meta">(${d.clean} hk${d.maint?' + '+d.maint+' tech.':''})</span>`:''}</td>
       <td>${d.missionPay.toFixed(2)}</td><td>${d.photoPay.toFixed(2)}</td><td>${d.qualityPay.toFixed(2)}</td><td>${d.displacementPay.toFixed(2)}</td>
       <td><b>${d.total.toFixed(2)} €</b></td></tr>`).join('')+'</table>';
-    $('primesTotals').innerHTML=`<h3>Totaux de l'équipe</h3><div style="display:flex;gap:14px;flex-wrap:wrap"><div class="meta">Missions : <b>${j.detail.reduce((s,d)=>s+d.missions,0)}</b></div><div style="color:var(--accent);font-weight:700;font-size:1rem">${j.grandTotal.toFixed(2)} €</div></div>`;
+    $('primesTotals').innerHTML=`<h3>${T('workforce.primesTotalsTitle',"Totaux de l'équipe")}</h3><div style="display:flex;gap:14px;flex-wrap:wrap"><div class="meta">${T('workforce.primesMissions','Missions :')} <b>${j.detail.reduce((s,d)=>s+d.missions,0)}</b></div><div style="color:var(--accent);font-weight:700;font-size:1rem">${j.grandTotal.toFixed(2)} €</div></div>`;
     $('lblMission').textContent=j.pay.missionRate+' €';$('lblMaint').textContent=j.pay.maintenanceRate+' €';
     $('lblPhoto').textContent=j.pay.photoBonus+' €';$('lblQual').textContent=j.pay.qualityBonus+' €';$('lblDisp').textContent=j.pay.displacementFlat+' €';
   }
@@ -263,20 +268,20 @@
   // ---------- NOTATION ----------
   async function loadRating(){
     const j=await api('/api/housekeeping/tasks?status=COMPLETED').catch(()=>null);
-    const ops=j&&j.tasks?j.tasks.filter(t=>!t.qualityScore||false).map(t=>`<option value="${t._id}">${esc(t.cabinSerial||t.cabin||'cabine')} — ${esc(t.type||'mission')} (${esc((t.agentUserId||t.assignedAgent||'agent'))})</option>`):[];
-    $('rateTask').innerHTML=ops.length?'<option value="">— choisir —</option>'+ops.join(''):'<option value="">Aucune mission à noter</option>';
+    const ops=j&&j.tasks?j.tasks.filter(t=>!t.qualityScore||false).map(t=>`<option value="${t._id}">${esc(t.cabinSerial||t.cabin||'—')} — ${esc(t.type||'—')} (${esc((t.agentUserId||t.assignedAgent||'—'))})</option>`):[];
+    $('rateTask').innerHTML=ops.length?'<option value="">'+T('workforce.chooseOption','— choisir —')+'</option>'+ops.join(''):'<option value="">'+T('workforce.noTaskToRate','Aucune mission à noter')+'</option>';
   }
   $('rateSubmit').onclick=async()=>{
     const id=$('rateTask').value; const score=parseFloat($('rateScore').value);
-    if(!id||isNaN(score))return toast('Mission et note requises');
+    if(!id||isNaN(score))return toast(T('workforce.errMissionScore','Mission et note requises'));
     const j=await api('/api/workforce/tasks/'+id+'/rate',{method:'POST',body:JSON.stringify({qualityScore:score})});
-    toast(j.message||(j.success?'Note enregistrée ✔':'Erreur'),j.success); if(j.success){$('rateScore').value='';loadRating();loadKpis();}
+    toast(j.message||(j.success?T('workforce.ratingSaved','Note enregistrée ✔'):T('workforce.error','Erreur')),j.success); if(j.success){$('rateScore').value='';loadRating();loadKpis();}
   };
 
   $('loginBtn').onclick=async()=>{
     const j=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email:$('email').value,password:$('password').value})}).catch(()=>null);
-    if(!j||!j.success){toast('Identifiants invalides');return;}
-    if(!['ADMIN','MANAGER'].includes(j.user.role)){toast('Accès réservé au management');return;}
+    if(!j||!j.success){toast(T('workforce.errCredentials','Identifiants invalides'));return;}
+    if(!['ADMIN','MANAGER'].includes(j.user.role)){toast(T('workforce.errManagement','Accès réservé au management'));return;}
     TOKEN=j.token;localStorage.setItem('wf_token',TOKEN);
     $('authCard').classList.add('hidden');$('appView').classList.remove('hidden');
     initTabs();loadKpis();loadAgents();loadPrimes();
@@ -285,15 +290,24 @@
   $('agCreate').onclick=async()=>{
     const body={name:$('agName').value,email:$('agEmail').value,password:$('agPass').value,phone:$('agPhone').value,role:$('agRole').value,
       skills:$('agSkills').value.split(',').map(s=>s.trim()).filter(Boolean),assignedZone:{city:$('agZoneCity').value}};
-    if(!body.name||!body.email||!body.password)return toast('Nom, email et mot de passe requis');
+    if(!body.name||!body.email||!body.password)return toast(T('workforce.errFields','Nom, email et mot de passe requis'));
     const j=await api('/api/workforce',{method:'POST',body:JSON.stringify(body)});
-    toast(j.message||(j.success?'Agent créé ✔':'Erreur'),j.success);
+    toast(j.message||(j.success?T('workforce.agentCreated','Agent créé ✔'):T('workforce.error','Erreur')),j.success);
     if(j.success){['agName','agEmail','agPass','agPhone','agSkills','agZoneCity'].forEach(id=>$(id).value='');loadAgents($('agentFilter .chip.active')?.dataset.f||'');}
   };
 
   const saved=$('email').value=localStorage.getItem('wf_email')||'';
   if(saved)$('email').value=saved;
   $('email').oninput=e=>localStorage.setItem('wf_email',e.target.value);
+
+  window.addEventListener('i18n:change',()=>{
+    if($('appView').classList.contains('hidden')) return;
+    const v=document.querySelector('#mainTabs .tab.active')?.dataset.v||'kpis';
+    if(v==='kpis') loadKpis();
+    if(v==='agents') loadAgents($('agentFilter .chip.active')?.dataset.f||'');
+    if(v==='primes') loadPrimes();
+    if(v==='rating') loadRating();
+  });
 
   if(TOKEN){api('/api/auth/me').then(j=>{
     if(j.success&&['ADMIN','MANAGER'].includes(j.user.role)){
@@ -303,5 +317,10 @@
   }).catch(authFail);}
 })();
 </script>
+
+<script src="/vendor/i18n/translations.js"></script>
+<script src="/vendor/i18n/i18n.js"></script>
+<script src="/vendor/i18n/pages/workforce.js"></script>
+<script>I18N.init();</script>
 </body>
 </html>

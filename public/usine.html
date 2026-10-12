@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#10161a">
 <meta name="author" content="pixelsoftwaredesign">
 <!-- © pixelsoftwaredesign 2026 -->
-<title>Usine de Cabines — Portail</title>
+<title data-i18n="usine.titleTag">Usine de Cabines — Portail</title>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -84,66 +84,67 @@
 </head>
 <body>
 
-<header id="authHeader" class="hidden"><h1>🏭 Usine de <em>Cabines</em></h1><div class="sub">Assemblage · Banc de test · QR livraison · FOTA</div></header>
+<header id="authHeader" class="hidden"><h1 data-i18n-html="usine.title">🏭 Usine de <em>Cabines</em></h1><div class="sub" data-i18n="usine.subtitle">Assemblage · Banc de test · QR livraison · FOTA</div></header>
 
 <main>
+  <div data-i18n-switcher style="display:flex;justify-content:center;margin:0 0 12px"></div>
   <div id="authView">
     <div class="card" style="max-width:440px;margin:24px auto">
-      <h2>Accès fabriquant</h2>
-      <label>Email</label><input class="input" id="email" type="email" placeholder="usine@exemple.com">
-      <label>Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
-      <button class="btn" id="loginBtn">Se connecter</button>
+      <h2 data-i18n="usine.authTitle">Accès fabriquant</h2>
+      <label data-i18n="usine.email">Email</label><input class="input" id="email" type="email" placeholder="usine@exemple.com">
+      <label data-i18n="usine.password">Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
+      <button class="btn" id="loginBtn" data-i18n="usine.login">Se connecter</button>
     </div>
   </div>
 
   <div id="appView" class="hidden">
     <div class="tabs" id="mainTabs">
-      <button class="tab active" data-v="prod">🔧 Production</button>
-      <button class="tab" data-v="asm">🔩 Assemblage</button>
-      <button class="tab" data-v="models">📐 Modèles</button>
-      <button class="tab" data-v="comps">🧰 Composants</button>
-      <button class="tab" data-v="ships">🚚 Livraisons</button>
-      <button class="tab" data-v="fota">📡 FOTA</button>
+      <button class="tab active" data-v="prod" data-i18n="usine.tab.prod">🔧 Production</button>
+      <button class="tab" data-v="asm" data-i18n="usine.tab.asm">🔩 Assemblage</button>
+      <button class="tab" data-v="models" data-i18n="usine.tab.models">📐 Modèles</button>
+      <button class="tab" data-v="comps" data-i18n="usine.tab.comps">🧰 Composants</button>
+      <button class="tab" data-v="ships" data-i18n="usine.tab.ships">🚚 Livraisons</button>
+      <button class="tab" data-v="fota" data-i18n="usine.tab.fota">📡 FOTA</button>
     </div>
 
     <!-- ============ PRODUCTION ============ -->
     <div id="tabProd">
-      <div class="card"><h2>Production</h2>
+      <div class="card"><h2 data-i18n="usine.prod.title">Production</h2>
         <div class="row">
-          <div class="kpi"><b id="kUnits">--</b><span>Unités</span></div>
-          <div class="kpi"><b id="kAssem">--</b><span>Montage</span></div>
-          <div class="kpi"><b id="kTested">--</b><span>Testées</span></div>
-          <div class="kpi"><b id="kReady">--</b><span>Prêtes envoi</span></div>
+          <div class="kpi"><b id="kUnits">--</b><span data-i18n="usine.prod.units">Unités</span></div>
+          <div class="kpi"><b id="kAssem">--</b><span data-i18n="usine.prod.assembly">Montage</span></div>
+          <div class="kpi"><b id="kTested">--</b><span data-i18n="usine.prod.tested">Testées</span></div>
+          <div class="kpi"><b id="kReady">--</b><span data-i18n="usine.prod.ready">Prêtes envoi</span></div>
         </div>
       </div>
 
       <div class="card">
-        <h2>➕ Enregistrer une unité (assemblage)</h2>
-        <p class="muted" style="font-size:.8rem;margin-bottom:10px">Enregistrez le matériel : série, version carte, MAC ESP32, certificat MQTT généré automatiquement.</p>
+        <h2 data-i18n="usine.reg.title">➕ Enregistrer une unité (assemblage)</h2>
+        <p class="muted" style="font-size:.8rem;margin-bottom:10px" data-i18n="usine.reg.desc">Enregistrez le matériel : série, version carte, MAC ESP32, certificat MQTT généré automatiquement.</p>
         <div class="grid2">
-          <div><label>Numéro de série (optionnel — auto généré)</label><input class="input" id="uSerial" placeholder="CAB-2026-TN-XXXX"></div>
-          <div><label>Nom / modèle</label><input class="input" id="uName" placeholder="Cabane Maison 45m²"></div>
+          <div><label data-i18n="usine.reg.serial">Numéro de série (optionnel — auto généré)</label><input class="input" id="uSerial" placeholder="CAB-2026-TN-XXXX"></div>
+          <div><label data-i18n="usine.reg.name">Nom / modèle</label><input class="input" id="uName" data-i18n-ph="usine.ph.name" placeholder="Cabane Maison 45m²"></div>
         </div>
         <div class="grid2">
-          <div><label>Version carte / armoire</label><input class="input" id="uHw" placeholder="v2.4-PRO"></div>
-          <div><label>Adresse MAC ESP32</label><input class="input" id="uMac" placeholder="24:0A:C4:9B:12:34"></div>
+          <div><label data-i18n="usine.reg.hw">Version carte / armoire</label><input class="input" id="uHw" placeholder="v2.4-PRO"></div>
+          <div><label data-i18n="usine.reg.mac">Adresse MAC ESP32</label><input class="input" id="uMac" placeholder="24:0A:C4:9B:12:34"></div>
         </div>
-        <h3>🏠 Pièces de la cabine (construction)</h3>
+        <h3 data-i18n="usine.reg.rooms">🏠 Pièces de la cabine (construction)</h3>
         <div class="room-grid" id="uRoomGrid"></div>
-        <button class="btn" id="uSave">Enregistrer le matériel</button>
+        <button class="btn" id="uSave" data-i18n="usine.reg.save">Enregistrer le matériel</button>
       </div>
 
-      <div class="card"><h2>📦 Unités en production</h2><div id="unitList" class="stagger-in"></div></div>
+      <div class="card"><h2 data-i18n="usine.units.title">📦 Unités en production</h2><div id="unitList" class="stagger-in"></div></div>
     </div>
 
     <!-- ============ ASSEMBLAGE P1 → P4 ============ -->
     <div id="tabAsm" class="hidden">
       <div class="card">
-        <h2>🔩 Ligne d'assemblage P1 → P4</h2>
-        <p class="muted" style="font-size:.8rem;margin-bottom:10px">Validez chaque poste, opération par opération. Le banc de test QC reste accessible depuis l'onglet Production.</p>
-        <label>Unité en production</label>
+        <h2 data-i18n="usine.asm.title">🔩 Ligne d'assemblage P1 → P4</h2>
+        <p class="muted" style="font-size:.8rem;margin-bottom:10px" data-i18n="usine.asm.desc">Validez chaque poste, opération par opération. Le banc de test QC reste accessible depuis l'onglet Production.</p>
+        <label data-i18n="usine.asm.unit">Unité en production</label>
         <select class="input" id="asmUnit"></select>
-        <button class="btn ghost" id="asmLoad">Charger la cadence</button>
+        <button class="btn ghost" id="asmLoad" data-i18n="usine.asm.load">Charger la cadence</button>
       </div>
       <div id="asmBoard"></div>
     </div>
@@ -151,83 +152,90 @@
     <!-- ============ MODÈLES ============ -->
     <div id="tabModels" class="hidden">
       <div class="card">
-        <h2 id="formTitle">➕ Nouveau modèle de cabine</h2>
-        <p class="muted" style="font-size:.8rem;margin-bottom:10px">Définissez le plan du modèle : nom, prix, stock et pièces (toilette, chambre, bureau, cuisine, salon…).</p>
-        <label>Titre du modèle</label><input class="input" id="fTitle" placeholder="Cabane Maison 45m²">
-        <label>Description</label><textarea class="input" id="fDesc" rows="2" placeholder="Cabine connectée, livrée appairée…"></textarea>
-        <label>Image (URL)</label><input class="input" id="fImage" placeholder="https://…/image.jpg">
+        <h2 id="formTitle" data-i18n="usine.model.new">➕ Nouveau modèle de cabine</h2>
+        <p class="muted" style="font-size:.8rem;margin-bottom:10px" data-i18n="usine.model.desc">Définissez le plan du modèle : nom, prix, stock et pièces (toilette, chambre, bureau, cuisine, salon…).</p>
+        <label data-i18n="usine.model.title">Titre du modèle</label><input class="input" id="fTitle" data-i18n-ph="usine.ph.name" placeholder="Cabane Maison 45m²">
+        <label data-i18n="usine.model.description">Description</label><textarea class="input" id="fDesc" rows="2" data-i18n-ph="usine.model.descPh" placeholder="Cabine connectée, livrée appairée…"></textarea>
+        <label data-i18n="usine.model.image">Image (URL)</label><input class="input" id="fImage" placeholder="https://…/image.jpg">
         <div class="grid2">
-          <div><label>Prix d'achat (€)</label><input class="input" id="fPrice" type="number" min="0"></div>
-          <div><label>Stock</label><input class="input" id="fStock" type="number" min="0" value="999"></div>
+          <div><label data-i18n="usine.model.price">Prix d'achat (€)</label><input class="input" id="fPrice" type="number" min="0"></div>
+          <div><label data-i18n="usine.model.stock">Stock</label><input class="input" id="fStock" type="number" min="0" value="999"></div>
         </div>
         <div class="grid2">
-          <div><label>Location par défaut (€/h)</label><input class="input" id="fRent" type="number" min="0" value="12"></div>
-          <div><label>Capacité (personnes)</label><input class="input" id="fCap" type="number" min="1" value="2"></div>
+          <div><label data-i18n="usine.model.rent">Location par défaut (€/h)</label><input class="input" id="fRent" type="number" min="0" value="12"></div>
+          <div><label data-i18n="usine.model.capacity">Capacité (personnes)</label><input class="input" id="fCap" type="number" min="1" value="2"></div>
         </div>
         <div class="grid2">
-          <div><label>Surface (m²)</label><input class="input" id="fSurf" type="number" min="0"></div>
-          <div><label>Disponible à la vente</label><label class="switch" style="margin-top:14px"><input type="checkbox" id="fAvail" checked><span class="slider"></span></label></div>
+          <div><label data-i18n="usine.model.surface">Surface (m²)</label><input class="input" id="fSurf" type="number" min="0"></div>
+          <div><label data-i18n="usine.model.available">Disponible à la vente</label><label class="switch" style="margin-top:14px"><input type="checkbox" id="fAvail" checked><span class="slider"></span></label></div>
         </div>
-        <h3>🏠 Pièces du modèle</h3>
+        <h3 data-i18n="usine.model.rooms">🏠 Pièces du modèle</h3>
         <div class="room-grid" id="roomGrid"></div>
-        <button class="btn" id="saveBtn">Construire le modèle</button>
-        <button class="btn ghost hidden" id="cancelBtn" style="margin-top:6px">Annuler la modification</button>
+        <button class="btn" id="saveBtn" data-i18n="usine.model.build">Construire le modèle</button>
+        <button class="btn ghost hidden" id="cancelBtn" style="margin-top:6px" data-i18n="usine.model.cancel">Annuler la modification</button>
       </div>
-      <div class="card"><h2>📦 Modèles en catalogue</h2><div id="prodList" class="stagger-in"></div></div>
+      <div class="card"><h2 data-i18n="usine.catalog.title">📦 Modèles en catalogue</h2><div id="prodList" class="stagger-in"></div></div>
     </div>
 
     <!-- ============ COMPOSANTS ============ -->
     <div id="tabComps" class="hidden">
-      <div class="card"><h2>🧰 Stock de composants</h2>
-        <p class="muted" style="font-size:.8rem;margin-bottom:8px">ESP32, relais, serrures, écrans, compteurs…</p>
+      <div class="card"><h2 data-i18n="usine.comp.title">🧰 Stock de composants</h2>
+        <p class="muted" style="font-size:.8rem;margin-bottom:8px" data-i18n="usine.comp.desc">ESP32, relais, serrures, écrans, compteurs…</p>
         <div id="compList"></div>
       </div>
     </div>
 
     <!-- ============ LIVRAISONS ============ -->
     <div id="tabShips" class="hidden">
-      <div class="card"><h2>🚚 Cabines livrées (unités construites)</h2><div id="orderList" class="stagger-in"><p class="muted">Chargement…</p></div></div>
+      <div class="card"><h2 data-i18n="usine.ships.title">🚚 Cabines livrées (unités construites)</h2><div id="orderList" class="stagger-in"><p class="muted" data-i18n="usine.loading">Chargement…</p></div></div>
     </div>
 
     <!-- ============ FOTA ============ -->
     <div id="tabFota" class="hidden">
       <div class="card">
-        <h2>📡 Mise à jour firmware (FOTA)</h2>
-        <label>Numéro de série</label><input class="input" id="fuSerial" placeholder="CAB-2026-TN-XXXX">
-        <label>Version cible</label><input class="input" id="fuVersion" placeholder="v2.4.1">
-        <p class="meta muted" id="fuStatus">Déployez une version stable avant expédition.</p>
-        <button class="btn" id="fuSend">Déployer la version</button>
+        <h2 data-i18n="usine.fota.title">📡 Mise à jour firmware (FOTA)</h2>
+        <label data-i18n="usine.fota.serial">Numéro de série</label><input class="input" id="fuSerial" placeholder="CAB-2026-TN-XXXX">
+        <label data-i18n="usine.fota.version">Version cible</label><input class="input" id="fuVersion" placeholder="v2.4.1">
+        <p class="meta muted" id="fuStatus" data-i18n="usine.fota.status">Déployez une version stable avant expédition.</p>
+        <button class="btn" id="fuSend" data-i18n="usine.fota.deploy">Déployer la version</button>
       </div>
     </div>
   </div>
 </main>
 
 <div class="modal" id="traceModal"><div class="box">
-  <h2 id="traceTitle">Fiche de fabrication</h2>
+  <h2 id="traceTitle" data-i18n="usine.trace.title">Fiche de fabrication</h2>
   <div id="traceBody"></div>
-  <button class="btn ghost" id="traceClose">Fermer</button>
+  <button class="btn ghost" id="traceClose" data-i18n="usine.close">Fermer</button>
 </div></div>
 <div class="modal" id="qrModal"><div class="box">
-  <h2>QR d’appairage</h2>
+  <h2 data-i18n="usine.qr.title">QR d’appairage</h2>
   <div class="qr-wrap" id="qrWrap"></div>
   <p class="muted" id="qrInfo" style="font-size:.8rem;text-align:center"></p>
-  <button class="btn ghost" id="qrClose">Fermer</button>
+  <button class="btn ghost" id="qrClose" data-i18n="usine.close">Fermer</button>
 </div></div>
 
 <div class="toast" id="toast"></div>
+
+<script src="/vendor/i18n/translations.js"></script>
+<script src="/vendor/i18n/i18n.js"></script>
+<script src="/vendor/i18n/pages/usine.js"></script>
+<script>I18N.init();</script>
 
 <script>
 (function(){
   if (window.CabinMotion) CabinMotion.init(document);
   const API = location.origin;
   const $ = (id)=>document.getElementById(id);
-  const FB = { IN_ASSEMBLY:{t:'Montage',c:'warn'}, TESTED:{t:'Testée',c:'blue'}, READY_FOR_SHIPPING:{t:'Prête envoi',c:'ok'}, SHIPPED:{t:'Expédiée',c:'blue'}, INSTALLED:{t:'Installée',c:'blue'}, DELIVERED_AND_COMMISSIONED:{t:'Livrée & prête',c:'ok'} };
+  const T=(k,fb)=>(window.I18N&&window.I18N.t)?window.I18N.t(k):fb;
+  function fbOf(code){ const m={ IN_ASSEMBLY:['Montage','usine.status.inAssembly','warn'], TESTED:['Testée','usine.status.tested','blue'], READY_FOR_SHIPPING:['Prête envoi','usine.status.readyShipping','ok'], SHIPPED:['Expédiée','usine.status.shipped','blue'], INSTALLED:['Installée','usine.status.installed','blue'], DELIVERED_AND_COMMISSIONED:['Livrée & prête','usine.status.delivered','ok'] }; const e=m[code]; return e?{t:T(e[1],e[0]),c:e[2]}:{t:code,c:''}; }
+  function lcOf(code){ const m={ FACTORY_PURCHASED:['Achetée usine','usine.lc.factoryPurchased','warn'], READY_FOR_SHIPPING:['Prête envoi','usine.status.readyShipping','blue'], IN_TRANSIT:['En transit','usine.lc.inTransit','blue'], ASSEMBLY_IN_PROGRESS:['Assemblage','usine.lc.assembly','warn'], OPERATIONAL:['En service','usine.lc.operational','ok'], DECOMPOSITION_REQUESTED:['Décomposition','usine.lc.decomposition','red'], DECOMPOSED_IN_STORAGE:['Stockée','usine.lc.stored','muted'] }; const e=m[code]; return e?[T(e[1],e[0]),e[2]]:[code||'—','muted']; }
   let token = localStorage.getItem('usine_token') || '';
   const auth=(h={})=>({ 'Content-Type':'application/json', ...(token?{Authorization:'Bearer '+token}:{}), ...h });
   async function api(path, opts={}){
     const res=await fetch(API+path, {...opts, headers: auth(opts.headers)});
-    const json=await res.json().catch(()=>({success:false,message:'Réponse invalide'}));
-    if(!res.ok && !json.success) throw new Error(json.message||('Erreur '+res.status));
+    const json=await res.json().catch(()=>({success:false,message:T('usine.err.invalidResponse','Réponse invalide')}));
+    if(!res.ok && !json.success) throw new Error(json.message||T('usine.err.status','Erreur {n}').replace('{n}',res.status));
     return json;
   }
   function toast(m){
@@ -239,8 +247,8 @@
   const escAttr=s=>esc(s);
 
   let rooms=[]; let products=[]; let selectedRooms=new Set();
+  let lastTraceSerial=null; let lastQr=null;
   const roomInfo=(code)=>rooms.find(r=>r.code===code)||{code,label:code,icon:'🚪'};
-  const LC={FACTORY_PURCHASED:['Achetée usine','warn'],READY_FOR_SHIPPING:['Prête envoi','blue'],IN_TRANSIT:['En transit','blue'],ASSEMBLY_IN_PROGRESS:['Assemblage','warn'],OPERATIONAL:['En service','ok'],DECOMPOSITION_REQUESTED:['Décomposition','red'],DECOMPOSED_IN_STORAGE:['Stockée','muted']};
 
   function renderRoomGrid(wrapId){
     const wrap=$(wrapId); if(!wrap) return; wrap.innerHTML='';
@@ -264,10 +272,10 @@
   // ============ AUTH ============
   $('loginBtn').onclick=async()=>{
     const email=$('email').value.trim(), password=$('password').value;
-    if(!email||!password) return toast('Email et mot de passe requis');
+    if(!email||!password) return toast(T('usine.toast.emailPass','Email et mot de passe requis'));
     try{
       const json=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email,password})});
-      if(json.user?.role!=='ADMIN') return toast('Compte sans accès usine');
+      if(json.user?.role!=='ADMIN') return toast(T('usine.toast.noAccess','Compte sans accès usine'));
       token=json.token; localStorage.setItem('usine_token',token);
       $('authView').classList.add('hidden'); $('appView').classList.remove('hidden');
       renderRoomGrid('uRoomGrid'); renderRoomGrid('roomGrid'); loadAll();
@@ -289,24 +297,24 @@
     try{
       const j=await api('/api/factory/units');
       wrap.innerHTML='';
-      if(!j.units.length){ wrap.innerHTML='<p class="muted">Aucune unité enregistrée. Enregistrez du matériel ci-dessus.</p>'; return; }
+      if(!j.units.length){ wrap.innerHTML='<p class="muted">'+T('usine.units.empty','Aucune unité enregistrée. Enregistrez du matériel ci-dessus.')+'</p>'; return; }
       j.units.forEach(u=>{
         const el=document.createElement('div'); el.className='unit';
-        const st=FB[u.factoryStatus]||{t:u.factoryStatus,c:''};
-        const lcs=LC[u.lifecycle]||[u.lifecycle||'—','muted'];
+        const st=fbOf(u.factoryStatus);
+        const lcs=lcOf(u.lifecycle);
         const mac=u.hardware?.esp32MacAddress||'--';
         el.innerHTML=`
           <div class="top">
             <div style="width:42px;height:42px;border-radius:11px;background:linear-gradient(155deg,rgba(242,166,90,.32),rgba(242,166,90,.05));border:1px solid rgba(242,166,90,.22);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">🏠</div>
             <div style="flex:1;min-width:0">
               <b>${u.serialNumber} <span class="badge ${st.c}">${st.t}</span> <span class="badge ${lcs[1]}">${lcs[0]}</span></b>
-              <div class="meta">${u.name} · carte ${u.hardware?.hardwareVersion||'--'} · MAC ${mac}${u.hasToken?' · QR appairé':''}</div>
+              <div class="meta">${u.name} · ${T('usine.unit.card','carte')} ${u.hardware?.hardwareVersion||'--'} · MAC ${mac}${u.hasToken?' · '+T('usine.unit.qrPaired','QR appairé'):''}</div>
             </div>
           </div>
           <div class="actions">
-            <button class="btn ghost small" data-qc="${u._id}">🔬 Banc de test</button>
-            <button class="btn ghost small" data-qr="${u._id}">🏷️ QR livraison</button>
-            <button class="btn ghost small" data-fiche="${u.serialNumber}">📋 Fiche</button>
+            <button class="btn ghost small" data-qc="${u._id}">${T('usine.btn.qc','🔬 Banc de test')}</button>
+            <button class="btn ghost small" data-qr="${u._id}">${T('usine.btn.shippingQr','🏷️ QR livraison')}</button>
+            <button class="btn ghost small" data-fiche="${u.serialNumber}">${T('usine.btn.sheet','📋 Fiche')}</button>
           </div>`;
         wrap.appendChild(el);
       });
@@ -318,38 +326,40 @@
   }
   function skeleton(n=3,h=90){ return Array.from({length:n},()=>`<div class="card skeleton" style="height:${h}px"></div>`).join(''); }
   async function runQC(id,btn){
-    btn.disabled=true; const orig=btn.textContent; btn.textContent='⏳ Test en cours…';
+    btn.disabled=true; const orig=btn.textContent; btn.textContent=T('usine.qc.running','⏳ Test en cours…');
     try{
       const j=await api('/api/factory/units/'+id+'/qc',{method:'POST',body:JSON.stringify({})});
       toast(j.message);
-      if(window.CabinMotion) CabinMotion.toast(j.tests.filter(t=>t.result==='PASS').length+'/5 tests OK');
+      if(window.CabinMotion) CabinMotion.toast(T('usine.qc.tests','{n}/5 tests OK').replace('{n}',j.tests.filter(t=>t.result==='PASS').length));
       loadUnits(); loadMetrics();
     }catch(e){ toast(e.message); btn.disabled=false; btn.textContent=orig; }
   }
   async function genQR(id){
     try{
       const j=await api('/api/factory/units/'+id+'/shipping-qr',{method:'POST',body:JSON.stringify({})});
-      toast('QR généré — '+j.factoryStatus);
-      $('qrInfo').textContent='Série : '+j.serialNumber+' · Token : '+j.token;
+      toast(T('usine.qr.generated','QR généré — ')+fbOf(j.factoryStatus).t);
+      $('qrInfo').textContent=T('usine.qr.info','Série : {s} · Token : {t}').replace('{s}',j.serialNumber).replace('{t}',j.token);
       $('qrWrap').innerHTML='';
       new QRCode($('qrWrap'),{text:j.qr,width:180,height:180,colorDark:'#eef3f1',colorLight:'#1a2228',correctLevel:QRCode.CorrectLevel.M});
+      lastQr={serialNumber:j.serialNumber,token:j.token};
       $('qrModal').classList.add('show');
       loadUnits(); loadMetrics();
     }catch(e){ toast(e.message); }
   }
   async function showTrace(serial){
     try{
+      lastTraceSerial=serial;
       const j=await api('/api/factory/units/'+encodeURIComponent(serial)+'/trace');
       const t=j.trace;
-      $('traceTitle').textContent='Fiche — '+t.serialNumber;
-      const qc=t.qcTests.map(q=>`<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:.85rem"><span class="${q.result==='PASS'?'tt':'ff'}">${q.result==='PASS'?'✓':'✗'} ${q.result}</span> — ${q.test} <span class="muted">· ${q.details}</span></div>`).join('')||'<p class="muted">Aucun test QC</p>';
+      $('traceTitle').textContent=T('usine.trace.sheet','Fiche — {s}').replace('{s}',t.serialNumber);
+      const qc=t.qcTests.map(q=>`<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:.85rem"><span class="${q.result==='PASS'?'tt':'ff'}">${q.result==='PASS'?'✓':'✗'} ${q.result}</span> — ${q.test} <span class="muted">· ${q.details}</span></div>`).join('')||'<p class="muted">'+T('usine.trace.noQc','Aucun test QC')+'</p>';
       $('traceBody').innerHTML=`
-        <p class="muted" style="font-size:.85rem">${t.name} · ${t.factoryStatus}</p>
-        <div class="meta" style="margin:6px 0">Carte ${t.hardware?.hardwareVersion||'--'} · MAC ${t.hardware?.esp32MacAddress||'--'} · MQTT ${t.hardware?.mqttUsername||'--'}</div>
-        <h3>🔬 Tests QC</h3>${qc}
-        <h3>🧾 Commande</h3><p class="muted" style="font-size:.85rem">${t.order?t.order.productId?.title+' · '+fmt(t.order.price)+' · livraison '+new Date(t.order.createdAt).toLocaleDateString('fr-FR'):'Cabine non vendue (stock usine)'}</p>
-        <h3>🛠️ Tickets</h3><p class="muted" style="font-size:.85rem">${t.tickets.length?t.tickets.map(x=>x.title+' ('+x.status+')').join(' · '):'Aucun'}</p>
-        <h3>🧹 Nettoyages</h3><p class="muted" style="font-size:.85rem">${t.tasks.length?t.tasks.length+' intervention(s)':'Aucune'}</p>`;
+        <p class="muted" style="font-size:.85rem">${t.name} · ${fbOf(t.factoryStatus).t}</p>
+        <div class="meta" style="margin:6px 0">${T('usine.trace.board','Carte ')}${t.hardware?.hardwareVersion||'--'} · MAC ${t.hardware?.esp32MacAddress||'--'} · MQTT ${t.hardware?.mqttUsername||'--'}</div>
+        <h3>${T('usine.trace.qc','🔬 Tests QC')}</h3>${qc}
+        <h3>${T('usine.trace.order','🧾 Commande')}</h3><p class="muted" style="font-size:.85rem">${t.order?t.order.productId?.title+' · '+fmt(t.order.price)+T('usine.trace.delivery',' · livraison ')+new Date(t.order.createdAt).toLocaleDateString('fr-FR'):T('usine.trace.notSold','Cabine non vendue (stock usine)')}</p>
+        <h3>${T('usine.trace.tickets','🛠️ Tickets')}</h3><p class="muted" style="font-size:.85rem">${t.tickets.length?t.tickets.map(x=>x.title+' ('+x.status+')').join(' · '):T('usine.trace.none','Aucun')}</p>
+        <h3>${T('usine.trace.clean','🧹 Nettoyages')}</h3><p class="muted" style="font-size:.85rem">${t.tasks.length?T('usine.trace.interventions','{n} intervention(s)').replace('{n}',t.tasks.length):T('usine.trace.noneF','Aucune')}</p>`;
       $('traceModal').classList.add('show');
     }catch(e){ toast(e.message); }
   }
@@ -365,7 +375,7 @@
         esp32MacAddress:$('uMac').value.trim(),
         rooms:[...selectedRooms]
       })});
-      toast('Unité enregistrée : '+j.unit.serialNumber+' ('+j.unit.factoryStatus+')');
+      toast(T('usine.toast.unitSaved','Unité enregistrée : {s} ({st})').replace('{s}',j.unit.serialNumber).replace('{st}',fbOf(j.unit.factoryStatus).t));
       ['uSerial','uName','uHw','uMac'].forEach(id=>$(id).value='');
       selectedRooms.clear(); renderRoomGrid('uRoomGrid');
       loadUnits(); loadMetrics(); loadAsmSel();
@@ -378,20 +388,20 @@
     try{
       const j=await api('/api/factory/units');
       const candidates=j.units.filter(u=>['IN_ASSEMBLY','TESTED'].includes(u.factoryStatus));
-      $('asmUnit').innerHTML=candidates.length?candidates.map(u=>`<option value="${u._id}">${u.serialNumber} — ${FB[u.factoryStatus]?.t||u.factoryStatus}</option>`).join(''):'<option value="">Aucune unité en montage</option>';
+      $('asmUnit').innerHTML=candidates.length?candidates.map(u=>`<option value="${u._id}">${u.serialNumber} — ${fbOf(u.factoryStatus).t}</option>`).join(''):'<option value="">'+T('usine.asm.none','Aucune unité en montage')+'</option>';
       if(asmUnitId && candidates.some(u=>u._id===asmUnitId)) showAsm();
     }catch(e){}
   }
   $('asmLoad').onclick=()=>{ asmUnitId=$('asmUnit').value; asmUnitId&&showAsm(); };
   async function showAsm(){
-    if(!asmUnitId) return toast('Choisissez une unité');
-    $('asmBoard').innerHTML='<p class="muted">Chargement…</p>';
+    if(!asmUnitId) return toast(T('usine.asm.choose','Choisissez une unité'));
+    $('asmBoard').innerHTML='<p class="muted">'+T('usine.loading','Chargement…')+'</p>';
     try{
       const j=await api('/api/factory/units/'+asmUnitId+'/assembly');
       const done=j.assembly.filter(a=>a.status==='DONE').length;
       $('asmBoard').innerHTML=`
         <div class="card">
-          <h2>🏠 ${j.serialNumber} <span class="badge ${done===4?'ok':'warn'}">${done}/4 postes validés</span></h2>
+          <h2>🏠 ${j.serialNumber} <span class="badge ${done===4?'ok':'warn'}">${T('usine.asm.stations','{done}/4 postes validés').replace('{done}',done)}</span></h2>
           <div style="background:var(--card2);border:1px solid var(--border);border-radius:99px;height:10px;overflow:hidden;margin-top:8px"><div style="width:${(done/4*100)}%;height:100%;background:linear-gradient(90deg,var(--ember),var(--pine));transition:width .4s var(--ease-out)"></div></div>
         </div>
       `+j.assembly.map((a,idx)=>{
@@ -400,37 +410,37 @@
         return `<div class="card">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
             <h2 style="margin:0">${a.station} — ${esc(a.label)}</h2>
-            <span class="badge ${a.status==='DONE'?'ok':'warn'}">${a.status==='DONE'?'Terminé':'En attente'}</span>
+            <span class="badge ${a.status==='DONE'?'ok':'warn'}">${a.status==='DONE'?T('usine.asm.done','Terminé'):T('usine.asm.pending','En attente')}</span>
           </div>
-          <div class="meta" style="margin-top:6px">${a.doneBy?('Par '+esc(a.doneBy)):''}${a.startedAt?' · début '+new Date(a.startedAt).toLocaleTimeString('fr-FR').slice(0,5):''}${a.completedAt?' · fin '+new Date(a.completedAt).toLocaleTimeString('fr-FR').slice(0,5):''}</div>
+          <div class="meta" style="margin-top:6px">${a.doneBy?(T('usine.asm.by','Par ')+esc(a.doneBy)):''}${a.startedAt?(T('usine.asm.start',' · début ')+new Date(a.startedAt).toLocaleTimeString('fr-FR').slice(0,5)):''}${a.completedAt?(T('usine.asm.end',' · fin ')+new Date(a.completedAt).toLocaleTimeString('fr-FR').slice(0,5)):''}</div>
           <div style="margin:8px 0">${ops}</div>
           <div class="actions" style="display:flex;gap:8px">
-            <button class="btn small" data-val="${a.station}" ${a.status==='DONE'?'disabled':''}>✔ Valider le poste</button>
-            <button class="btn ghost small" data-reset="${a.station}" ${a.status==='PENDING'?'disabled':''}>↺ Réinitialiser</button>
-            <span class="meta" style="align-self:center">⏱ prévu ${j.stations[idx]?.durationMin||''} min</span>
+            <button class="btn small" data-val="${a.station}" ${a.status==='DONE'?'disabled':''}>${T('usine.asm.validate','✔ Valider le poste')}</button>
+            <button class="btn ghost small" data-reset="${a.station}" ${a.status==='PENDING'?'disabled':''}>${T('usine.asm.reset','↺ Réinitialiser')}</button>
+            <span class="meta" style="align-self:center">${T('usine.asm.duration','⏱ prévu {d} min').replace('{d}',j.stations[idx]?.durationMin||'')}</span>
           </div></div>`;
       }).join('');
       document.querySelectorAll('[data-val]').forEach(b=>b.onclick=async()=>{
         const ops=[...$('asmBoard').querySelectorAll('[data-op]')].filter(i=>i.checked||i.disabled).map(i=>i.dataset.op);
-        try{ const r=await api('/api/factory/units/'+asmUnitId+'/assembly/'+b.dataset.val,{method:'POST',body:JSON.stringify({operations:ops})}); toast('Poste '+b.dataset.val+' validé'); showAsm(); }catch(e){ toast(e.message); }
+        try{ const r=await api('/api/factory/units/'+asmUnitId+'/assembly/'+b.dataset.val,{method:'POST',body:JSON.stringify({operations:ops})}); toast(T('usine.asm.stationOk','Poste {s} validé').replace('{s}',b.dataset.val)); showAsm(); }catch(e){ toast(e.message); }
       });
       document.querySelectorAll('[data-reset]').forEach(b=>b.onclick=async()=>{
-        if(!confirm('Réinitialiser ce poste ?')) return;
-        try{ await api('/api/factory/units/'+asmUnitId+'/assembly/'+b.dataset.reset+'/reset',{method:'POST',body:JSON.stringify({})}); toast('Poste réinitialisé'); showAsm(); }catch(e){ toast(e.message); }
+        if(!confirm(T('usine.confirm.resetStation','Réinitialiser ce poste ?'))) return;
+        try{ await api('/api/factory/units/'+asmUnitId+'/assembly/'+b.dataset.reset+'/reset',{method:'POST',body:JSON.stringify({})}); toast(T('usine.toast.stationReset','Poste réinitialisé')); showAsm(); }catch(e){ toast(e.message); }
       });
     }catch(e){ $('asmBoard').innerHTML='<p class="muted">'+e.message+'</p>'; }
   }
 
   // ============ MODELS ============
-  let editingId=null;
+  let editingId=null; let editingTitle='';
   function resetForm(){
-    editingId=null; $('formTitle').textContent='➕ Nouveau modèle de cabine';
+    editingId=null; editingTitle=''; $('formTitle').textContent=T('usine.model.new','➕ Nouveau modèle de cabine');
     ['fTitle','fDesc','fImage','fPrice','fStock','fRent','fCap','fSurf'].forEach(id=>$(id).value='');
     $('fStock').value=999; $('fRent').value=12; $('fCap').value=2; $('fAvail').checked=true;
     selectedRooms.clear(); renderRoomGrid('roomGrid'); $('cancelBtn').classList.add('hidden');
   }
   function fillForm(p){
-    editingId=p._id; $('formTitle').textContent='✏️ Modifier : '+p.title;
+    editingId=p._id; editingTitle=p.title; $('formTitle').textContent=T('usine.model.edit','✏️ Modifier : ')+p.title;
     $('fTitle').value=p.title||''; $('fDesc').value=p.description||''; $('fImage').value=p.image||'';
     $('fPrice').value=p.price??''; $('fStock').value=p.stock??''; $('fRent').value=p.defaultRentalPricePerHour??'';
     $('fCap').value=p.specs?.capacity??''; $('fSurf').value=p.specs?.surfaceM2??''; $('fAvail').checked=p.available!==false;
@@ -441,21 +451,21 @@
     try{
       const j=await api('/api/factory/products'); products=j.products;
       wrap.innerHTML='';
-      if(!products.length){ wrap.innerHTML='<p class="muted">Aucun modèle.</p>'; return; }
+      if(!products.length){ wrap.innerHTML='<p class="muted">'+T('usine.catalog.empty','Aucun modèle.')+'</p>'; return; }
       products.forEach(p=>{
         const el=document.createElement('div');
         el.className='unit';
         el.innerHTML=`
-          <b>${p.title} <span class="badge ${p.available?'ok':'warn'}">${p.available?'Vente':'Masqué'}</span></b>
-          <div class="meta">${fmt(p.price)} · stock <b>${p.stock}</b> · ${p.specs?.surfaceM2?p.specs.surfaceM2+' m²':''} · ${p.specs?.capacity||2} pers · location ${p.defaultRentalPricePerHour}€/h</div>
-          <div class="meta">🏠 ${(p.specs?.rooms||[]).map(c=>roomInfo(c).label).join(', ')||'aucune pièce'}</div>
-          <div class="actions"><button class="btn ghost small" data-edit="${p._id}">Modifier</button><button class="btn danger small" data-del="${p._id}">Supprimer</button></div>`;
+          <b>${p.title} <span class="badge ${p.available?'ok':'warn'}">${p.available?T('usine.catalog.sale','Vente'):T('usine.catalog.hidden','Masqué')}</span></b>
+          <div class="meta">${fmt(p.price)} · ${T('usine.catalog.stock','stock')} <b>${p.stock}</b> · ${p.specs?.surfaceM2?p.specs.surfaceM2+' m²':''} · ${p.specs?.capacity||2} ${T('usine.catalog.pers','pers')} · ${T('usine.catalog.rent','location')} ${p.defaultRentalPricePerHour}€/h</div>
+          <div class="meta">🏠 ${(p.specs?.rooms||[]).map(c=>roomInfo(c).label).join(', ')||T('usine.catalog.noRooms','aucune pièce')}</div>
+          <div class="actions"><button class="btn ghost small" data-edit="${p._id}">${T('usine.btn.edit','Modifier')}</button><button class="btn danger small" data-del="${p._id}">${T('usine.btn.delete','Supprimer')}</button></div>`;
         wrap.appendChild(el);
       });
       wrap.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>fillForm(products.find(x=>x._id===b.dataset.edit)));
       wrap.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
-        if(!confirm('Supprimer ce modèle ?')) return;
-        try{ await api('/api/factory/products/'+b.dataset.del,{method:'DELETE'}); toast('Modèle supprimé'); loadProducts(); loadMetrics(); resetForm(); }catch(e){ toast(e.message); }
+        if(!confirm(T('usine.confirm.delModel','Supprimer ce modèle ?'))) return;
+        try{ await api('/api/factory/products/'+b.dataset.del,{method:'DELETE'}); toast(T('usine.toast.modelDeleted','Modèle supprimé')); loadProducts(); loadMetrics(); resetForm(); }catch(e){ toast(e.message); }
       });
       if(window.CabinMotion) window.CabinMotion.observeReveals(wrap);
     }catch(e){ wrap.innerHTML='<p class="muted">'+e.message+'</p>'; }
@@ -463,10 +473,10 @@
   $('saveBtn').onclick=async()=>{
     try{
       const title=$('fTitle').value.trim(); const price=Number($('fPrice').value);
-      if(!title||!(price>=0)) return toast('Titre et prix requis');
+      if(!title||!(price>=0)) return toast(T('usine.toast.titlePrice','Titre et prix requis'));
       const body={title,description:$('fDesc').value.trim(),image:$('fImage').value.trim(),price,stock:Number($('fStock').value)||0,defaultRentalPricePerHour:Number($('fRent').value)||0,available:$('fAvail').checked,specs:{capacity:Number($('fCap').value)||1,surfaceM2:$('fSurf').value?Number($('fSurf').value):undefined,rooms:[...selectedRooms]}};
-      if(editingId){ await api('/api/factory/products/'+editingId,{method:'PATCH',body:JSON.stringify(body)}); toast('Modèle mis à jour'); }
-      else { await api('/api/factory/products',{method:'POST',body:JSON.stringify(body)}); toast('Modèle construit'); }
+      if(editingId){ await api('/api/factory/products/'+editingId,{method:'PATCH',body:JSON.stringify(body)}); toast(T('usine.toast.modelUpdated','Modèle mis à jour')); }
+      else { await api('/api/factory/products',{method:'POST',body:JSON.stringify(body)}); toast(T('usine.toast.modelBuilt','Modèle construit')); }
       resetForm(); loadProducts();
     }catch(e){ toast(e.message); }
   };
@@ -474,7 +484,7 @@
 
   // ============ COMPONENTS ============
   async function loadComps(){
-    const wrap=$('compList'); wrap.innerHTML='<p class="muted">Chargement…</p>';
+    const wrap=$('compList'); wrap.innerHTML='<p class="muted">'+T('usine.loading','Chargement…')+'</p>';
     try{
       const j=await api('/api/factory/components');
       wrap.innerHTML='';
@@ -482,7 +492,7 @@
         const el=document.createElement('div'); el.className='comp';
         const warn=c.stock<=c.minWarning;
         el.innerHTML=`
-          <div class="label"><b>${c.label}</b><small>${c.code} · seuil ${c.minWarning}</small></div>
+          <div class="label"><b>${c.label}</b><small>${c.code} · ${T('usine.comp.threshold','seuil ')}${c.minWarning}</small></div>
           <div class="cnt${warn?' warn':''}">${c.stock}</div>
           <div style="display:flex;gap:6px"><button class="btn ghost small" data-dec="${c.code}">−</button><button class="btn ghost small" data-inc="${c.code}">+</button></div>`;
         wrap.appendChild(el);
@@ -501,10 +511,10 @@
     try{
       const j=await api('/api/factory/orders');
       wrap.innerHTML='';
-      if(!j.orders.length){ wrap.innerHTML='<p class="muted">Aucune cabine livrée.</p>'; return; }
+      if(!j.orders.length){ wrap.innerHTML='<p class="muted">'+T('usine.ships.empty','Aucune cabine livrée.')+'</p>'; return; }
       j.orders.forEach(o=>{
         const el=document.createElement('div'); el.className='unit';
-        el.innerHTML=`<b>${o.serialNumber} <span class="badge ok">Livrée</span></b>
+        el.innerHTML=`<b>${o.serialNumber} <span class="badge ok">${T('usine.ships.delivered','Livrée')}</span></b>
           <div class="meta">${o.productTitle} · ${new Date(o.createdAt).toLocaleDateString('fr-FR')} · ${fmt(o.price)}</div>
           <div class="meta">🏠 ${(o.rooms||[]).map(c=>roomInfo(c).label).join(', ')||'—'}</div>`;
         wrap.appendChild(el);
@@ -516,7 +526,7 @@
   // ============ FOTA ============
   $('fuSend').onclick=async()=>{
     const serial=$('fuSerial').value.trim(), version=$('fuVersion').value.trim();
-    if(!serial||!version) return toast('Série et version requises');
+    if(!serial||!version) return toast(T('usine.fota.required','Série et version requises'));
     try{
       const j=await api('/api/factory/fota',{method:'POST',body:JSON.stringify({serialNumber:serial,version})});
       $('fuStatus').textContent=j.message; toast(j.message);
@@ -524,6 +534,19 @@
   };
 
   function loadAll(){ loadMetrics(); loadUnits(); loadAsmSel(); }
+
+  window.addEventListener('i18n:change',()=>{
+    if($('traceModal').classList.contains('show')&&lastTraceSerial) showTrace(lastTraceSerial);
+    if($('qrModal').classList.contains('show')&&lastQr) $('qrInfo').textContent=T('usine.qr.info','Série : {s} · Token : {t}').replace('{s}',lastQr.serialNumber).replace('{t}',lastQr.token);
+    if($('appView').classList.contains('hidden')) return;
+    const act=document.querySelector('#mainTabs .tab.active');
+    const v=act?act.dataset.v:'prod';
+    if(v==='asm'){ loadAsmSel(); if(asmUnitId) showAsm(); }
+    else if(v==='models'){ loadProducts(); if(editingId&&editingTitle) $('formTitle').textContent=T('usine.model.edit','✏️ Modifier : ')+editingTitle; }
+    else if(v==='comps'){ loadComps(); }
+    else if(v==='ships'){ loadOrders(); }
+    else if(v==='prod'){ loadAll(); }
+  });
 
   (async()=>{
     try{ const r=await api('/api/factory/rooms'); rooms=r.rooms||[]; renderRoomGrid('uRoomGrid'); renderRoomGrid('roomGrid'); }catch(e){ rooms=[]; }
@@ -534,8 +557,8 @@
   })();
 })();
 </script>
-<footer class="app-footer">&copy; pixelsoftwaredesign 2026 &middot; Usine &mdash; Atlas Cabine
-  <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
+<footer class="app-footer"><span data-i18n="usine.footer">&copy; pixelsoftwaredesign 2026 &middot; Usine &mdash; Atlas Cabine</span>
+  <div class="site-links"><a href="/" data-i18n="nav.home">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a><span data-i18n-switcher></span></div>
 </footer>
 </body>
 </html>

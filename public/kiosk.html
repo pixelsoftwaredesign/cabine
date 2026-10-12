@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#10161a">
 <meta name="author" content="pixelsoftwaredesign">
 <!-- © pixelsoftwaredesign 2026 -->
-<title>Atlas Cabine — Kiosque</title>
+<title data-i18n="kiosk.titleTag">Atlas Cabine — Kiosque</title>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/biometrics.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -157,26 +157,26 @@
     <h1 id="clock">--:--</h1>
     <span id="date">--</span>
   </div>
-  <div class="status-chip" id="cabinState">Cabine : vérification...</div>
+  <div class="status-chip" id="cabinState" data-i18n="kiosk.checking">Cabine : vérification...</div>
   <div class="card">
-    <p class="lock-hint">🔓 Entrez votre code de réservation pour ouvrir la cabine</p>
+    <p class="lock-hint" data-i18n="kiosk.hint">🔓 Entrez votre code de réservation pour ouvrir la cabine</p>
     <div class="pin-display" id="pinDisplay"></div>
     <div class="keypad" id="keypad"></div>
     <p class="status-msg" id="pinMsg" style="margin-top:12px"></p>
   </div>
   <div class="card biometrics">
-    <p class="status-msg" style="margin-bottom:10px">Ou ouvrez avec la biométrie</p>
+    <p class="status-msg" style="margin-bottom:10px" data-i18n="kiosk.bioPrompt">Ou ouvrez avec la biométrie</p>
     <div class="grid">
-      <button class="btn" id="bioFace">👤 Reconnaissance faciale</button>
-      <button class="btn" id="bioFinger">🫆 Empreinte digitale</button>
+      <button class="btn" id="bioFace" data-i18n="kiosk.bioFace">👤 Reconnaissance faciale</button>
+      <button class="btn" id="bioFinger" data-i18n="kiosk.bioFinger">🫆 Empreinte digitale</button>
     </div>
   </div>
 </div>
 
 <div id="openScreen" class="screen hidden open-screen">
   <span class="open-icon">🔓</span>
-  <div class="open-title">Cabine ouverte</div>
-  <div class="open-sub">La porte est déverrouillée — bienvenue</div>
+  <div class="open-title" data-i18n="kiosk.doorOpenTitle">Cabine ouverte</div>
+  <div class="open-sub" data-i18n="kiosk.doorOpenSub">La porte est déverrouillée — bienvenue</div>
 </div>
 
 <div id="dashScreen" class="screen hidden">
@@ -184,101 +184,101 @@
     <h1 id="dashClock" style="font-size:2.4rem">--:--</h1>
   </div>
   <div class="card card-hero">
-    <p style="margin-bottom:12px"><span class="badge-live"><span class="live-dot"></span> Session active</span></p>
+    <p style="margin-bottom:12px"><span class="badge-live"><span class="live-dot"></span> <span data-i18n="kiosk.sessionActive">Session active</span></span></p>
     <div class="ring-wrap">
       <svg class="countdown-ring" width="92" height="92" id="ringSvg">
         <circle cx="46" cy="46" r="40" stroke="rgba(107,191,156,.15)" stroke-width="7" fill="none"></circle>
         <circle cx="46" cy="46" r="40" stroke="var(--pine)" stroke-width="7" fill="none" stroke-linecap="round"></circle>
       </svg>
       <div>
-        <div class="ring-label">Temps restant</div>
+        <div class="ring-label" data-i18n="kiosk.timeLeft">Temps restant</div>
         <div class="ring-time" id="countdown">--:--</div>
-        <div class="session-line"><span>Cliente :</span><b id="guestName">invité</b></div>
-        <div class="session-line"><span>Fin :</span><b id="endTimeTxt">--:--</b></div>
-        <div class="session-line"><span>Porte :</span><b id="doorState">Ouverte</b></div>
+        <div class="session-line"><span data-i18n="kiosk.guest">Cliente :</span><b id="guestName" data-i18n="kiosk.guestDefault">invité</b></div>
+        <div class="session-line"><span data-i18n="kiosk.end">Fin :</span><b id="endTimeTxt">--:--</b></div>
+        <div class="session-line"><span data-i18n="kiosk.door">Porte :</span><b id="doorState" data-i18n="kiosk.doorLocked">Verrouillée</b></div>
       </div>
     </div>
   </div>
   <div class="card">
     <div class="indicator">
-      <span>Température</span><span class="value" id="temp">--</span>
+      <span data-i18n="kiosk.temp">Température</span><span class="value" id="temp">--</span>
     </div>
     <div class="indicator">
-      <span>Humidité</span><span class="value" id="humidity">--</span>
+      <span data-i18n="kiosk.humidity">Humidité</span><span class="value" id="humidity">--</span>
     </div>
     <div class="indicator">
-      <span>Présence</span><span class="value" id="presence">--</span>
+      <span data-i18n="kiosk.presence">Présence</span><span class="value" id="presence">--</span>
     </div>
   </div>
   <div class="card">
-    <h2 style="font-size:1.1rem; margin-bottom:12px">Contrôles</h2>
+    <h2 style="font-size:1.1rem; margin-bottom:12px" data-i18n="kiosk.controls">Contrôles</h2>
     <div class="grid">
-      <button class="btn" id="btnLight" data-device="lighting">💡 Éclairage</button>
-      <button class="btn" id="btnVent" data-device="ventilation">🌀 Ventilation</button>
-      <button class="btn" id="btnSpeaker" data-device="speaker">🔊 Audio</button>
-      <button class="btn" id="btnLock" data-device="lock">🔒 Serrure</button>
+      <button class="btn" id="btnLight" data-device="lighting" data-i18n="kiosk.light">💡 Éclairage</button>
+      <button class="btn" id="btnVent" data-device="ventilation" data-i18n="kiosk.vent">🌀 Ventilation</button>
+      <button class="btn" id="btnSpeaker" data-device="speaker" data-i18n="kiosk.audio">🔊 Audio</button>
+      <button class="btn" id="btnLock" data-device="lock" data-i18n="kiosk.lock">🔒 Serrure</button>
     </div>
   </div>
   <div class="card">
-    <h2 style="font-size:1.1rem; margin-bottom:12px">Thermostats</h2>
+    <h2 style="font-size:1.1rem; margin-bottom:12px" data-i18n="kiosk.thermostats">Thermostats</h2>
     <div class="thermo-list" id="thermoList">
       <div class="thermo" data-thermo="climate">
         <div class="thermo-head">
-          <span class="thermo-label">🌡️ Climatisation</span>
-          <button class="btn mini" id="btnClimate" data-device="climate">Consigne <b class="thermo-val">22°</b></button>
+          <span class="thermo-label" data-i18n="kiosk.thermoClimate">🌡️ Climatisation</span>
+          <button class="btn mini" id="btnClimate" data-device="climate"><span data-i18n="kiosk.consigne">Consigne</span> <b class="thermo-val">22°</b></button>
         </div>
         <div class="stepper">
           <button class="btn mini" data-step="-1" data-for="climate">−</button>
-          <span class="thermo-range">18–30 °C</span>
+          <span class="thermo-range" data-i18n="kiosk.rangeClimate">18–30 °C</span>
           <button class="btn mini" data-step="1" data-for="climate">+</button>
         </div>
       </div>
       <div class="thermo" data-thermo="heater">
         <div class="thermo-head">
-          <span class="thermo-label">🔥 Chauffage</span>
-          <button class="btn mini" id="btnHeater" data-device="heater">Consigne <b class="thermo-val">34°</b></button>
+          <span class="thermo-label" data-i18n="kiosk.thermoHeater">🔥 Chauffage</span>
+          <button class="btn mini" id="btnHeater" data-device="heater"><span data-i18n="kiosk.consigne">Consigne</span> <b class="thermo-val">34°</b></button>
         </div>
         <div class="stepper">
           <button class="btn mini" data-step="-1" data-for="heater">−</button>
-          <span class="thermo-range">30–40 °C</span>
+          <span class="thermo-range" data-i18n="kiosk.rangeHeater">30–40 °C</span>
           <button class="btn mini" data-step="1" data-for="heater">+</button>
         </div>
       </div>
       <div class="thermo" data-thermo="waterHeater">
         <div class="thermo-head">
-          <span class="thermo-label">♨️ Chauffe-eau</span>
-          <button class="btn mini" id="btnWaterHeater" data-device="waterHeater">Consigne <b class="thermo-val">45°</b></button>
+          <span class="thermo-label" data-i18n="kiosk.thermoWater">♨️ Chauffe-eau</span>
+          <button class="btn mini" id="btnWaterHeater" data-device="waterHeater"><span data-i18n="kiosk.consigne">Consigne</span> <b class="thermo-val">45°</b></button>
         </div>
         <div class="stepper">
           <button class="btn mini" data-step="-1" data-for="waterHeater">−</button>
-          <span class="thermo-range">30–60 °C</span>
+          <span class="thermo-range" data-i18n="kiosk.rangeWater">30–60 °C</span>
           <button class="btn mini" data-step="1" data-for="waterHeater">+</button>
         </div>
       </div>
     </div>
   </div>
   <div class="card">
-    <h2 style="font-size:1.1rem; margin-bottom:12px">Éclairage — couleur</h2>
+    <h2 style="font-size:1.1rem; margin-bottom:12px" data-i18n="kiosk.lightColor">Éclairage — couleur</h2>
     <div class="thermo-list">
       <div class="thermo" data-thermo="lightTemp">
         <div class="thermo-head">
-          <span class="thermo-label">💡 Température de couleur</span>
-          <button class="btn mini" id="btnLightTemp" data-device="lightTemp">Consigne <b class="thermo-val">3500K</b></button>
+          <span class="thermo-label" data-i18n="kiosk.lightTempLabel">💡 Température de couleur</span>
+          <button class="btn mini" id="btnLightTemp" data-device="lightTemp"><span data-i18n="kiosk.consigne">Consigne</span> <b class="thermo-val">3500K</b></button>
         </div>
         <div class="stepper">
           <button class="btn mini" data-step="-100" data-for="lightTemp">−</button>
-          <span class="thermo-range">2700–6500 K · chaud → froid</span>
+          <span class="thermo-range" data-i18n="kiosk.rangeLightTemp">2700–6500 K · chaud → froid</span>
           <button class="btn mini" data-step="100" data-for="lightTemp">+</button>
         </div>
       </div>
       <div class="thermo" data-thermo="lightSat">
         <div class="thermo-head">
-          <span class="thermo-label">❤️ Saturation rouge</span>
-          <button class="btn mini" id="btnLightSat" data-device="lightSat">Consigne <b class="thermo-val">0%</b></button>
+          <span class="thermo-label" data-i18n="kiosk.lightSatLabel">❤️ Saturation rouge</span>
+          <button class="btn mini" id="btnLightSat" data-device="lightSat"><span data-i18n="kiosk.consigne">Consigne</span> <b class="thermo-val">0%</b></button>
         </div>
         <div class="stepper">
           <button class="btn mini" data-step="-5" data-for="lightSat">−</button>
-          <span class="thermo-range">0–100 % · blanc → rouge</span>
+          <span class="thermo-range" data-i18n="kiosk.rangeLightSat">0–100 % · blanc → rouge</span>
           <button class="btn mini" data-step="5" data-for="lightSat">+</button>
         </div>
       </div>
@@ -287,32 +287,39 @@
   <div class="card">
     <button class="mic-btn" id="micBtn">🎙️</button>
     <div class="voice-chips">
-      <span class="voice-chip">« Allume la lumière »</span>
-      <span class="voice-chip">« Éteins le chauffage »</span>
-      <span class="voice-chip">« Quel est l'état ? »</span>
+      <span class="voice-chip" data-i18n="kiosk.vc1">« Allume la lumière »</span>
+      <span class="voice-chip" data-i18n="kiosk.vc2">« Éteins le chauffage »</span>
+      <span class="voice-chip" data-i18n="kiosk.vc3">« Quel est l'état ? »</span>
     </div>
   </div>
   <div class="card guide" id="guideCard">
-    <button class="guide-trigger" id="guideToggle">🛠️ Guide de la cabine <span class="car">▾</span></button>
+    <button class="guide-trigger" id="guideToggle"><span data-i18n="kiosk.guideTitle">🛠️ Guide de la cabine</span> <span class="car">▾</span></button>
     <div class="guide-body">
-      <div class="guide-row"><span>💡 Éclairage</span><span class="guide-cmd">« Allume la lumière »</span></div>
-      <div class="guide-row"><span>💡💡 Couleur (2700–6500 K)</span><span class="guide-cmd">« Lumière à 3500 kelvins »</span></div>
-      <div class="guide-row"><span>❤️ Saturation rouge (0–100)</span><span class="guide-cmd">« Rouge à 80 »</span></div>
-      <div class="guide-row"><span>🌡️ Climatisation (18–30 °C)</span><span class="guide-cmd">« Clim à 22 degrés »</span></div>
-      <div class="guide-row"><span>🔥 Chauffage (30–40 °C)</span><span class="guide-cmd">« Chauffage à 35 degrés »</span></div>
-      <div class="guide-row"><span>♨️ Chauffe-eau (30–60 °C)</span><span class="guide-cmd">« Eau chaude à 50 degrés »</span></div>
-      <div class="guide-row"><span>🌀 Ventilation</span><span class="guide-cmd">« Active la ventilation »</span></div>
-      <div class="guide-row"><span>🔊 Audio</span><span class="guide-cmd">« Allume l'audio »</span></div>
-      <div class="guide-row"><span>🔒 Serrure</span><span class="guide-cmd">« Ferme / ouvre la serrure »</span></div>
+      <div class="guide-row"><span data-i18n="kiosk.g1l">💡 Éclairage</span><span class="guide-cmd" data-i18n="kiosk.g1c">« Allume la lumière »</span></div>
+      <div class="guide-row"><span data-i18n="kiosk.g2l">💡💡 Couleur (2700–6500 K)</span><span class="guide-cmd" data-i18n="kiosk.g2c">« Lumière à 3500 kelvins »</span></div>
+      <div class="guide-row"><span data-i18n="kiosk.g3l">❤️ Saturation rouge (0–100)</span><span class="guide-cmd" data-i18n="kiosk.g3c">« Rouge à 80 »</span></div>
+      <div class="guide-row"><span data-i18n="kiosk.g4l">🌡️ Climatisation (18–30 °C)</span><span class="guide-cmd" data-i18n="kiosk.g4c">« Clim à 22 degrés »</span></div>
+      <div class="guide-row"><span data-i18n="kiosk.g5l">🔥 Chauffage (30–40 °C)</span><span class="guide-cmd" data-i18n="kiosk.g5c">« Chauffage à 35 degrés »</span></div>
+      <div class="guide-row"><span data-i18n="kiosk.g6l">♨️ Chauffe-eau (30–60 °C)</span><span class="guide-cmd" data-i18n="kiosk.g6c">« Eau chaude à 50 degrés »</span></div>
+      <div class="guide-row"><span data-i18n="kiosk.g7l">🌀 Ventilation</span><span class="guide-cmd" data-i18n="kiosk.g7c">« Active la ventilation »</span></div>
+      <div class="guide-row"><span data-i18n="kiosk.g8l">🔊 Audio</span><span class="guide-cmd" data-i18n="kiosk.g8c">« Allume l'audio »</span></div>
+      <div class="guide-row"><span data-i18n="kiosk.g9l">🔒 Serrure</span><span class="guide-cmd" data-i18n="kiosk.g9c">« Ferme / ouvre la serrure »</span></div>
     </div>
   </div>
-  <button class="btn-checkout" id="btnCheckout">🚪 Check-out — terminer la session</button>
+  <button class="btn-checkout" id="btnCheckout" data-i18n="kiosk.checkout">🚪 Check-out — terminer la session</button>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<script src="/vendor/i18n/translations.js"></script>
+<script src="/vendor/i18n/i18n.js"></script>
+<script src="/vendor/i18n/pages/kiosk.js"></script>
+<script>I18N.init();</script>
+
 <script>
 (function () {
+  const T = (k, v) => (window.I18N ? window.I18N.t(k, v) : k);
+  const LOC = () => (window.I18N ? I18N.locale : 'fr-FR');
   const params = new URLSearchParams(location.search);
   const cabinId = params.get('cabin');
   const cabinSpecified = !!cabinId;
@@ -326,6 +333,7 @@
   let unlockTimer = null;
   let recognition = null;
   const deviceStates = {};
+  let lastPresence = null;
 
   const API_BASE = location.origin;
 
@@ -338,7 +346,7 @@
     if (!byId('dashScreen').classList.contains('hidden')) {
       byId('dashClock').textContent = `${hh}:${mm}`;
     }
-    byId('date').textContent = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+    byId('date').textContent = now.toLocaleDateString(LOC(), { weekday: 'long', day: 'numeric', month: 'long' });
   }
   setInterval(tickClock, 1000);
   tickClock();
@@ -389,11 +397,11 @@
 
   async function verifyPin() {
     if (pin.length !== 6) {
-      byId('pinMsg').textContent = 'Code à 6 chiffres';
+      byId('pinMsg').textContent = T('kiosk.pinLen');
       return;
     }
     try {
-      byId('pinMsg').textContent = 'Vérification...';
+      byId('pinMsg').textContent = T('kiosk.verifying');
       const payload = { pinCode: pin };
       if (cabinSpecified) payload.cabinId = cabinId;
       const res = await fetch(`${API_BASE}/api/access/verify`, {
@@ -409,13 +417,13 @@
         disp.classList.remove('shake');
         void disp.offsetWidth; // restart animation
         disp.classList.add('shake');
-        byId('pinMsg').textContent = json.message || 'Code invalide';
-        speak(json.message || 'Code invalide');
+        byId('pinMsg').textContent = json.message || T('kiosk.pinInvalid');
+        speak(json.message || T('kiosk.pinInvalid'));
         return;
       }
       openSession(json.reservation);
     } catch (err) {
-      byId('pinMsg').textContent = 'Erreur réseau';
+      byId('pinMsg').textContent = T('kiosk.networkErr');
     }
   }
 
@@ -442,9 +450,9 @@
     byId('dashScreen').classList.add('view-enter');
     const welcomeCard = byId('dashScreen').querySelector('.card');
     if (welcomeCard) welcomeCard.classList.add('glow-wash');
-    byId('guestName').textContent = reservation.clientName || 'invité';
-    byId('doorState').textContent = 'Ouverte';
-    const endTxt = new Date(reservation.endTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    byId('guestName').textContent = reservation.clientName || T('kiosk.guestDefault');
+    byId('doorState').textContent = T('kiosk.doorOpen');
+    const endTxt = new Date(reservation.endTime).toLocaleTimeString(LOC(), { hour: '2-digit', minute: '2-digit' });
     byId('endTimeTxt').textContent = endTxt;
     startCountdown(reservation.startTime ? new Date(reservation.startTime) : null, new Date(reservation.endTime));
     speak('Bienvenue dans la cabine');
@@ -475,7 +483,7 @@
     byId('dashScreen').classList.add('hidden');
     byId('openScreen').classList.add('hidden');
     byId('lockScreen').classList.remove('hidden');
-    byId('doorState').textContent = 'Verrouillée';
+    byId('doorState').textContent = T('kiosk.doorLocked');
     session = null;
     speak('Votre créneau est terminé');
   }
@@ -486,7 +494,7 @@
   });
 
   byId('btnCheckout').addEventListener('click', async () => {
-    if (!confirm('Terminer votre session maintenant ?')) return;
+    if (!confirm(T('kiosk.confirmEnd'))) return;
     speak('Session terminée, bonne journée');
     if (session && session.id) {
       try {
@@ -550,7 +558,7 @@
       deviceStates[device] = state;
       byId(id).classList.toggle('on', state === 'ON');
       if (device === 'lock' && byId('doorState')) {
-        byId('doorState').textContent = state === 'ON' ? 'Ouverte' : 'Verrouillée';
+        byId('doorState').textContent = state === 'ON' ? T('kiosk.doorOpen') : T('kiosk.doorLocked');
       }
       if (state === 'ON') {
         byId(id).classList.remove('glow-wash');
@@ -567,9 +575,9 @@
     if (serial && socket && socket.connected) {
       socket.emit('iot:command', { cabinSerial: serial, deviceId: device, action: 'SET', value });
     } else if (socket && socket.connected) {
-      toast('Session active requise pour contrôler');
+      toast(T('kiosk.needSession'));
     } else {
-      toast('Connexion au serveur indisponible');
+      toast(T('kiosk.noServer'));
     }
   }
 
@@ -582,17 +590,17 @@
   }
 
   async function biometricUnlock(kindMsg) {
-    if (!window.BioAuth) { byId('pinMsg').textContent = 'Biométrie indisponible (rechargez la page)'; return; }
-    byId('pinMsg').textContent = kindMsg + '… veuillez poser votre ' + (kindMsg === 'Visage' ? 'visage' : 'doigt');
+    if (!window.BioAuth) { byId('pinMsg').textContent = T('kiosk.bioUnavailable'); return; }
+    byId('pinMsg').textContent = kindMsg === 'Visage' ? T('kiosk.bioWaitFace') : T('kiosk.bioWaitFinger');
     try {
       const json = await window.BioAuth.verify();
       if (!handleBioResult(json, kindMsg)) {
         pin = '';
-        byId('pinMsg').textContent = json.message || 'Ouverture biométrique refusée';
+        byId('pinMsg').textContent = json.message || T('kiosk.bioRefused');
         speak(json.message || 'Refusé');
       }
     } catch (e) {
-      byId('pinMsg').textContent = e.message || 'Erreur biométrique';
+      byId('pinMsg').textContent = e.message || T('kiosk.bioError');
     }
   }
 
@@ -620,13 +628,14 @@
         if (window.CabinMotion) CabinMotion.pulseData(byId('humidity'));
       }
       if (d.presence !== undefined) {
-        byId('presence').textContent = d.presence ? 'Détectée' : 'Absente';
+        byId('presence').textContent = d.presence ? T('kiosk.presenceYes') : T('kiosk.presenceNo');
+        lastPresence = d.presence;
         if (window.CabinMotion) CabinMotion.pulseData(byId('presence'));
       }
       const lockVal = d.lock !== undefined ? d.lock : d.lockStatus;
       if (lockVal !== undefined) {
         const open = String(lockVal).toUpperCase() === 'UNLOCKED' || String(lockVal).toUpperCase() === 'OPEN' || lockVal === true || lockVal === 'ON';
-        if (byId('doorState')) byId('doorState').textContent = open ? 'Ouverte' : 'Verrouillée';
+        if (byId('doorState')) byId('doorState').textContent = open ? T('kiosk.doorOpen') : T('kiosk.doorLocked');
         const lb = byId('btnLock');
         if (lb) lb.classList.toggle('on', open);
       }
@@ -644,13 +653,13 @@
       const res = await fetch(`${API_BASE}/api/access/cabin/${serial}/status`);
       const json = await res.json();
       if (json.success) {
-        const s = json.cabin.status === 'OCCUPIED_BY_GUEST' ? 'Occupée' :
-                  json.cabin.status === 'AVAILABLE' ? 'Libre' :
-                  json.cabin.status === 'CLEANING_REQUIRED' ? 'Nettoyage requis' :
-                  json.cabin.status === 'MAINTENANCE' ? 'Maintenance' : 'Mode personnel';
-        const guest = json.cabin.guestState === 'INSIDE' ? 'Client à l’intérieur' :
-                      json.cabin.guestState === 'OUTSIDE' ? 'Client sorti — éclairage coupé' : '';
-        byId('cabinState').textContent = 'Cabine : ' + s + (guest ? ' · ' + guest : '');
+        const s = json.cabin.status === 'OCCUPIED_BY_GUEST' ? T('kiosk.stOccupied') :
+                  json.cabin.status === 'AVAILABLE' ? T('kiosk.stAvailable') :
+                  json.cabin.status === 'CLEANING_REQUIRED' ? T('kiosk.stClean') :
+                  json.cabin.status === 'MAINTENANCE' ? T('kiosk.stMaint') : T('kiosk.stPersonal');
+        const guest = json.cabin.guestState === 'INSIDE' ? T('kiosk.guestInside') :
+                      json.cabin.guestState === 'OUTSIDE' ? T('kiosk.guestOutside') : '';
+        byId('cabinState').textContent = T('kiosk.cabinPrefix') + s + (guest ? ' · ' + guest : '');
       }
     } catch (e) {}
   }
@@ -790,10 +799,22 @@
     if (window.CabinMotion) { window.CabinMotion.init(document); }
     requestAnimationFrame(() => requestAnimationFrame(fn));
   }
+
+  // Re-rendu après changement de langue
+  window.addEventListener('i18n:change', () => {
+    const hasSession = !!session;
+    if (hasSession) {
+      byId('guestName').textContent = session.clientName || T('kiosk.guestDefault');
+      byId('endTimeTxt').textContent = new Date(session.endTime).toLocaleTimeString(LOC(), { hour: '2-digit', minute: '2-digit' });
+    }
+    byId('doorState').textContent = deviceStates.lock === 'ON' ? T('kiosk.doorOpen') : T('kiosk.doorLocked');
+    if (lastPresence !== null) byId('presence').textContent = lastPresence ? T('kiosk.presenceYes') : T('kiosk.presenceNo');
+    loadCabinState();
+  });
 })();
 </script>
-<footer class="app-footer">&copy; pixelsoftwaredesign 2026 &mdash; Atlas Cabine
-  <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
+<footer class="app-footer"><span data-i18n="kiosk.foot">&copy; pixelsoftwaredesign 2026 &mdash; Atlas Cabine</span>
+  <div class="site-links"><a href="/" data-i18n="nav.home">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a><span data-i18n-switcher></span></div>
 </footer>
 </body>
 </html>

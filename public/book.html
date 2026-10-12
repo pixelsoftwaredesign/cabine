@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#10161a">
 <meta name="author" content="pixelsoftwaredesign">
 <!-- © pixelsoftwaredesign 2026 -->
-<title>Réservation — Atlas Cabine</title>
+<title data-i18n="book.titleTag">Réservation — Atlas Cabine</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -103,103 +103,110 @@
 </head>
 <body>
 <header>
-  <h1>🏠 Atlas Cabine</h1>
-  <p class="sub">Réservez, gérez vos accès, contrôlez à la voix.</p>
+  <h1 data-i18n="book.h1">🏠 Atlas Cabine</h1>
+  <p class="sub" data-i18n="book.sub">Réservez, gérez vos accès, contrôlez à la voix.</p>
+  <div data-i18n-switcher style="display:flex;justify-content:center;margin-top:10px"></div>
   <div class="tab-bar" id="tabBar" style="display:none">
-    <button class="active" data-tab="reserve">Réservation</button>
-    <button data-tab="my">Mes réservations <span class="badge-count hidden" id="myCount"></span></button>
+    <button class="active" data-tab="reserve" data-i18n="book.tabReserve">Réservation</button>
+    <button data-tab="my"><span data-i18n="book.tabMy">Mes réservations</span> <span class="badge-count hidden" id="myCount"></span></button>
   </div>
 </header>
 
 <main>
   <!-- Auth -->
   <div id="authCard" class="card">
-    <h2>Connexion pour réserver</h2>
-    <label>Email</label><input class="input" id="email" type="email" placeholder="vous@exemple.com">
-    <label>Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
-    <button class="btn" id="loginBtn">Se connecter / Créer un compte</button>
-    <p style="text-align:center;margin-top:10px"><a href="/map.html" style="color:var(--accent);font-size:.85rem;text-decoration:none">🗺️ Explorer la carte</a></p>
+    <h2 data-i18n="book.authTitle">Connexion pour réserver</h2>
+    <label data-i18n="book.email">Email</label><input class="input" id="email" type="email" placeholder="vous@exemple.com" data-i18n-ph="book.phEmail">
+    <label data-i18n="book.pass">Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••" data-i18n-ph="book.phPass">
+    <button class="btn" id="loginBtn" data-i18n="book.login">Se connecter / Créer un compte</button>
+    <p style="text-align:center;margin-top:10px"><a href="/map.html" style="color:var(--accent);font-size:.85rem;text-decoration:none" data-i18n="book.mapLink">🗺️ Explorer la carte</a></p>
   </div>
 
   <!-- === TAB: Réserver === -->
   <div id="viewReserve" class="hidden">
     <!-- Stepper -->
     <div class="steps" id="stepper">
-      <div class="step active" data-step="1"><span class="num">1</span> Cabine</div>
+      <div class="step active" data-step="1"><span class="num">1</span> <span data-i18n="book.stepCabin">Cabine</span></div>
       <div class="step-line"></div>
-      <div class="step" data-step="2"><span class="num">2</span> Créneau</div>
+      <div class="step" data-step="2"><span class="num">2</span> <span data-i18n="book.stepSlot">Créneau</span></div>
       <div class="step-line"></div>
-      <div class="step" data-step="3"><span class="num">3</span> Confirmation</div>
+      <div class="step" data-step="3"><span class="num">3</span> <span data-i18n="book.stepConfirm">Confirmation</span></div>
     </div>
 
     <!-- Step 1: Cabine -->
     <div id="step1" class="card reveal">
-      <h2>Choisissez une cabine</h2>
+      <h2 data-i18n="book.step1Title">Choisissez une cabine</h2>
       <div class="search-row">
-        <input class="input" id="searchCabins" placeholder="🔍 Rechercher par ville, nom..." autocomplete="off">
-        <select id="sortCabins"><option value="">Trier</option><option value="price-asc">Prix ↑</option><option value="price-desc">Prix ↓</option><option value="name">Nom A→Z</option></select>
+        <input class="input" id="searchCabins" placeholder="🔍 Rechercher par ville, nom..." autocomplete="off" data-i18n-ph="book.phSearchCabin">
+        <select id="sortCabins"><option value="" data-i18n="book.sort">Trier</option><option value="price-asc" data-i18n="book.sortPriceAsc">Prix ↑</option><option value="price-desc" data-i18n="book.sortPriceDesc">Prix ↓</option><option value="name" data-i18n="book.sortName">Nom A→Z</option></select>
       </div>
       <div id="cabins" class="stagger-in"></div>
-      <p id="noCabins" class="muted hidden" style="text-align:center;padding:16px">Aucune cabine trouvée.</p>
+      <p id="noCabins" class="muted hidden" style="text-align:center;padding:16px" data-i18n="book.noCabins">Aucune cabine trouvée.</p>
     </div>
 
     <!-- Step 2: Créneau -->
     <div id="step2" class="card hidden reveal reveal-delay-1">
-      <h2>Choisissez la date et le créneau</h2>
-      <label>Date</label>
+      <h2 data-i18n="book.step2Title">Choisissez la date et le créneau</h2>
+      <label data-i18n="book.date">Date</label>
       <input class="input" id="date" type="date">
       <div class="slots stagger-in" id="slots"></div>
       <div class="search-row" style="margin-top:10px">
-        <label style="margin:0">Durée</label>
+        <label style="margin:0" data-i18n="book.duration">Durée</label>
         <select class="input" id="duration" style="margin:0;flex:0 0 120px">
-          <option value="1">1 heure</option>
-          <option value="2" selected>2 heures</option>
-          <option value="3">3 heures</option>
-          <option value="4">4 heures</option>
+          <option value="1" data-i18n="book.dur1">1 heure</option>
+          <option value="2" selected data-i18n="book.dur2">2 heures</option>
+          <option value="3" data-i18n="book.dur3">3 heures</option>
+          <option value="4" data-i18n="book.dur4">4 heures</option>
         </select>
       </div>
       <div class="summary" id="summaryCard">
-        <div class="row"><span>Cabine</span><b id="sumCabin">—</b></div>
-        <div class="row"><span>Date</span><span id="sumDate">—</span></div>
-        <div class="row"><span>Heure</span><span id="sumTime">—</span></div>
-        <div class="row"><span>Durée</span><span id="sumDur">—</span></div>
-        <div class="row total"><span>Total</span><span class="price" id="sumTotal">—</span></div>
+        <div class="row"><span data-i18n="book.sumCabin">Cabine</span><b id="sumCabin">—</b></div>
+        <div class="row"><span data-i18n="book.sumDate">Date</span><span id="sumDate">—</span></div>
+        <div class="row"><span data-i18n="book.sumTime">Heure</span><span id="sumTime">—</span></div>
+        <div class="row"><span data-i18n="book.sumDur">Durée</span><span id="sumDur">—</span></div>
+        <div class="row total"><span data-i18n="book.sumTotal">Total</span><span class="price" id="sumTotal">—</span></div>
       </div>
-      <button class="btn" id="bookBtn">Confirmer et payer</button>
+      <button class="btn" id="bookBtn" data-i18n="book.bookBtn">Confirmer et payer</button>
     </div>
 
     <!-- Step 3: Confirmation -->
     <div id="step3" class="card card-hero hidden scale-reveal">
       <div class="empty"><div class="ico">🎉</div></div>
-      <h2 style="text-align:center">Réservation confirmée !</h2>
-      <p class="muted" style="text-align:center">Ce code ouvre votre cabine 🔓 — saisissez-le sur l'écran du kiosque à votre arrivée :</p>
+      <h2 style="text-align:center" data-i18n="book.confirmed">Réservation confirmée !</h2>
+      <p class="muted" style="text-align:center" data-i18n="book.confirmDesc">Ce code ouvre votre cabine 🔓 — saisissez-le sur l'écran du kiosque à votre arrivée :</p>
       <div class="pin" id="pin"></div>
       <div class="qr-wrap" id="qrWrap"></div>
       <p class="muted" style="text-align:center;font-size:.8rem" id="confirmInfo"></p>
-      <button class="btn ghost" id="btnViewMy">Voir mes réservations</button>
-      <button class="btn" id="btnNewBook">Nouvelle réservation</button>
+      <button class="btn ghost" id="btnViewMy" data-i18n="book.viewMy">Voir mes réservations</button>
+      <button class="btn" id="btnNewBook" data-i18n="book.newBook">Nouvelle réservation</button>
     </div>
   </div>
 
   <!-- === TAB: Mes réservations === -->
   <div id="viewMy" class="hidden">
     <div class="steps" style="margin-bottom:16px">
-      <div class="step active"><span class="num" style="background:var(--accent);color:#241202;border-color:var(--accent)">📋</span> <b>Mes réservations</b></div>
+      <div class="step active"><span class="num" style="background:var(--accent);color:#241202;border-color:var(--accent)">📋</span> <b data-i18n="book.myTitle">Mes réservations</b></div>
     </div>
     <div id="myBookings" class="stagger-in"></div>
     <div id="emptyBookings" class="empty hidden">
       <div class="ico">📭</div>
-      <p>Aucune réservation pour le moment</p>
-      <button class="btn" id="btnNewFromEmpty" style="margin-top:12px">Réserver une cabine</button>
+      <p data-i18n="book.emptyBookings">Aucune réservation pour le moment</p>
+      <button class="btn" id="btnNewFromEmpty" style="margin-top:12px" data-i18n="book.bookCabin">Réserver une cabine</button>
     </div>
   </div>
 </main>
 
 <div class="toast" id="toast"></div>
 
+<script src="/vendor/i18n/translations.js"></script>
+<script src="/vendor/i18n/i18n.js"></script>
+<script src="/vendor/i18n/pages/book.js"></script>
+<script>I18N.init();</script>
+
 <script>
 (function(){
   if (window.CabinMotion) CabinMotion.init(document);
+  const T = (k, v) => (window.I18N ? window.I18N.t(k, v) : k);
   const API = location.origin;
   const $ = (id) => document.getElementById(id);
   const params = new URLSearchParams(location.search);
@@ -243,17 +250,18 @@
   const auth = (h={}) => ({ 'Content-Type':'application/json', ...(token?{Authorization:'Bearer '+token}:{}), ...h });
   async function api(path, opts={}) {
     const res = await fetch(API+path, {...opts, headers: auth(opts.headers)});
-    const json = await res.json().catch(() => ({ success:false, message:'Réponse invalide' }));
-    if (!res.ok && !json.success) throw new Error(json.message || ('Erreur '+res.status));
+    const json = await res.json().catch(() => ({ success:false, message:T('book.errInvalid') }));
+    if (!res.ok && !json.success) throw new Error(json.message || T('book.errHttp',{n:res.status}));
     return json;
   }
   function toast(m, opts){
     if (window.CabinMotion && CabinMotion.toast) return CabinMotion.toast(m, Object.assign({duration:3200}, opts||{}));
     const el=$('toast'); el.textContent=m; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3200);
   }
+  const LOC = () => (window.I18N ? I18N.locale : 'fr-FR');
   const fmt = (n) => n.toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
-  const fmtDate = (d) => new Date(d).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});
-  const fmtTime = (d) => new Date(d).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  const fmtDate = (d) => new Date(d).toLocaleDateString(LOC(),{weekday:'short',day:'numeric',month:'short'});
+  const fmtTime = (d) => new Date(d).toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'});
   const CURRENCY_SYMBOLS = {EUR:'€',TND:'TND',USD:'$',GBP:'£',MAD:'MAD',DZD:'DA'};
 
   // ====================== TABS ======================
@@ -285,7 +293,7 @@
   // ====================== AUTH ======================
   $('loginBtn').onclick = async () => {
     const email=$('email').value.trim(), password=$('password').value;
-    if(!email||!password) return toast('Email et mot de passe requis');
+    if(!email||!password) return toast(T('book.errCredentials'));
     try {
       let json;
       try { json = await api('/api/auth/login', { method:'POST', body: JSON.stringify({email,password}) }); }
@@ -340,7 +348,7 @@
         <div class="info">
           <b>${c.name}</b>
           <small>${c.address||''} · ${c.telemetry?.temperature??'--'}°C</small>
-          <div class="price">${fmtDis(c.rentalSettings.pricePerHour, c.pricing?.currency || 'EUR')}/heure</div>
+          <div class="price">${fmtDis(c.rentalSettings.pricePerHour, c.pricing?.currency || 'EUR')}${T('book.perHour')}</div>
           <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">${roomTags(c.rooms)}</div>
         </div>`;
       el.onclick=()=>{ selectCabin(c, el); };
@@ -409,7 +417,7 @@
 
   // ====================== BOOKING ======================
   $('bookBtn').onclick = async () => {
-    if(!selectedCabin||!selectedSlot) return toast('Choisissez un créneau');
+    if(!selectedCabin||!selectedSlot) return toast(T('book.selectSlot'));
     const hours=Number($('duration').value);
     const start=new Date(selectedSlot.start);
     const end=new Date(start.getTime()+hours*3600000);
@@ -417,7 +425,7 @@
     try {
       const vs = await fetch(API+'/api/cabins/'+selectedCabin._id+'/status?startTime='+start.toISOString()+'&endTime='+end.toISOString()).then(r=>r.json());
       if(vs.success && !vs.cabin.bookable){
-        toast('⚠️ '+((vs.cabin.verification?.slotFree===false)?'Créneau déjà réservé':vs.cabin.verification?.statusText||'Indisponible')+' — actualisation...');
+        toast('⚠️ '+((vs.cabin.verification?.slotFree===false)?T('book.reasonSlot'):vs.cabin.verification?.statusText||T('book.unavailable'))+T('book.refreshing'));
         loadSlots();
         return;
       }
@@ -425,7 +433,7 @@
 
     try {
       const r=await api('/api/reservations',{ method:'POST', body: JSON.stringify({cabinId:selectedCabin._id,startTime:start.toISOString(),endTime:end.toISOString()}) });
-      toast('Paiement en cours...');
+      toast(T('book.paying'));
       const p=await api('/api/payments/dev-confirm',{ method:'POST', body: JSON.stringify({reservationId:r.reservation.id}) });
 
       setStep(3);
@@ -438,7 +446,7 @@
       if(typeof QRCode!=='undefined'){
         $('qrWrap').innerHTML='';
         const qr=new QRCode($('qrWrap'),{text:String(p.accessCode),width:128,height:128,colorDark:'#eef3f1',colorLight:'#1a2228',correctLevel:QRCode.CorrectLevel.M});
-        const lbl=document.createElement('div'); lbl.className='qr-label'; lbl.textContent='Scannez ou saisissez le code'; $('qrWrap').appendChild(lbl);
+        const lbl=document.createElement('div'); lbl.className='qr-label'; lbl.textContent=T('book.qrLabel'); $('qrWrap').appendChild(lbl);
       }
 
       loadMyReservations();
@@ -483,23 +491,23 @@
       const isUpcoming=!isPast&&!isActive;
       el.className='res-card '+(isActive?'active':isPast?'past':'upcoming');
 
-      const stBadge=isActive?'<span class="badge progress">En cours</span>':res.status==='CONFIRMED'?'<span class="badge conf">Confirmée</span>':res.status==='COMPLETED'?'<span class="badge done">Terminée</span>':'<span class="badge cancel">'+res.status+'</span>';
+      const stBadge=isActive?'<span class="badge progress">'+T('book.badgeActive')+'</span>':res.status==='CONFIRMED'?'<span class="badge conf">'+T('book.badgeConfirmed')+'</span>':res.status==='COMPLETED'?'<span class="badge done">'+T('book.badgeDone')+'</span>':'<span class="badge cancel">'+res.status+'</span>';
 
       let countdownHTML='';
       if(isActive){
         const msLeft=new Date(res.endTime)-Date.now();
         const m=Math.floor(msLeft/60000);
-        countdownHTML=`<div class="countdown${m<=10?' urgent':''}" id="cd-${res._id}">Se termine dans ${m}min</div>`;
+        countdownHTML=`<div class="countdown${m<=10?' urgent':''}" id="cd-${res._id}">${T('book.endsIn',{m})}</div>`;
       } else if(isUpcoming){
         const msUntil=new Date(res.startTime)-Date.now();
         const h=Math.floor(msUntil/3600000);
         const m=Math.floor((msUntil%3600000)/60000);
-        countdownHTML=`<div class="countdown" id="cd-${res._id}">Commence dans ${h>0?h+'h ':''}${m}min</div>`;
+        countdownHTML=`<div class="countdown" id="cd-${res._id}">${T('book.startsIn',{h:h>0?h+'h ':'',m:m+'min'})}</div>`;
       }
 
       let pinHTML='';
       if(res.accessCode && !isPast){
-        pinHTML=`<div class="res-pin"><div><small class="muted">Code d'accès</small><br><code>${res.accessCode}</code></div></div>`;
+        pinHTML=`<div class="res-pin"><div><small class="muted">${T('book.accessCode')}</small><br><code>${res.accessCode}</code></div></div>`;
       }
 
       let qrHTML='';
@@ -508,17 +516,17 @@
       }
 
       el.innerHTML=`
-        <div class="res-header"><div class="res-cabin">${res.cabinId?.name||'Cabine'}</div>${stBadge}</div>
+        <div class="res-header"><div class="res-cabin">${res.cabinId?.name||T('book.cabin')}</div>${stBadge}</div>
         <div class="res-date">📅 ${fmtDate(res.startTime)} · ${fmtTime(res.startTime)} → ${fmtTime(res.endTime)}</div>
         ${countdownHTML}
         ${pinHTML}
         ${qrHTML}
         <div style="font-size:.8rem;margin-top:4px"><b>${fmt(res.totalPrice)}</b></div>
-        ${isActive?`<div class="res-actions"><button class="btn danger small" onclick="checkOut('${res._id}','${res.cabinId?._id||''}')">🚪 Check-out</button></div>`:''}
+        ${isActive?`<div class="res-actions"><button class="btn danger small" onclick="checkOut('${res._id}','${res.cabinId?._id||''}')">${T('book.checkout')}</button></div>`:''}
         ${(isActive || isUpcoming) ? `<div style="margin-top:8px; display:flex; gap:8px">
-          <button class="btn ghost small" onclick="bioEnrollRes('face')">👤 Visage</button>
-          <button class="btn ghost small" onclick="bioEnrollRes('fingerprint')">🫆 Empreinte</button>
-          <span style="font-size:.7rem;color:var(--muted);align-self:center">activer l'ouverture biométrique</span>
+          <button class="btn ghost small" onclick="bioEnrollRes('face')">${T('book.face')}</button>
+          <button class="btn ghost small" onclick="bioEnrollRes('fingerprint')">${T('book.fingerprint')}</button>
+          <span style="font-size:.7rem;color:var(--muted);align-self:center">${T('book.bioLabel')}</span>
         </div>` : ''}
       `;
       wrap.appendChild(el);
@@ -530,14 +538,14 @@
           const cdEl=document.getElementById('cd-'+res._id);
           if(!cdEl) return;
           if(isActive){
-            if(left<=0){ cdEl.textContent='Terminé'; cdEl.classList.add('urgent'); clearInterval(countdownTimers[countdownTimers.length-1]); return; }
+            if(left<=0){ cdEl.textContent=T('book.over'); cdEl.classList.add('urgent'); clearInterval(countdownTimers[countdownTimers.length-1]); return; }
             const mm=Math.floor(left/60000);
-            cdEl.textContent='Se termine dans '+mm+'min';
+            cdEl.textContent=T('book.endsIn',{m:mm});
             cdEl.classList.toggle('urgent',mm<=10);
           } else {
-            if(left<=0){ cdEl.textContent='Maintenant !'; cdEl.classList.add('urgent'); return; }
+            if(left<=0){ cdEl.textContent=T('book.now'); cdEl.classList.add('urgent'); return; }
             const hh=Math.floor(left/3600000); const mm=Math.floor((left%3600000)/60000);
-            cdEl.textContent='Commence dans '+(hh>0?hh+'h ':'')+mm+'min';
+            cdEl.textContent=T('book.startsIn',{h:hh>0?hh+'h ':'',m:mm+'min'});
           }
         },10000));
       }
@@ -549,28 +557,37 @@
   }
 
   window.checkOut = async function(resId, cabinId){
-    if(!confirm('Terminer votre session maintenant ?')) return;
+    if(!confirm(T('book.confirmCheckout'))) return;
     try{
-      toast('Check-out en cours...');
+      toast(T('book.checkingOut'));
       await fetch(API+'/api/access/reservation/'+resId+'/checkout',{ method:'POST', headers:auth() });
-      toast('✅ Session terminée. Merci !');
+      toast(T('book.sessionDone'));
       loadMyReservations();
     } catch(e){ toast(e.message); }
   };
 
   window.bioEnrollRes = async function(kind){
-    if(!window.BioAuth) return toast('biometrics.js non chargé');
-    toast('Enregistrement '+(kind==='face'?'visage':'empreinte')+'…');
+    if(!window.BioAuth) return toast(T('book.bioNotLoaded'));
+    toast(T('book.bioEnroll',{kind: kind==='face'?T('book.faceKind'):T('book.fingerKind')}));
     try{
       const r = await window.BioAuth.enroll(kind, ()=>token);
-      toast(r.success ? ('✅ '+(r.message||'Enregistré')) : ('❌ '+(r.message||'Erreur')));
+      toast(r.success ? ('✅ '+(r.message||T('book.enrolled'))) : ('❌ '+(r.message||T('book.toastError'))));
       if(!r.success && r.message) window.alert(r.message);
     } catch(e){ toast(e.message); window.alert(e.message); }
   };
+
+  // Re-rendu après changement de langue
+  window.addEventListener('i18n:change', function(){
+    if(token){
+      renderCabins(allCabins);
+      updateSummary();
+      loadMyReservations();
+    }
+  });
 })();
 </script>
-<footer class="app-footer">&copy; pixelsoftwaredesign 2026 &middot; Réservation &mdash; Atlas Cabine
-  <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
+<footer class="app-footer"><span data-i18n="book.foot">&copy; pixelsoftwaredesign 2026 &middot; Réservation &mdash; Atlas Cabine</span>
+  <div class="site-links"><a href="/" data-i18n="nav.home">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a><span data-i18n-switcher></span></div>
 </footer>
 </body>
 </html>

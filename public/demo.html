@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#10161a">
 <meta name="author" content="pixelsoftwaredesign">
 <!-- © pixelsoftwaredesign 2026 -->
-<title>Démo — Cycle de vie complet</title>
+<title data-i18n="demo.titleTag">Démo — Cycle de vie complet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -75,43 +75,43 @@
 </style>
 </head>
 <body>
-<header><h1>🎬 Démo — <span>Cycle de vie complet</span></h1><div class="sub">Rejeu usine → client → démontage · Track & Trace · bordereau · QR · transfert</div></header>
+<header><h1 data-i18n-html="demo.title">🎬 Démo — <span>Cycle de vie complet</span></h1><div class="sub" data-i18n="demo.subtitle">Rejeu usine → client → démontage · Track & Trace · bordereau · QR · transfert</div><div data-i18n-switcher style="display:flex;justify-content:center;margin-top:10px"></div></header>
 
 <main>
   <div id="authCard" class="card">
-    <h2>Connexion</h2>
-    <label>Email</label><input class="input" id="email" type="email" placeholder="admin@cabine.com">
-    <label>Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
-    <button class="btn" id="loginBtn">Se connecter</button>
+    <h2 data-i18n="demo.authTitle">Connexion</h2>
+    <label data-i18n="demo.email">Email</label><input class="input" id="email" type="email" placeholder="admin@cabine.com">
+    <label data-i18n="demo.password">Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
+    <button class="btn" id="loginBtn" data-i18n="demo.login">Se connecter</button>
   </div>
 
   <div id="appView" class="hidden">
     <div class="card">
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <h2 style="margin:0">Répartition du parc</h2>
+        <h2 style="margin:0" data-i18n="demo.park.title">Répartition du parc</h2>
         <span class="meta" id="parkCount"></span>
       </div>
       <div class="pipe" id="pipeline"></div>
     </div>
 
     <div class="card">
-      <h2>▶ Rejouer le cycle complet</h2>
-      <p class="meta" style="margin-bottom:8px">Crée une cabine <b>CAB-2026-DEMO-XXXX</b> et enchaîne chaque étape du cycle de vie réel via les API : fabrication, assemblage, QC, expédition (bordereau + QR colisage), transit GPS, arrivée site, mise en service, puis démontage complet jusqu'au stockage.</p>
-      <button class="btn ok" id="playBtn">🎬 Lancer la démo</button>
-      <button class="btn ghost" id="resetBtn" style="margin-top:6px">🧹 Vider les cabines de démo (CAB-2026-DEMO-*)</button>
+      <h2 data-i18n="demo.replay.title">▶ Rejouer le cycle complet</h2>
+      <p class="meta" style="margin-bottom:8px" data-i18n-html="demo.replay.desc">Crée une cabine <b>CAB-2026-DEMO-XXXX</b> et enchaîne chaque étape du cycle de vie réel via les API : fabrication, assemblage, QC, expédition (bordereau + QR colisage), transit GPS, arrivée site, mise en service, puis démontage complet jusqu'au stockage.</p>
+      <button class="btn ok" id="playBtn" data-i18n="demo.replay.play">🎬 Lancer la démo</button>
+      <button class="btn ghost" id="resetBtn" style="margin-top:6px" data-i18n="demo.replay.reset">🧹 Vider les cabines de démo (CAB-2026-DEMO-*)</button>
       <div class="grid2" style="margin-top:12px">
-        <div class="kpi"><div class="v" id="kSerial">—</div><div class="l">Série</div></div>
-        <div class="kpi"><div class="v" id="kLife">—</div><div class="l">Étape en cours</div></div>
+        <div class="kpi"><div class="v" id="kSerial">—</div><div class="l" data-i18n="demo.kpi.serial">Série</div></div>
+        <div class="kpi"><div class="v" id="kLife">—</div><div class="l" data-i18n="demo.kpi.step">Étape en cours</div></div>
       </div>
       <div id="steps" style="margin-top:8px"></div>
-      <h3 class="meta" style="margin:10px 0 4px">Journal</h3>
+      <h3 class="meta" style="margin:10px 0 4px" data-i18n="demo.log.title">Journal</h3>
       <div class="log" id="log"></div>
     </div>
 
     <div class="card hidden" id="traceCard">
       <div style="display:flex;align-items:center;gap:10px">
-        <h2 style="margin:0">🧭 Fiche de vie</h2>
-        <a class="btn ghost small" id="bordBtn" target="_blank" style="margin:0;margin-left:auto">📄 Bordereau PDF</a>
+        <h2 style="margin:0" data-i18n="demo.trace.title">🧭 Fiche de vie</h2>
+        <a class="btn ghost small" id="bordBtn" target="_blank" style="margin:0;margin-left:auto" data-i18n="demo.trace.bordereau">📄 Bordereau PDF</a>
       </div>
       <div class="pipe" id="miniPipe" style="margin-top:10px"></div>
       <div class="timeline" id="tl" style="margin-top:8px"></div>
@@ -121,47 +121,66 @@
 
 <div id="toast" class="toast"></div>
 
+<script src="/vendor/i18n/translations.js"></script>
+<script src="/vendor/i18n/i18n.js"></script>
+<script src="/vendor/i18n/pages/demo.js"></script>
+<script>I18N.init();</script>
+
 <script>
 (function(){
   if(window.CabinMotion) CabinMotion.init(document);
   const API=location.origin;
   const $=id=>document.getElementById(id);
   let TOKEN=localStorage.getItem('demo_token')||'';
+  const T=(k,fb)=>(window.I18N&&window.I18N.t)?window.I18N.t(k):fb;
   const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2800);};
   const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   async function api(path,opt){
     const r=await fetch(API+path,Object.assign({headers:{'Content-Type':'application/json',Authorization:'Bearer '+TOKEN}},opt||{}));
-    const j=await r.json().catch(()=>({success:false,message:'Erreur réseau'}));
+    const j=await r.json().catch(()=>({success:false,message:T('demo.err.network','Erreur réseau')}));
     if(r.status===401){localStorage.removeItem('demo_token');TOKEN='';location.reload();}
     return j;
   }
 
-  const LC={FACTORY_PURCHASED:['Achetée usine','warn'],READY_FOR_SHIPPING:['Prête envoi','blue'],IN_TRANSIT:['En transit','blue'],ASSEMBLY_IN_PROGRESS:['Assemblage','warn'],OPERATIONAL:['En service','ok'],DECOMPOSITION_REQUESTED:['Décomposition','red'],DECOMPOSED_IN_STORAGE:['Stockée','muted']};
+  function lcOf(code){
+    const m={
+      FACTORY_PURCHASED:['demo.lc.factoryPurchased','warn'],
+      READY_FOR_SHIPPING:['demo.lc.readyShipping','blue'],
+      IN_TRANSIT:['demo.lc.inTransit','blue'],
+      ASSEMBLY_IN_PROGRESS:['demo.lc.assembly','warn'],
+      OPERATIONAL:['demo.lc.operational','ok'],
+      DECOMPOSITION_REQUESTED:['demo.lc.decomposition','red'],
+      DECOMPOSED_IN_STORAGE:['demo.lc.stored','muted']
+    };
+    const e=m[code];
+    return e?[T(e[0],code),e[1]]:[code||'—','muted'];
+  }
   const ORDER=['FACTORY_PURCHASED','READY_FOR_SHIPPING','IN_TRANSIT','ASSEMBLY_IN_PROGRESS','OPERATIONAL','DECOMPOSITION_REQUESTED','DECOMPOSED_IN_STORAGE'];
 
-  let steps=[]; let running=false;
+  let steps=[]; let running=false; let currentPhase=null;
   function log(msg,cls){
     const el=$('log'); if(!el)return;
     const t=document.createElement('div'); t.innerHTML=esc(msg); if(cls)t.className=cls;
     el.appendChild(t); el.scrollTop=el.scrollHeight;
   }
   function renderPipeline(){
-    $('pipeline').innerHTML=ORDER.map((c,i)=>`<div class="node${steps.length? '' : ''}" data-p="${c}" id="node-${c}"><span class="n">${String(i+1)}</span>${LC[c][0]}</div>`).join('');
-    $('miniPipe').innerHTML=ORDER.map((c,i)=>`<div class="node" id="mnode-${c}"><span class="n">${String(i+1)}</span>${LC[c][0]}</div>`).join('');
+    $('pipeline').innerHTML=ORDER.map((c,i)=>`<div class="node${steps.length? '' : ''}" data-p="${c}" id="node-${c}"><span class="n">${String(i+1)}</span>${lcOf(c)[0]}</div>`).join('');
+    $('miniPipe').innerHTML=ORDER.map((c,i)=>`<div class="node" id="mnode-${c}"><span class="n">${String(i+1)}</span>${lcOf(c)[0]}</div>`).join('');
   }
   function setPhase(code){
+    if(code) currentPhase=code;
     document.querySelectorAll('#pipeline .node').forEach(n=>n.classList.remove('active','done'));
     document.querySelectorAll('#miniPipe .node').forEach(n=>n.classList.remove('active','done'));
     const i=ORDER.indexOf(code);
     ORDER.slice(0,i).forEach(c=>{const a=$('node-'+c),b=$('mnode-'+c);if(a)a.classList.add('done');if(b)b.classList.add('done');});
     const a=$('node-'+code),b=$('mnode-'+code);
     if(a)a.classList.add('active'); if(b)b.classList.add('active');
-    $('kLife').textContent=LC[code]?.[0]||code;
+    $('kLife').textContent=lcOf(code)[0];
   }
   async function loadPark(){
     const j=await api('/api/lifecycle/units').catch(()=>null); if(!j)return;
     const counts={}; j.units.forEach(u=>counts[u.lifecycle]=(counts[u.lifecycle]||0)+1);
-    $('parkCount').textContent=j.units.length+' cabine(s)';
+    $('parkCount').textContent=T('demo.park.count','{n} cabine(s)').replace('{n}',j.units.length);
     renderPipeline();
     setPhase(steps.length?ORDER[ORDER.length-1]:null);
     document.querySelectorAll('#pipeline .node').forEach(n=>{
@@ -189,7 +208,7 @@
           m.textContent=String(e&&e.message||e);
           div.querySelector('.out').textContent='✗';
           div.classList.remove('run'); div.classList.add('err');
-          log(label+' → ERREUR : '+String(e&&e.message||e),'err');
+          log(label+T('demo.step.error',' → ERREUR : ')+String(e&&e.message||e),'err');
           throw e;
         }
       };
@@ -210,71 +229,71 @@
     let cabinId=null, tracking='', orderId='';
 
     const stepsDef=[
-      ['🏭','Création unité usine',m=>api('/api/factory/units',{method:'POST',body:JSON.stringify({serialNumber:serial,name:'Cabine démo cycle de vie',hardwareVersion:'v1 démo',esp32MacAddress:'02:'+serial.slice(-4).split('').join(':')})}).then(j=>{
+      ['🏭',T('demo.step.create','Création unité usine'),m=>api('/api/factory/units',{method:'POST',body:JSON.stringify({serialNumber:serial,name:T('demo.tech.cabinName','Cabine démo cycle de vie'),hardwareVersion:'v1 démo',esp32MacAddress:'02:'+serial.slice(-4).split('').join(':')})}).then(j=>{
         if(!j.success) throw new Error(j.message);
         cabinId=j.unit._id;
-        return {line:'Créée : '+serial+' → FACTORY_PURCHASED',detail:'Cabin créée'};
+        return {line:T('demo.line.created','Créée : ')+serial+' → FACTORY_PURCHASED',detail:T('demo.detail.created','Cabin créée')};
       })],
-      ['🔩','Assemblage usine P1→P4',async m=>{
+      ['🔩',T('demo.step.assemble','Assemblage usine P1→P4'),async m=>{
         const a=await api('/api/factory/units/'+cabinId+'/assembly');
         if(!a.success) throw new Error(a.message);
         const ordered=a.assembly.slice().sort((x,y)=>x.station.localeCompare(y.station));
         for(const st of ordered){
-          m.textContent='Station '+st.station.toUpperCase()+'…';
+          m.textContent=T('demo.detail.station','Station {s}…').replace('{s}',st.station.toUpperCase());
           const j=await api('/api/factory/units/'+cabinId+'/assembly/'+st.station,{method:'POST',body:JSON.stringify({operations:st.operations.map(o=>o.label)})});
           if(!j.success) throw new Error(j.message||('station '+st.station));
         }
-        return {line:'Assemblage terminé (P1-P4)','detail':'4 stations ✓'};
+        return {line:T('demo.line.assemblyDone','Assemblage terminé (P1-P4)'),'detail':T('demo.detail.stations','4 stations ✓')};
       }],
-      ['✅','Contrôle qualité usine',m=>api('/api/factory/units/'+cabinId+'/qc',{method:'POST',body:JSON.stringify({})}).then(j=>{
+      ['✅',T('demo.step.qc','Contrôle qualité usine'),m=>api('/api/factory/units/'+cabinId+'/qc',{method:'POST',body:JSON.stringify({})}).then(j=>{
         if(!j.success) throw new Error(j.message);
         setPhase('READY_FOR_SHIPPING');
-        return {line:'QC réussi → READY_FOR_SHIPPING'};
+        return {line:T('demo.line.qcOk','QC réussi → READY_FOR_SHIPPING')};
       })],
-      ['🚚','Expédition + bordereau + QR colisage',m=>api('/api/lifecycle/cabins/'+cabinId+'/shipping',{method:'PATCH',body:JSON.stringify({carrierName:'DHL',destinationAddress:'Démonstration — Tunis, La Marsa',dock:'Quai B'})}).then(j=>{
+      ['🚚',T('demo.step.shipping','Expédition + bordereau + QR colisage'),m=>api('/api/lifecycle/cabins/'+cabinId+'/shipping',{method:'PATCH',body:JSON.stringify({carrierName:'DHL',destinationAddress:'Démonstration — Tunis, La Marsa',dock:'Quai B'})}).then(j=>{
         if(!j.success) throw new Error(j.message);
         tracking=j.trackingNumber; setPhase('IN_TRANSIT');
         $('bordBtn').href=API+'/api/lifecycle/report/bordereau/'+cabinId;
-        return {line:'Expédiée — tracking '+tracking+' · QR '+j.packingQR,'detail':'Tracking '+tracking};
+        return {line:T('demo.line.shipped','Expédiée — tracking ')+tracking+T('demo.line.qr',' · QR ')+j.packingQR,'detail':T('demo.detail.tracking','Tracking ')+tracking};
       })],
-      ['🛰️','Suivi GPS transit (2 points)',async m=>{
+      ['🛰️',T('demo.step.gps','Suivi GPS transit (2 points)'),async m=>{
         for(const p of [{la:36.8065,lo:10.1815},{la:36.7990,lo:10.1740}]){
           const j=await api('/api/lifecycle/cabins/'+cabinId+'/transit',{method:'PATCH',body:JSON.stringify({carrier:'DHL',vehicle:'TN-1234-DEMO',lat:p.la,lng:p.lo})});
           if(!j.success) throw new Error(j.message);
-          m.textContent='point '+p.la.toFixed(4)+', '+p.lo.toFixed(4)+' ✓';
+          m.textContent=T('demo.detail.point','point {p} ✓').replace('{p}',p.la.toFixed(4)+', '+p.lo.toFixed(4));
         }
-        return {line:'2 waypoints GPS enregistrés','detail':'35.8065…'}||{};
+        return {line:T('demo.line.gps','2 waypoints GPS enregistrés'),'detail':'35.8065…'}||{};
       }],
-      ['📍','Arrivée sur site (assemblage)',m=>api('/api/lifecycle/cabins/'+cabinId+'/site-arrival',{method:'POST',body:JSON.stringify({})}).then(j=>{
+      ['📍',T('demo.step.arrival','Arrivée sur site (assemblage)'),m=>api('/api/lifecycle/cabins/'+cabinId+'/site-arrival',{method:'POST',body:JSON.stringify({})}).then(j=>{
         if(!j.success) throw new Error(j.message);
         setPhase('ASSEMBLY_IN_PROGRESS');
-        return {line:'Arrivée → ASSEMBLY_IN_PROGRESS'};
+        return {line:T('demo.line.arrival','Arrivée → ASSEMBLY_IN_PROGRESS')};
       })],
-      ['🛠️','Mise en service → opérationnelle',m=>api('/api/lifecycle/cabins/'+cabinId+'/operational',{method:'POST',body:JSON.stringify({})}).then(j=>{
+      ['🛠️',T('demo.step.operational','Mise en service → opérationnelle'),m=>api('/api/lifecycle/cabins/'+cabinId+'/operational',{method:'POST',body:JSON.stringify({})}).then(j=>{
         if(!j.success) throw new Error(j.message);
         setPhase('OPERATIONAL');
-        return {line:'Commission → OPERATIONAL (louable)'};
+        return {line:T('demo.line.operational','Commission → OPERATIONAL (louable)')};
       })],
-      ['🚨','Demande de démontage (relocation)',m=>api('/api/lifecycle/cabins/'+cabinId+'/decompose',{method:'POST',body:JSON.stringify({reason:'RELOCATION',targetDestination:'Sousse, Port El Kantaoui'})}).then(j=>{
+      ['🚨',T('demo.step.decompose','Demande de démontage (relocation)'),m=>api('/api/lifecycle/cabins/'+cabinId+'/decompose',{method:'POST',body:JSON.stringify({reason:'RELOCATION',targetDestination:'Sousse, Port El Kantaoui'})}).then(j=>{
         if(!j.success) throw new Error(j.message);
         orderId=j.orderId; setPhase('DECOMPOSITION_REQUESTED');
-        return {line:'Ordre '+orderId+' · hors-service, bourse masquée, MQTT DECOMMISSION_PREPARATION','detail':orderId};
+        return {line:T('demo.line.decompose','Ordre {o} · hors-service, bourse masquée, MQTT DECOMMISSION_PREPARATION').replace('{o}',orderId),'detail':orderId};
       })],
-      ['👷','Affectation technicien',async m=>{
+      ['👷',T('demo.step.assign','Affectation technicien'),async m=>{
         let users=(await api('/api/workforce')).agents||[];
         let tech=users.find(u=>u.role==='TECHNICIAN'||(u.roles&&u.roles.includes('TECHNICIAN')));
         if(!tech){
           const email='demo.tech'+rnd+'@cabine.com';
-          const cr=await api('/api/workforce',{method:'POST',body:JSON.stringify({name:'Technicien Démo',email,password:'pass1234',role:'TECHNICIAN'})});
+          const cr=await api('/api/workforce',{method:'POST',body:JSON.stringify({name:T('demo.tech.name','Technicien Démo'),email,password:'pass1234',role:'TECHNICIAN'})});
           if(!cr.success) throw new Error(cr.message);
           tech=cr.agent;
         }
         const j=await api('/api/lifecycle/decompositions/'+cabinId+'/assign',{method:'POST',body:JSON.stringify({technicianId:tech.id||tech._id})});
         if(!j.success) throw new Error(j.message);
         m.textContent=(tech.name||tech.email);
-        return {line:'Technicien '+(tech.name||tech.email)+' affecté'};
+        return {line:T('demo.line.techAssigned','Technicien {n} affecté').replace('{n}',tech.name||tech.email)};
       }],
-      ['📖','Guide de démontage inversé (8 étapes)',async m=>{
+      ['📖',T('demo.step.guide','Guide de démontage inversé (8 étapes)'),async m=>{
         const cfg=await api('/api/lifecycle/config');
         const g=await api('/api/lifecycle/decompositions/'+cabinId+'/guide');
         if(!g.success) throw new Error(g.message);
@@ -282,9 +301,9 @@
           const j=await api('/api/lifecycle/decompositions/'+cabinId+'/steps/'+s.key,{method:'PATCH',body:JSON.stringify({})});
           if(!j.success) throw new Error(j.message+' ('+s.key+')');
         }
-        return {line:'8 étapes P4→P1 validées (guide inversé)'};
+        return {line:T('demo.line.guide','8 étapes P4→P1 validées (guide inversé)')};
       }],
-      ['🧾','Inventaire composants (4 scans QR)',async m=>{
+      ['🧾',T('demo.step.inventory','Inventaire composants (4 scans QR)'),async m=>{
         const inv={armoire_iot:'IOT',tablette:'TAB',serrure_relais:'LCK',panneaux:'STR'};
         let n=0;
         for(const [k,p] of Object.entries(inv)){
@@ -292,20 +311,21 @@
           if(!j.success) throw new Error(j.message);
           n++; m.textContent=n+'/4';
         }
-        return {line:'4 composants scannés (QT-IOT/TAB/LCK/STR)'};
+        return {line:T('demo.line.inventory','4 composants scannés (QT-IOT/TAB/LCK/STR)')};
       }],
-      ['📦','Clôture → stockage',m=>api('/api/lifecycle/decompositions/'+cabinId+'/complete',{method:'POST',body:JSON.stringify({notes:'Palettes étiquetées — démo',photos:[],result:'STORAGE'})}).then(j=>{
+      ['📦',T('demo.step.complete','Clôture → stockage'),m=>api('/api/lifecycle/decompositions/'+cabinId+'/complete',{method:'POST',body:JSON.stringify({notes:'Palettes étiquetées — démo',photos:[],result:'STORAGE'})}).then(j=>{
         if(!j.success) throw new Error(j.message);
         setPhase('DECOMPOSED_IN_STORAGE');
-        $('kLife').textContent='Stockée';
-        return {line:'Décomposition '+orderId+' clôturée → DECOMPOSED_IN_STORAGE'};
+        $('kLife').textContent=lcOf('DECOMPOSED_IN_STORAGE')[0];
+        return {line:T('demo.line.complete','Décomposition {o} clôturée → DECOMPOSED_IN_STORAGE').replace('{o}',orderId)};
       })],
-      ['🧭','Trace finale (événements)',async m=>{
+      ['🧭',T('demo.step.trace','Trace finale (événements)'),async m=>{
         const t=await api('/api/lifecycle/cabins/'+cabinId+'/trace');
         if(!t.success) throw new Error(t.message);
-        $('tl').innerHTML=t.events.slice().reverse().map(e=>`<div class="tl"><b>${esc(e.action)}</b> <span class="badge muted">${esc(e.from||'—')} → ${esc(e.to||'—')}</span><div class="m">${new Date(e.at).toLocaleString('fr-FR')} · ${esc(e.by)}</div></div>`).join('');
+        const locale=(window.I18N&&I18N.locale)||'fr-FR';
+        $('tl').innerHTML=t.events.slice().reverse().map(e=>`<div class="tl"><b>${esc(e.action)}</b> <span class="badge muted">${esc(e.from||'—')} → ${esc(e.to||'—')}</span><div class="m">${new Date(e.at).toLocaleString(locale)} · ${esc(e.by)}</div></div>`).join('');
         $('traceCard').classList.remove('hidden'); setTimeout(()=>$('traceCard').scrollIntoView({behavior:'smooth',block:'start'}),300);
-        return {line:'Fiche de vie affichée — '+t.events.length+' événements tracés'};
+        return {line:T('demo.line.trace','Fiche de vie affichée — {n} événements tracés').replace('{n}',t.events.length)};
       }]
     ];
 
@@ -315,9 +335,9 @@
         await onestep();
       }
       loadPark(); setPhase('DECOMPOSED_IN_STORAGE');
-      toast('🎉 Cycle complet rejoué avec succès');
+      toast(T('demo.toast.success','🎉 Cycle complet rejoué avec succès'));
     }catch(e){
-      toast('Démo interrompue — voir le journal');
+      toast(T('demo.toast.interrupted','Démo interrompue — voir le journal'));
     }finally{
       running=false; $('playBtn').disabled=false; $('resetBtn').disabled=false;
       loadPark();
@@ -326,28 +346,35 @@
 
   $('playBtn').onclick=()=>{ if(!running) replay(); };
   $('resetBtn').onclick=async()=>{
-    if(!confirm('Supprimer définitivement toutes les cabines CAB-2026-DEMO-* (unités usine + suivi + historiques) ?'))return;
+    if(!confirm(T('demo.confirm.reset','Supprimer définitivement toutes les cabines CAB-2026-DEMO-* (unités usine + suivi + historiques) ?')))return;
     const j=await api('/api/lifecycle/units'); if(!j.success)return;
     const demos=j.units.filter(u=>u.serialNumber.startsWith('CAB-2026-DEMO-'));
     let n=0;
     for(const u of demos){ const r=await api('/api/lifecycle/cabins/'+u._id,{method:'DELETE'}); if(r.success)n++; }
-    toast(n+' cabine(s) de démo supprimée(s)'); $('steps').innerHTML=''; $('log').innerHTML='';
+    toast(T('demo.toast.resetDone','{n} cabine(s) de démo supprimée(s)').replace('{n}',n)); $('steps').innerHTML=''; $('log').innerHTML=''; currentPhase=null;
     await loadPark();
   };
 
   $('loginBtn').onclick=async()=>{
     const j=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email:$('email').value,password:$('password').value})}).catch(()=>({success:false}));
-    if(!j.success){toast('Identifiants invalides');return;}
+    if(!j.success){toast(T('demo.toast.badLogin','Identifiants invalides'));return;}
     TOKEN=j.token; localStorage.setItem('demo_token',TOKEN);
     $('authCard').classList.add('hidden'); $('appView').classList.remove('hidden');
     renderPipeline(); await loadPark();
   };
 
+  // Re-render language-dependent dynamic content on language switch.
+  window.addEventListener('i18n:change',()=>{
+    if($('appView').classList.contains('hidden')) return;
+    renderPipeline();
+    loadPark().then(()=>{ if(currentPhase) setPhase(currentPhase); });
+  });
+
   (async()=>{ if(TOKEN){ $('authCard').classList.add('hidden');$('appView').classList.remove('hidden'); renderPipeline(); loadPark(); } })();
 })();
 </script>
-<footer class="app-footer">&copy; pixelsoftwaredesign 2026 &middot; Démo &mdash; Atlas Cabine
-  <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
+<footer class="app-footer"><span data-i18n="demo.footer">&copy; pixelsoftwaredesign 2026 &middot; Démo &mdash; Atlas Cabine</span>
+  <div class="site-links"><a href="/" data-i18n="nav.home">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a><span data-i18n-switcher></span></div>
 </footer>
 </body>
 </html>

@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#10161a">
 <meta name="author" content="pixelsoftwaredesign">
 <!-- © pixelsoftwaredesign 2026 -->
-<title>Logistique & Cycle de vie — Track & Trace</title>
+<title data-i18n="logistics.titleTag">Logistique & Cycle de vie — Track & Trace</title>
 <script src="/socket.io/socket.io.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,33 +71,33 @@
 </style>
 </head>
 <body>
-<header><h1>🚚 Logistique & <span>Cycle de vie</span> <a href="/plan.html" style="font-size:.66rem;font-weight:600;color:var(--accent);text-decoration:none;vertical-align:middle;margin-left:8px;border:1px solid var(--border);padding:3px 9px;border-radius:99px;">🧭 Plan intérieur ↗</a></h1><div class="sub">Track & Trace · bordereaux · QR colisage · démontage & transfert</div></header>
+<header><h1><span data-i18n-html="logistics.h1" style="color:var(--text)">🚚 Logistique & <span>Cycle de vie</span></span> <a href="/plan.html" style="font-size:.66rem;font-weight:600;color:var(--accent);text-decoration:none;vertical-align:middle;margin-left:8px;border:1px solid var(--border);padding:3px 9px;border-radius:99px;">🧭 <span data-i18n="logistics.planLink">Plan intérieur</span> ↗</a></h1><div class="sub" data-i18n="logistics.sub">Track & Trace · bordereaux · QR colisage · démontage & transfert</div><div style="display:flex;justify-content:flex-end;margin-top:6px"><span data-i18n-switcher></span></div></header>
 
 <main>
   <div id="authCard" class="card">
-    <h2>Connexion</h2>
-    <label>Email</label><input class="input" id="email" type="email" placeholder="admin@cabine.com">
-    <label>Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
-    <button class="btn" id="loginBtn">Se connecter</button>
-    <p class="meta" style="margin-top:8px;text-align:center">Accès : admin · partenaire · manager · technicien</p>
+    <h2 data-i18n="logistics.loginTitle">Connexion</h2>
+    <label data-i18n="logistics.email">Email</label><input class="input" id="email" type="email" placeholder="admin@cabine.com" data-i18n-ph="logistics.emailPh">
+    <label data-i18n="logistics.password">Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
+    <button class="btn" id="loginBtn" data-i18n="logistics.loginBtn">Se connecter</button>
+    <p class="meta" style="margin-top:8px;text-align:center" data-i18n="logistics.accessNote">Accès : admin · partenaire · manager · technicien</p>
   </div>
 
   <div id="appView" class="hidden">
     <div class="tabs" id="mainTabs">
-      <button class="tab active" data-v="track">🗂️ Tracking</button>
-      <button class="tab" data-v="demount">🔧 Démontage</button>
+      <button class="tab active" data-v="track" data-i18n="logistics.tabTrack">🗂️ Tracking</button>
+      <button class="tab" data-v="demount" data-i18n="logistics.tabDemount">🔧 Démontage</button>
     </div>
 
     <!-- TRACKING -->
     <div id="tabTrack">
       <div class="filter" id="lifeFilter">
-        <button class="chip active" data-f="">Toutes</button>
-        <button class="chip" data-f="READY_FOR_SHIPPING">Prêtes envoi</button>
-        <button class="chip" data-f="IN_TRANSIT">En transit</button>
-        <button class="chip" data-f="ASSEMBLY_IN_PROGRESS">Assemblage</button>
-        <button class="chip" data-f="OPERATIONAL">En service</button>
-        <button class="chip" data-f="DECOMPOSITION_REQUESTED">Décomposition</button>
-        <button class="chip" data-f="DECOMPOSED_IN_STORAGE">Stockées</button>
+        <button class="chip active" data-f="" data-i18n="logistics.fAll">Toutes</button>
+        <button class="chip" data-f="READY_FOR_SHIPPING" data-i18n="logistics.fReady">Prêtes envoi</button>
+        <button class="chip" data-f="IN_TRANSIT" data-i18n="logistics.fTransit">En transit</button>
+        <button class="chip" data-f="ASSEMBLY_IN_PROGRESS" data-i18n="logistics.fAssembly">Assemblage</button>
+        <button class="chip" data-f="OPERATIONAL" data-i18n="logistics.fOperational">En service</button>
+        <button class="chip" data-f="DECOMPOSITION_REQUESTED" data-i18n="logistics.fDecomp">Décomposition</button>
+        <button class="chip" data-f="DECOMPOSED_IN_STORAGE" data-i18n="logistics.fStored">Stockées</button>
       </div>
       <div id="trackList" class="stagger-in"></div>
     </div>
@@ -105,37 +105,37 @@
     <!-- DECOMPOSITION -->
     <div id="tabDemount" class="hidden">
       <div class="card">
-        <h2>➕ Demander une décomposition / relocation</h2>
-        <label>Numéro de série de la cabine</label><input class="input" id="dmSerial" placeholder="CAB-…">
+        <h2 data-i18n="logistics.dmFormTitle">➕ Demander une décomposition / relocation</h2>
+        <label data-i18n="logistics.dmSerial">Numéro de série de la cabine</label><input class="input" id="dmSerial" placeholder="CAB-…" data-i18n-ph="logistics.dmSerialPh">
         <div class="row">
-          <div><label>Motif</label><select class="input" id="dmReason"><option value="RELOCATION">Relocation</option><option value="RETURN_TO_FACTORY">Retour usine</option><option value="SALE_RESALE">Vente / revente</option><option value="END_OF_USE">Fin d'usage</option><option value="OTHER">Autre</option></select></div>
-          <div><label>Destination cible (transfert)</label><input class="input" id="dmTarget" placeholder="Adresse du nouveau site"></div>
+          <div><label data-i18n="logistics.dmReason">Motif</label><select class="input" id="dmReason"><option value="RELOCATION" data-i18n="logistics.dmReasonReloc">Relocation</option><option value="RETURN_TO_FACTORY" data-i18n="logistics.dmReasonReturn">Retour usine</option><option value="SALE_RESALE" data-i18n="logistics.dmReasonSale">Vente / revente</option><option value="END_OF_USE" data-i18n="logistics.dmReasonEnd">Fin d'usage</option><option value="OTHER" data-i18n="logistics.dmReasonOther">Autre</option></select></div>
+          <div><label data-i18n="logistics.dmTarget">Destination cible (transfert)</label><input class="input" id="dmTarget" placeholder="Adresse du nouveau site" data-i18n-ph="logistics.dmTargetPh"></div>
         </div>
-        <button class="btn" id="dmRequest">🚨 Mettre hors-service & demander le démontage</button>
+        <button class="btn" id="dmRequest" data-i18n="logistics.dmRequest">🚨 Mettre hors-service & demander le démontage</button>
       </div>
       <div class="card">
-        <h2>📋 Ordres de démontage actifs</h2>
+        <h2 data-i18n="logistics.dmOrdersTitle">📋 Ordres de démontage actifs</h2>
         <div id="dmList"></div>
       </div>
       <div class="card" id="guideCard" class="hidden">
         <h2 id="guideTitle">🔧 Guide de démontage inversé</h2>
         <p class="meta" id="guideMeta"></p>
-        <h3>Étapes (inverse de l'assemblage P4→P1)</h3>
+        <h3 data-i18n="logistics.guideSteps">Étapes (inverse de l'assemblage P4→P1)</h3>
         <div id="guideSteps"></div>
-        <h3>🧾 Inventaire des composants (scan QR)</h3>
+        <h3 data-i18n="logistics.guideInventory">🧾 Inventaire des composants (scan QR)</h3>
         <div id="guideInventory"></div>
-        <h3>📷 Photos des éléments emballés</h3>
+        <h3 data-i18n="logistics.guidePhotos">📷 Photos des éléments emballés</h3>
         <div class="row">
           <div class="photo-wrap" id="dmPhotoWrap" style="text-align:center;background:var(--card2);border:1px dashed var(--border);border-radius:12px;padding:12px">
             <input class="input" type="file" accept="image/*" id="dmPhoto" style="font-size:.8rem;padding:8px">
             <div id="dmPhotoPreview"></div>
           </div>
         </div>
-        <label style="margin-top:8px">Notes du technicien</label>
-        <textarea class="input" id="dmNotes" rows="2" placeholder="Palettes bâchées, étiquettes posées…"></textarea>
+        <label style="margin-top:8px" data-i18n="logistics.dmNotes">Notes du technicien</label>
+        <textarea class="input" id="dmNotes" rows="2" placeholder="Palettes bâchées, étiquettes posées…" data-i18n-ph="logistics.dmNotesPh"></textarea>
         <div class="row">
-          <button class="btn ok" id="dmCompleteStore">☑ Clôturer → stockage</button>
-          <button class="btn ok" id="dmCompleteTransfer">🚚 Clôturer → transfert site</button>
+          <button class="btn ok" id="dmCompleteStore" data-i18n="logistics.dmCompleteStore">☑ Clôturer → stockage</button>
+          <button class="btn ok" id="dmCompleteTransfer" data-i18n="logistics.dmCompleteTransfer">🚚 Clôturer → transfert site</button>
         </div>
       </div>
     </div>
@@ -146,7 +146,7 @@
   <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:520px;width:100%;padding:18px;max-height:86vh;overflow-y:auto">
     <h2 id="trTitle">Fiche de vie</h2>
     <div id="trBody"></div>
-    <button class="btn ghost" id="trClose">Fermer</button>
+    <button class="btn ghost" id="trClose" data-i18n="logistics.close">Fermer</button>
   </div>
 </div>
 <div id="toast" class="toast"></div>
@@ -159,13 +159,19 @@
   let TOKEN=localStorage.getItem('logi_token')||'';
   const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2800);};
   const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const T=(k,fb,vars)=>{ if(!k) return fb!==undefined?fb:k; try{ if(window.I18N&&window.I18N.t){ const v=window.I18N.t(k,vars); if(v!==undefined&&v!==k) return v; } }catch(e){} let s=fb!==undefined?fb:k; if(vars) s=s.replace(/\{(\w+)\}/g,(m,x)=>vars[x]!==undefined?vars[x]:m); return s; };
+  const LOC=()=>((window.I18N&&window.I18N.locale)||'fr-FR');
   async function api(path,opt){
     const r=await fetch(API+path,Object.assign({headers:{'Content-Type':'application/json',Authorization:'Bearer '+TOKEN}},opt||{}));
-    const j=await r.json().catch(()=>({success:false,message:'Erreur réseau'}));
+    const j=await r.json().catch(()=>({success:false,message:T('logistics.errNetwork','Erreur réseau')}));
     if(r.status===401){localStorage.removeItem('logi_token');TOKEN='';location.reload();}
     return j;
   }
-  const LC={FACTORY_PURCHASED:['Achetée usine','warn'],READY_FOR_SHIPPING:['Prête envoi','blue'],IN_TRANSIT:['En transit','blue'],ASSEMBLY_IN_PROGRESS:['Assemblage site','warn'],OPERATIONAL:['En service','ok'],DECOMPOSITION_REQUESTED:['Décomposition','red'],DECOMPOSED_IN_STORAGE:['Stockée','muted']};
+  const LC={FACTORY_PURCHASED:{k:'logistics.lc.FACTORY_PURCHASED',fb:'Achetée usine',c:'warn'},READY_FOR_SHIPPING:{k:'logistics.lc.READY_FOR_SHIPPING',fb:'Prête envoi',c:'blue'},IN_TRANSIT:{k:'logistics.lc.IN_TRANSIT',fb:'En transit',c:'blue'},ASSEMBLY_IN_PROGRESS:{k:'logistics.lc.ASSEMBLY_IN_PROGRESS',fb:'Assemblage site',c:'warn'},OPERATIONAL:{k:'logistics.lc.OPERATIONAL',fb:'En service',c:'ok'},DECOMPOSITION_REQUESTED:{k:'logistics.lc.DECOMPOSITION_REQUESTED',fb:'Décomposition',c:'red'},DECOMPOSED_IN_STORAGE:{k:'logistics.lc.DECOMPOSED_IN_STORAGE',fb:'Stockée',c:'muted'}};
+  const S=(key,fb)=>{ const e=LC[key]; return e?T(e.k,e.fb):(fb!==undefined?fb:key); };
+  const SC=(key,fb)=>{ const e=LC[key]; return e?e.c:(fb||'muted'); };
+  const R={RELOCATION:{k:'logistics.dmReasonReloc',fb:'Relocation'},RETURN_TO_FACTORY:{k:'logistics.dmReasonReturn',fb:'Retour usine'},SALE_RESALE:{k:'logistics.dmReasonSale',fb:'Vente / revente'},END_OF_USE:{k:'logistics.dmReasonEnd',fb:"Fin d'usage"},OTHER:{k:'logistics.dmReasonOther',fb:'Autre'}};
+  const RS=(key,fb)=>{ const e=R[key]; return e?T(e.k,e.fb):(fb!==undefined?fb:key); };
 
   function tabs(){
     document.querySelectorAll('#mainTabs .tab').forEach(t=>t.onclick=()=>{
@@ -185,45 +191,45 @@
     const j=await api('/api/lifecycle/units').catch(()=>null); if(!j)return;
     const units=f?j.units.filter(u=>u.lifecycle===f):j.units;
     $('trackList').innerHTML=units.length?units.map(u=>{
-      const st=LC[u.lifecycle]||[u.lifecycle,'muted'];
+      const lbl=S(u.lifecycle), cls=SC(u.lifecycle);
       return `<div class="unit">
         <div class="top">
           <b>${esc(u.serialNumber)}</b>
-          <span class="badge ${st[1]}">${st[0]}</span>
+          <span class="badge ${cls}">${esc(lbl)}</span>
           <span class="meta" style="margin-left:auto">${esc(u.city||u.address||'—')}</span>
         </div>
-        <div class="meta">${esc(u.name)}${u.shipping&&u.shipping.trackingNumber?(' · tracking <b>'+esc(u.shipping.trackingNumber)+'</b>'+u.shipping.carrierName?(' · '+esc(u.shipping.carrierName)):''):''}</div>
+        <div class="meta">${esc(u.name)}${u.shipping&&u.shipping.trackingNumber?(' · '+T('logistics.tracking','tracking')+' <b>'+esc(u.shipping.trackingNumber)+'</b>'+u.shipping.carrierName?(' · '+esc(u.shipping.carrierName)):''):''}</div>
         <div class="actions">
-          <button class="btn ghost small" data-trace="${u._id}">🧭 Trace</button>
-          ${u.shipping&&u.shipping.trackingNumber?`<button class="btn ghost small" data-bord="${u._id}">📄 Bordereau</button><button class="btn ghost small" data-qr="${u._id}">⬛ QR colisage</button>`:''}
-          <button class="btn ghost small" data-ship="${u._id}" data-name="${esc(u.serialNumber)}">🚚 Expédier</button>
-          <button class="btn ghost small" data-arr="${u._id}">📍 Arrivée site</button>
+          <button class="btn ghost small" data-trace="${u._id}">${T('logistics.btnTrace','🧭 Trace')}</button>
+          ${u.shipping&&u.shipping.trackingNumber?`<button class="btn ghost small" data-bord="${u._id}">${T('logistics.btnBordereau','📄 Bordereau')}</button><button class="btn ghost small" data-qr="${u._id}">${T('logistics.btnQr','⬛ QR colisage')}</button>`:''}
+          <button class="btn ghost small" data-ship="${u._id}" data-name="${esc(u.serialNumber)}">${T('logistics.btnShip','🚚 Expédier')}</button>
+          <button class="btn ghost small" data-arr="${u._id}">${T('logistics.btnArrival','📍 Arrivée site')}</button>
         </div>
       </div>`;
-    }).join(''):'<p class="meta">Aucune cabine dans cet état.</p>';
+    }).join(''):'<p class="meta">'+T('logistics.emptyState','Aucune cabine dans cet état.')+'</p>';
     document.querySelectorAll('[data-trace]').forEach(b=>b.onclick=()=>showTrace(b.dataset.trace));
     document.querySelectorAll('[data-bord]').forEach(b=>b.onclick=()=>window.open(API+'/api/lifecycle/report/bordereau/'+b.dataset.bord,'_blank'));
     document.querySelectorAll('[data-qr]').forEach(b=>b.onclick=()=>openQR(b.dataset.qr));
     document.querySelectorAll('[data-ship]').forEach(b=>b.onclick=()=>shipModal(b.dataset.ship,b.dataset.name));
     document.querySelectorAll('[data-arr]').forEach(b=>b.onclick=async()=>{
       const j=await api('/api/lifecycle/cabins/'+b.dataset.arr+'/site-arrival',{method:'POST',body:JSON.stringify({})});
-      toast(j.message||(j.success?'Arrivée enregistrée':'Erreur')); loadTrack($('lifeFilter .chip.active')?.dataset.f||'');
+      toast(j.message||(j.success?T('logistics.arrivalSaved','Arrivée enregistrée'):T('logistics.error','Erreur'))); loadTrack($('lifeFilter .chip.active')?.dataset.f||'');
     });
     if(window.CabinMotion) window.CabinMotion.observeReveals($('trackList'));
   }
 
   async function showTrace(id){
     const j=await api('/api/lifecycle/cabins/'+id+'/trace'); if(!j.success){toast(j.message);return;}
-    const st=LC[j.lifecycle]||[j.lifecycle,'muted'];
-    $('trTitle').textContent='Fiche de vie — '+j.serialNumber;
-    const events=j.events.slice().reverse().map(e=>`<div class="tl"><b>${esc(e.action)}</b> <span class="badge muted">${esc(e.from||'—')} → ${esc(e.to||'—')}</span><div class="meta">${new Date(e.at).toLocaleString('fr-FR')} · ${esc(e.by)}${e.details?'<br>'+esc(e.details):''}</div></div>`).join('');
+    const lbl=S(j.lifecycle), cls=SC(j.lifecycle);
+    $('trTitle').textContent=T('logistics.traceHeader','Fiche de vie — {serial}',{serial:j.serialNumber});
+    const events=j.events.slice().reverse().map(e=>`<div class="tl"><b>${esc(e.action)}</b> <span class="badge muted">${esc(e.from||'—')} → ${esc(e.to||'—')}</span><div class="meta">${new Date(e.at).toLocaleString(LOC())} · ${esc(e.by)}${e.details?'<br>'+esc(e.details):''}</div></div>`).join('');
     $('trBody').innerHTML=`
-      <p><b>${esc(j.name)}</b> <span class="badge ${st[1]}">${st[0]}</span></p>
-      <div class="meta">Offre : ${(j.shippingDetails&&j.shippingDetails.carrierName)||'—'} · tracking ${(j.shippingDetails&&j.shippingDetails.trackingNumber)||'—'}</div>
-      <div class="meta">Destination : ${esc((j.shippingDetails&&j.shippingDetails.destinationAddress)||j.location?.city||'—')}</div>
-      ${j.logistics&&j.logistics.lastLat?`<div class="meta">Dernier point GPS : ${j.logistics.lastLat.toFixed(4)}, ${j.logistics.lastLng.toFixed(4)} · ${new Date(j.logistics.lastUpdate).toLocaleTimeString('fr-FR')}</div>`:''}
-      <h3 style="margin-top:10px">📦 Dernier états et événements</h3>
-      <div class="timeline">${events||'<div class="meta">Aucun événement</div>'}</div>`;
+      <p><b>${esc(j.name)}</b> <span class="badge ${cls}">${esc(lbl)}</span></p>
+      <div class="meta">${T('logistics.offer','Offre :')} ${(j.shippingDetails&&j.shippingDetails.carrierName)||'—'} · ${T('logistics.tracking','tracking')} ${(j.shippingDetails&&j.shippingDetails.trackingNumber)||'—'}</div>
+      <div class="meta">${T('logistics.destination','Destination :')} ${esc((j.shippingDetails&&j.shippingDetails.destinationAddress)||j.location?.city||'—')}</div>
+      ${j.logistics&&j.logistics.lastLat?`<div class="meta">${T('logistics.lastGps','Dernier point GPS :')} ${j.logistics.lastLat.toFixed(4)}, ${j.logistics.lastLng.toFixed(4)} · ${new Date(j.logistics.lastUpdate).toLocaleTimeString(LOC())}</div>`:''}
+      <h3 style="margin-top:10px">${T('logistics.lastEvents','📦 Dernier états et événements')}</h3>
+      <div class="timeline">${events||('<div class="meta">'+T('logistics.noEvents','Aucun événement')+'</div>')}</div>`;
     $('traceModal').style.display='flex';
   }
   $('trClose').onclick=()=>$('traceModal').style.display='none';
@@ -231,28 +237,28 @@
   function openQR(id){
     api('/api/lifecycle/cabins/'+id+'/packing-qr').then(j=>{
       if(!j.success)return toast(j.message);
-      toast('QR colisage : '+j.qr);
+      toast(T('logistics.qrPacking','QR colisage : {qr}',{qr:j.qr}));
     });
   }
   async function shipModal(id,name){
-    const serial=prompt('Numéro de tracking (ou vide pour génération auto)');
+    const serial=prompt(T('logistics.promptTracking','Numéro de tracking (ou vide pour génération auto)'));
     if(serial===null)return;
-    const carrier=prompt('Transporteur (DHL, COLLISSIMO, TRANS, OCTROI…)')||'';
-    const dest=prompt('Adresse de destination')||'';
+    const carrier=prompt(T('logistics.promptCarrier','Transporteur (DHL, COLLISSIMO, TRANS, OCTROI…)'))||'';
+    const dest=prompt(T('logistics.promptDest','Adresse de destination'))||'';
     const j=await api('/api/lifecycle/cabins/'+id+'/shipping',{method:'PATCH',body:JSON.stringify({trackingNumber:serial,carrierName:carrier,destinationAddress:dest})});
-    toast(j.message||(j.success?'Expédiée — '+j.trackingNumber:'Erreur'));
+    toast(j.message||(j.success?T('logistics.shipped','Expédiée — {tracking}',{tracking:j.trackingNumber}):T('logistics.error','Erreur')));
     loadTrack($('lifeFilter .chip.active')?.dataset.f||'');
   }
 
   // ============ DÉMONTAGE ============
   $('dmRequest').onclick=async()=>{
     const serial=$('dmSerial').value.trim();
-    if(!serial)return toast('Numéro de série requis');
+    if(!serial)return toast(T('logistics.errSerialRequired','Numéro de série requis'));
     const cabins=(await api('/api/lifecycle/units')).units;
     const c=cabins.find(u=>u.serialNumber===serial.toUpperCase());
-    if(!c)return toast('Cabine introuvable');
+    if(!c)return toast(T('logistics.errCabinNotFound','Cabine introuvable'));
     const j=await api('/api/lifecycle/cabins/'+c._id+'/decompose',{method:'POST',body:JSON.stringify({reason:$('dmReason').value,targetDestination:$('dmTarget').value.trim()})});
-    toast(j.message||(j.success?'Ordre créé : '+j.orderId:'Erreur'));
+    toast(j.message||(j.success?T('logistics.orderCreated','Ordre créé : {id}',{id:j.orderId}):T('logistics.error','Erreur')));
     if(j.success){$('dmSerial').value='';loadDemounts();loadTrack();}
   };
 
@@ -265,23 +271,23 @@
     const j=await api('/api/lifecycle/decompositions').catch(()=>null); if(!j)return;
     $('dmList').innerHTML=j.decompositions.length?j.decompositions.map(d=>`
       <div class="unit">
-        <div class="top"><b>${esc(d.serialNumber)}</b><span class="badge red">Décomposition</span>
+        <div class="top"><b>${esc(d.serialNumber)}</b><span class="badge red">${T('logistics.fDecomp','Décomposition')}</span>
         <span class="meta" style="margin-left:auto">${esc(d.decomposition.orderId)}</span></div>
-        <div class="meta">Motif : <b>${esc(d.decomposition.reason||'—')}</b> · demandé le ${new Date(d.decomposition.requestedAt).toLocaleDateString('fr-FR')}${d.decomposition.technician?(' · technicien <b>'+esc(d.decomposition.technician.name)+'</b>'):''}${d.decomposition.targetDestination?(' → '+esc(d.decomposition.targetDestination)):''}</div>
+        <div class="meta">${T('logistics.reason','Motif :')} <b>${esc(RS(d.decomposition.reason,d.decomposition.reason))}</b> · ${T('logistics.requestedOn','demandé le {date}',{date:new Date(d.decomposition.requestedAt).toLocaleDateString(LOC())})}${d.decomposition.technician?T('logistics.technicianInline',' · technicien {name}',{name:esc(d.decomposition.technician.name)}):''}${d.decomposition.targetDestination?(' → '+esc(d.decomposition.targetDestination)):''}</div>
         <div class="actions">
-          <button class="btn ghost small" data-assign="${d._id}">👷 Affecter</button>
-          <button class="btn ok small" data-guide="${d._id}">🔧 Guide & inventaire</button>
+          <button class="btn ghost small" data-assign="${d._id}">${T('logistics.btnAssign','👷 Affecter')}</button>
+          <button class="btn ok small" data-guide="${d._id}">${T('logistics.btnGuide','🔧 Guide & inventaire')}</button>
         </div>
-      </div>`).join(''):'<p class="meta">Aucun ordre de démontage actif.</p>';
+      </div>`).join(''):'<p class="meta">'+T('logistics.emptyOrders','Aucun ordre de démontage actif.')+'</p>';
     document.querySelectorAll('[data-assign]').forEach(b=>b.onclick=async()=>{
-      const tech=prompt('Email du technicien (utilisateur existant — ex: technician@exemple.com)');
+      const tech=prompt(T('logistics.promptTech','Email du technicien (utilisateur existant — ex: technician@exemple.com)'));
       if(!tech)return;
       // résolution du user par id est attendue ; on transmet l'email pour traçage only si absent : on garde vide
       const users=(await api('/api/workforce')).agents||[];
       const u=users.find(x=>x.email===tech.trim().toLowerCase());
-      if(!u){toast('Technicien introuvable dans Workforce');return;}
+      if(!u){toast(T('logistics.errTechNotFound','Technicien introuvable dans Workforce'));return;}
       const j=await api('/api/lifecycle/decompositions/'+b.dataset.assign+'/assign',{method:'POST',body:JSON.stringify({technicianId:u.id,associate:''})});
-      toast(j.message||'Technicien affecté'); loadDemounts();
+      toast(j.message||T('logistics.techAssigned','Technicien affecté')); loadDemounts();
     });
     document.querySelectorAll('[data-guide]').forEach(b=>b.onclick=()=>openGuide(b.dataset.guide));
   }
@@ -293,8 +299,8 @@
     const j=await api('/api/lifecycle/decompositions/'+id+'/guide');
     if(!j.success)return toast(j.message);
     curSerial=j.serialNumber.toUpperCase();
-    $('guideTitle').textContent='🔧 Guide inversé — '+j.serialNumber+' ('+j.orderId+')';
-    $('guideMeta').innerHTML=j.technician?('Technicien : <b>'+esc(j.technician.name)+'</b>'+(j.associate?' · aide '+esc(j.associate):'')):'Technicien non affecté';
+    $('guideTitle').textContent=T('logistics.guideTitleReverse','🔧 Guide inversé — {serial} ({order})',{serial:j.serialNumber,order:j.orderId});
+    $('guideMeta').innerHTML=j.technician?(T('logistics.technician','Technicien :')+' <b>'+esc(j.technician.name)+'</b>'+(j.associate?T('logistics.assist',' · aide {name}',{name:esc(j.associate)}):'')):T('logistics.technicianNone','Technicien non affecté');
     renderSteps(j.steps);
     renderInventory();
   }
@@ -308,49 +314,62 @@
   function renderInventory(){
     $('guideInventory').innerHTML=INV_META.map(c=>`
       <div class="invent">
-        <div style="flex:1"><b>${esc(c.label)}</b><div class="meta" style="font-family:monospace">QR attendu : ${esc(c.qrPrefix+curSerial)}</div></div>
-        <input class="input" placeholder="Scanner le QR…" style="width:auto;flex:1;padding:8px;margin:0" id="scan-${c.key}">
+        <div style="flex:1"><b>${esc(c.label)}</b><div class="meta" style="font-family:monospace">${T('logistics.expectedQr','QR attendu :')} ${esc(c.qrPrefix+curSerial)}</div></div>
+        <input class="input" placeholder="${T('logistics.scanQrPh','Scanner le QR…')}" style="width:auto;flex:1;padding:8px;margin:0" id="scan-${c.key}">
         <button class="btn ghost small" data-scan="${c.key}">📷</button>
         <span class="meta" id="st-${c.key}"></span>
       </div>`).join('');
     document.querySelectorAll('[data-scan]').forEach(b=>b.onclick=async()=>{
       const inp=$('scan-'+b.dataset.scan); const val=inp.value.trim();
       const j=await api('/api/lifecycle/decompositions/'+guideId+'/inventory',{method:'POST',body:JSON.stringify({key:b.dataset.scan,scanValue:val})});
-      if(j.success){($('st-'+b.dataset.scan)).textContent='✓ scanné'; inp.disabled=true; toast(j.message);}
-      else toast(j.message||'QR invalide');
+      if(j.success){($('st-'+b.dataset.scan)).textContent=T('logistics.scanned','✓ scanné'); inp.disabled=true; toast(j.message);}
+      else toast(j.message||T('logistics.errQrInvalid','QR invalide'));
     });
   }
   async function closeDemount(result){
     const photos=[];
+    const done=(j)=>{
+      toast(j.message||(j.success?T('logistics.dmClosed','Décomposition clôturée — {lifecycle}',{lifecycle:S(j.lifecycle,j.lifecycle)}):T('logistics.error','Erreur')));
+      if(j.success){$('guideCard').style.display='none';loadDemounts();loadTrack();}
+    };
     const f=$('dmPhoto').files[0];
     if(f){ const rd=new FileReader(); rd.onload=async()=>{
         photos.push(rd.result);
         const j=await api('/api/lifecycle/decompositions/'+guideId+'/complete',{method:'POST',body:JSON.stringify({photos,notes:$('dmNotes').value.trim(),result})});
-        toast(j.message||(j.success?'Décomposition clôturée — '+j.lifecycle:'Erreur'));
-        if(j.success){$('guideCard').style.display='none';loadDemounts();loadTrack();}
+        done(j);
       }; rd.readAsDataURL(f); }
     else {
       const j=await api('/api/lifecycle/decompositions/'+guideId+'/complete',{method:'POST',body:JSON.stringify({photos:[],notes:$('dmNotes').value.trim(),result})});
-      toast(j.message||(j.success?'Décomposition clôturée — '+j.lifecycle:'Erreur'));
-      if(j.success){$('guideCard').style.display='none';loadDemounts();loadTrack();}
+      done(j);
     }
   }
-  $('dmCompleteStore').onclick=()=>{ if(confirm('Clôturer et stocker les pièces ?')) closeDemount('STORAGE'); };
-  $('dmCompleteTransfer').onclick=()=>{ if(confirm('Clôturer et lancer le transfert vers le nouveau site ?')) closeDemount('TRANSFER'); };
+  $('dmCompleteStore').onclick=()=>{ if(confirm(T('logistics.confirmStore','Clôturer et stocker les pièces ?'))) closeDemount('STORAGE'); };
+  $('dmCompleteTransfer').onclick=()=>{ if(confirm(T('logistics.confirmTransfer','Clôturer et lancer le transfert vers le nouveau site ?'))) closeDemount('TRANSFER'); };
 
   $('loginBtn').onclick=async()=>{
     const j=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email:$('email').value,password:$('password').value})}).catch(()=>({success:false}));
-    if(!j.success){toast('Identifiants invalides');return;}
+    if(!j.success){toast(T('logistics.invalidCredentials','Identifiants invalides'));return;}
     TOKEN=j.token;localStorage.setItem('logi_token',TOKEN);
     $('authCard').classList.add('hidden');$('appView').classList.remove('hidden');
     await loadConfig(); tabs(); loadTrack();
   };
 
+  window.addEventListener('i18n:change',()=>{
+    if($('appView').classList.contains('hidden')) return;
+    loadTrack($('lifeFilter .chip.active')?.dataset.f||'');
+    if(!$('tabDemount').classList.contains('hidden')) loadDemounts();
+  });
+
   (async()=>{ if(TOKEN){ $('authCard').classList.add('hidden');$('appView').classList.remove('hidden'); await loadConfig(); tabs(); loadTrack(); } })();
 })();
 </script>
-<footer class="app-footer">&copy; pixelsoftwaredesign 2026 &middot; Logistique &mdash; Atlas Cabine
-  <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
+<footer class="app-footer"><span data-i18n="logistics.foot">&copy; pixelsoftwaredesign 2026 &middot; Logistique &mdash; Atlas Cabine</span>
+  <div class="site-links"><a href="/" data-i18n="nav.home">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a><span data-i18n-switcher></span></div>
 </footer>
+
+<script src="/vendor/i18n/translations.js"></script>
+<script src="/vendor/i18n/i18n.js"></script>
+<script src="/vendor/i18n/pages/logistics.js"></script>
+<script>I18N.init();</script>
 </body>
 </html>

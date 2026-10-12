@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#10161a">
 <meta name="author" content="pixelsoftwaredesign">
 <!-- © pixelsoftwaredesign 2026 -->
-<title>Atlas Cabine — Portail</title>
+<title data-i18n="index.titleTag">Atlas Cabine — Portail</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -85,140 +85,141 @@
 <body>
 
 <header>
-  <div class="eyebrow">Atlas Cabine</div>
-  <h1>Bienvenue sur le <span>portail</span></h1>
-  <p class="tag">Guettes un détail : chaque interface de l'écosystème — du kiosque de la cabine à la chaîne de production — est accessible depuis ce hub unique.</p>
+  <div class="eyebrow" data-i18n="index.eyebrow">Atlas Cabine</div>
+  <h1 data-i18n-html="index.title">Bienvenue sur le <span>portail</span></h1>
+  <p class="tag" data-i18n="index.tag">Guette un détail : chaque interface de l'écosystème — du kiosque de la cabine à la chaîne de production — est accessible depuis ce hub unique.</p>
+  <div class="lang-switcher-wrap" data-i18n-switcher style="margin-top:16px;display:flex;justify-content:center"></div>
 </header>
 
 <main>
   <section class="roles">
     <div>
-      <div class="role-title">Public — visiteurs</div>
+      <div class="role-title" data-i18n="index.rolePublic">Public — visiteurs</div>
       <div class="grid">
         <a class="card" href="/book.html" style="animation:fadeSlideUp .4s var(--ease-out) both">
-          <div class="ico">🔎</div><b>Réserver une cabine</b>
-          <p>Recherche de créneaux, réservation et location à l'heure dans les cabines disponibles.</p>
-          <div class="meta"><span class="who">Sans compte</span></div><div class="go">→</div>
+          <div class="ico">🔎</div><b data-i18n="index.bookTitle">Réserver une cabine</b>
+          <p data-i18n="index.bookDesc">Recherche de créneaux, réservation et location à l'heure dans les cabines disponibles.</p>
+          <div class="meta"><span class="who" data-i18n="index.noAccount">Sans compte</span></div><div class="go">→</div>
         </a>
         <a class="card" href="/map.html" style="animation:fadeSlideUp .4s var(--ease-out) .05s both">
-          <div class="ico">🗺️</div><b>Carte des cabines</b>
-          <p>Exploration des cabines sur plan extérieur : statut, disponibilité et réservation directe.</p>
-          <div class="meta"><span class="who">Sans compte</span></div><div class="go">→</div>
+          <div class="ico">🗺️</div><b data-i18n="index.mapTitle">Carte des cabines</b>
+          <p data-i18n="index.mapDesc">Exploration des cabines sur plan extérieur : statut, disponibilité et réservation directe.</p>
+          <div class="meta"><span class="who" data-i18n="index.noAccount">Sans compte</span></div><div class="go">→</div>
         </a>
       </div>
     </div>
 
     <div class="franchise" id="franchise" style="animation:fadeSlideUp .4s var(--ease-out) .1s both">
       <div class="franchise-head">
-        <div class="eyebrow2">Développement international — Afrique · Europe · Amérique</div>
-        <h2>Devenez <em>franchise</em></h2>
-        <p>Territoire exclusif, plateforme IoT, production locale et contrat avec fabrication après financement. Choisissez votre zone :</p>
+        <div class="eyebrow2" data-i18n="index.frEyebrow">Développement international — Afrique · Europe · Amérique</div>
+        <h2 data-i18n-html="index.frTitle">Devenez <em>franchise</em></h2>
+        <p data-i18n="index.frDesc">Territoire exclusif, plateforme IoT, production locale et contrat avec fabrication après financement. Choisissez votre zone :</p>
       </div>
       <div class="franchise-cards">
         <a class="fcard" href="/franchise.html">
-          <div class="flag">🌍</div><b>Franchise Afrique</b>
-          <p>Déploiement par pays ou zone urbaine prioritaire : marque Atlas Cabine, réseau IoT, production et services, contrat signé après financement.</p>
-          <span class="fgo">Explorer</span>
+          <div class="flag">🌍</div><b data-i18n="index.frAfrica">Franchise Afrique</b>
+          <p data-i18n="index.frAfricaDesc">Déploiement par pays ou zone urbaine prioritaire : marque Atlas Cabine, réseau IoT, production et services, contrat signé après financement.</p>
+          <span class="fgo" data-i18n="index.explore">Explorer</span>
         </a>
         <a class="fcard" href="/franchise-europe.html">
-          <div class="flag">🇪🇺</div><b>Franchise Europe</b>
-          <p>Marque Atlas Cabine par pays, région ou métropole : RGPD, TVA intracommunautaire, royalties 10–15 %, engagement de 5 ans, fabrication après financement.</p>
-          <span class="fgo">Explorer</span>
+          <div class="flag">🇪🇺</div><b data-i18n="index.frEurope">Franchise Europe</b>
+          <p data-i18n="index.frEuropeDesc">Marque Atlas Cabine par pays, région ou métropole : RGPD, TVA intracommunautaire, royalties 10–15 %, engagement de 5 ans, fabrication après financement.</p>
+          <span class="fgo" data-i18n="index.explore">Explorer</span>
         </a>
         <a class="fcard" href="/franchise-america.html">
-          <div class="flag">🌎</div><b>Franchise Amérique</b>
-          <p>États-Unis, Canada, Mexique, Amérique latine et Caraïbes : marque Atlas Cabine, accompagnement réglementaire local, paiement en USD, fabrication après financement.</p>
-          <span class="fgo">Explorer</span>
+          <div class="flag">🌎</div><b data-i18n="index.frAmerica">Franchise Amérique</b>
+          <p data-i18n="index.frAmericaDesc">États-Unis, Canada, Mexique, Amérique latine et Caraïbes : marque Atlas Cabine, accompagnement réglementaire local, paiement en USD, fabrication après financement.</p>
+          <span class="fgo" data-i18n="index.explore">Explorer</span>
         </a>
       </div>
       <div class="franchise-foot">
-        <a class="cta" href="/partner.html?mode=register">S'inscrire comme partenaire</a>
-        <a class="cta ghost" href="/contrat-franchise.html">📄 Contrat type</a>
-        <a class="cta ghost" href="/contrat-location.html">🔑 Location cabine</a>
+        <a class="cta" href="/partner.html?mode=register" data-i18n="index.frSignup">S'inscrire comme partenaire</a>
+        <a class="cta ghost" href="/contrat-franchise.html" data-i18n="index.frContract">📄 Contrat type</a>
+        <a class="cta ghost" href="/contrat-location.html" data-i18n="index.frLocation">🔑 Location cabine</a>
       </div>
-      <div class="franchise-owner">Marque « Atlas Cabine » — nouvelle marque internationale d'Atlas Working. « my cabine » dérivée d'atlascabine (atlascabine.pages.dev). pixelsoftwaredesign : suivi technique, sans engagement · signature : représentant légal d'Atlas Working.</div>
+      <div class="franchise-owner" data-i18n="index.frOwner">Marque « Atlas Cabine » — nouvelle marque internationale d'Atlas Working. « my cabine » dérivée d'atlascabine (atlascabine.pages.dev). pixelsoftwaredesign : suivi technique, sans engagement · signature : représentant légal d'Atlas Working.</div>
     </div>
 
     <div>
-      <div class="role-title">Contrats &amp; documents</div>
+      <div class="role-title" data-i18n="index.roleDocs">Contrats &amp; documents</div>
       <div class="grid">
         <a class="card" href="/contrat-franchise.html" style="animation:fadeSlideUp .4s var(--ease-out) .1s both">
-          <div class="ico">📄</div><b>Contrat de franchise Atlas Cabine</b>
-          <p>Contrat type franchise international (Afrique, Europe, Amérique) : territoires, financement, royalties, fabrication après financement et signatures.</p>
-          <div class="meta"><span class="who">Imprimable · PDF</span></div><div class="go">→</div>
+          <div class="ico">📄</div><b data-i18n="index.docFrTitle">Contrat de franchise Atlas Cabine</b>
+          <p data-i18n="index.docFrDesc">Contrat type franchise international (Afrique, Europe, Amérique) : territoires, financement, royalties, fabrication après financement et signatures.</p>
+          <div class="meta"><span class="who" data-i18n="index.printable">Imprimable · PDF</span></div><div class="go">→</div>
         </a>
         <a class="card" href="/contrat-location.html" style="animation:fadeSlideUp .4s var(--ease-out) .14s both">
-          <div class="ico">🔑</div><b>Contrat de location cabine</b>
-          <p>Location Atlas Cabine avec engagement de durée (12/24/36 mois), loyer, caution et fabrication après financement.</p>
-          <div class="meta"><span class="who">Imprimable · PDF</span></div><div class="go">→</div>
+          <div class="ico">🔑</div><b data-i18n="index.docLocTitle">Contrat de location cabine</b>
+          <p data-i18n="index.docLocDesc">Location Atlas Cabine avec engagement de durée (12/24/36 mois), loyer, caution et fabrication après financement.</p>
+          <div class="meta"><span class="who" data-i18n="index.printable">Imprimable · PDF</span></div><div class="go">→</div>
         </a>
       </div>
     </div>
 
     <div>
-      <div class="role-title">Gestion — propriétaire &amp; partenaire</div>
+      <div class="role-title" data-i18n="index.roleMgmt">Gestion — propriétaire &amp; partenaire</div>
       <div class="grid">
         <a class="card" href="/partner.html" style="animation:fadeSlideUp .4s var(--ease-out) .1s both">
-          <div class="ico">🏠</div><b>Portail partenaire</b>
-          <p>Appairage, boutique, revenus, réservations et automatisations de vos cabines.</p>
-          <div class="meta"><span class="who">Partenaire</span></div><div class="go">→</div>
+          <div class="ico">🏠</div><b data-i18n="index.partnerTitle">Portail partenaire</b>
+          <p data-i18n="index.partnerDesc">Appairage, boutique, revenus, réservations et automatisations de vos cabines.</p>
+          <div class="meta"><span class="who" data-i18n="index.partner">Partenaire</span></div><div class="go">→</div>
         </a>
         <a class="card" href="/plan.html" style="animation:fadeSlideUp .4s var(--ease-out) .14s both">
-          <div class="ico">🧭</div><b>Plan intérieur</b>
-          <p>Cartographie indoor (bâtiments, centres, usines) : cabines, étages, géolocalisation.</p>
-          <div class="meta"><span class="who">Partenaire · Admin</span></div><div class="go">→</div>
+          <div class="ico">🧭</div><b data-i18n="index.planTitle">Plan intérieur</b>
+          <p data-i18n="index.planDesc">Cartographie indoor (bâtiments, centres, usines) : cabines, étages, géolocalisation.</p>
+          <div class="meta"><span class="who" data-i18n="index.adminPartner">Partenaire · Admin</span></div><div class="go">→</div>
         </a>
         <a class="card" href="/maintenance.html" style="animation:fadeSlideUp .4s var(--ease-out) .18s both">
-          <div class="ico">🧼</div><b>Management &amp; Housekeeping</b>
-          <p>Parc, missions de nettoyage (PIN, checklist, photos) et tickets de maintenance.</p>
-          <div class="meta"><span class="who">Équipe</span></div><div class="go">→</div>
+          <div class="ico">🧼</div><b data-i18n="index.maintenanceTitle">Management &amp; Housekeeping</b>
+          <p data-i18n="index.maintenanceDesc">Parc, missions de nettoyage (PIN, checklist, photos) et tickets de maintenance.</p>
+          <div class="meta"><span class="who" data-i18n="index.team">Équipe</span></div><div class="go">→</div>
         </a>
         <a class="card" href="/workforce.html" style="animation:fadeSlideUp .4s var(--ease-out) .2s both">
-          <div class="ico">🎯</div><b>Workforce &amp; KPI</b>
-          <p>Agents, indicateurs de performance, primes hebdomadaires et rapport PDF.</p>
-          <div class="meta"><span class="who">Manager</span></div><div class="go">→</div>
+          <div class="ico">🎯</div><b data-i18n="index.workforceTitle">Workforce &amp; KPI</b>
+          <p data-i18n="index.workforceDesc">Agents, indicateurs de performance, primes hebdomadaires et rapport PDF.</p>
+          <div class="meta"><span class="who" data-i18n="index.manager">Manager</span></div><div class="go">→</div>
         </a>
         <a class="card" href="/bim.html" style="animation:fadeSlideUp .4s var(--ease-out) .22s both">
-          <div class="ico">🏗️</div><b>Jumeau numérique BIM</b>
-          <p>Maquette 3D temps réel : équipements, GUID, flux MQTT, alarmes et états.</p>
-          <div class="meta"><span class="who">Admin · Manager</span></div><div class="go">→</div>
+          <div class="ico">🏗️</div><b data-i18n="index.bimTitle">Jumeau numérique BIM</b>
+          <p data-i18n="index.bimDesc">Maquette 3D temps réel : équipements, GUID, flux MQTT, alarmes et états.</p>
+          <div class="meta"><span class="who" data-i18n="index.adminManager">Admin · Manager</span></div><div class="go">→</div>
         </a>
       </div>
     </div>
 
     <div>
-      <div class="role-title">Opérations — production &amp; installation</div>
+      <div class="role-title" data-i18n="index.roleOps">Opérations — production &amp; installation</div>
       <div class="grid">
         <a class="card" href="/usine.html" style="animation:fadeSlideUp .4s var(--ease-out) .22s both">
-          <div class="ico">🏭</div><b>Usine de cabines</b>
-          <p>Modèles, assemblage, banc de test QC, QR de livraison, stock composants et FOTA.</p>
-          <div class="meta"><span class="who">Admin</span></div><div class="go">→</div>
+          <div class="ico">🏭</div><b data-i18n="index.factoryTitle">Usine de cabines</b>
+          <p data-i18n="index.factoryDesc">Modèles, assemblage, banc de test QC, QR de livraison, stock composants et FOTA.</p>
+          <div class="meta"><span class="who" data-i18n="index.admin">Admin</span></div><div class="go">→</div>
         </a>
         <a class="card" href="/install.html" style="animation:fadeSlideUp .4s var(--ease-out) .26s both">
-          <div class="ico">🔧</div><b>Installation terrain</b>
-          <p>Scan du QR d'appairage, self-test des équipements, photos, GPS et mise en service.</p>
-          <div class="meta"><span class="who">Technicien</span></div><div class="go">→</div>
+          <div class="ico">🔧</div><b data-i18n="index.installTitle">Installation terrain</b>
+          <p data-i18n="index.installDesc">Scan du QR d'appairage, self-test des équipements, photos, GPS et mise en service.</p>
+          <div class="meta"><span class="who" data-i18n="index.technician">Technicien</span></div><div class="go">→</div>
         </a>
         <a class="card" href="/logistics.html" style="animation:fadeSlideUp .4s var(--ease-out) .28s both">
-          <div class="ico">🚚</div><b>Logistique &amp; Cycle de vie</b>
-          <p>Expédition, bordereaux, QR colisage, trace GPS et démontage/transfert.</p>
-          <div class="meta"><span class="who">Admin · Partenaire</span></div><div class="go">→</div>
+          <div class="ico">🚚</div><b data-i18n="index.logisticsTitle">Logistique &amp; Cycle de vie</b>
+          <p data-i18n="index.logisticsDesc">Expédition, bordereaux, QR colisage, trace GPS et démontage/transfert.</p>
+          <div class="meta"><span class="who" data-i18n="index.adminPartnerL">Admin · Partenaire</span></div><div class="go">→</div>
         </a>
         <a class="card" href="/demo.html" style="animation:fadeSlideUp .4s var(--ease-out) .3s both">
-          <div class="ico">🎬</div><b>Démo — Cycle de vie</b>
-          <p>Rejoue le parcours complet usine → client → démontage sur une cabine de démonstration.</p>
-          <div class="meta"><span class="who">Admin</span></div><div class="go">→</div>
+          <div class="ico">🎬</div><b data-i18n="index.demoTitle">Démo — Cycle de vie</b>
+          <p data-i18n="index.demoDesc">Rejoue le parcours complet usine → client → démontage sur une cabine de démonstration.</p>
+          <div class="meta"><span class="who" data-i18n="index.admin">Admin</span></div><div class="go">→</div>
         </a>
       </div>
     </div>
 
     <div>
-      <div class="role-title">À bord — la cabine elle-même</div>
+      <div class="role-title" data-i18n="index.roleOnboard">À bord — la cabine elle-même</div>
       <div class="grid">
         <a class="card" href="/kiosk.html" style="animation:fadeSlideUp .4s var(--ease-out) .3s both">
-          <div class="ico">🏕️</div><b>Kiosque cabine</b>
-          <p>Interface tactile embarquée : climat, lumière, serrure, commande vocale et ambiance.</p>
-          <div class="meta"><span class="who">Écran cabine</span></div><div class="go">→</div>
+          <div class="ico">🏕️</div><b data-i18n="index.kioskTitle">Kiosque cabine</b>
+          <p data-i18n="index.kioskDesc">Interface tactile embarquée : climat, lumière, serrure, commande vocale et ambiance.</p>
+          <div class="meta"><span class="who" data-i18n="index.screenCabin">Écran cabine</span></div><div class="go">→</div>
         </a>
       </div>
     </div>
@@ -226,8 +227,11 @@
 </main>
 <footer class="foot">
   <div class="dotts">&middot;&middot;</div>
-  &copy; pixelsoftwaredesign 2026 &mdash; Plateforme cabines intelligentes
-  <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
+  <div data-i18n="index.foot">&copy; pixelsoftwaredesign 2026 &mdash; Atlas Cabine : plateforme internationale de cabines à la séance</div>
+  <div class="site-links"><a href="/" data-i18n="nav.home">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a><span data-i18n-switcher></span></div>
 </footer>
+<script src="/vendor/i18n/translations.js"></script>
+<script src="/vendor/i18n/i18n.js"></script>
+<script>I18N.init();</script>
 </body>
 </html>

@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#10161a">
 <meta name="author" content="pixelsoftwaredesign">
 <!-- © pixelsoftwaredesign 2026 -->
-<title>Management & Housekeeping</title>
+<title data-i18n="maintenance.titleTag">Management & Housekeeping</title>
 <script src="/socket.io/socket.io.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -61,51 +61,51 @@
 </style>
 </head>
 <body>
-<header><h1>🧼 Management & <span>Housekeeping</span> <a href="/plan.html" style="font-size:.66rem;font-weight:600;color:var(--accent);text-decoration:none;vertical-align:middle;margin-left:8px;border:1px solid var(--border);padding:3px 9px;border-radius:99px;">🧭 Plan intérieur ↗</a></h1><div class="sub">Propreté, maintenance et état de préparation des cabines</div></header>
+<header><h1><span data-i18n-html="maintenance.h1" style="color:var(--text)">🧼 Management & <span>Housekeeping</span></span> <a href="/plan.html" style="font-size:.66rem;font-weight:600;color:var(--accent);text-decoration:none;vertical-align:middle;margin-left:8px;border:1px solid var(--border);padding:3px 9px;border-radius:99px;">🧭 <span data-i18n="maintenance.planLink">Plan intérieur</span> ↗</a></h1><div class="sub" data-i18n="maintenance.sub">Propreté, maintenance et état de préparation des cabines</div><div style="display:flex;justify-content:flex-end;margin-top:6px"><span data-i18n-switcher></span></div></header>
 
 <main>
   <div id="authCard" class="card">
-    <h2>Connexion</h2>
-    <label>Email</label><input class="input" id="email" type="email" placeholder="agent@exemple.com">
-    <label>Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
-    <button class="btn" id="loginBtn">Se connecter</button>
+    <h2 data-i18n="maintenance.loginTitle">Connexion</h2>
+    <label data-i18n="maintenance.email">Email</label><input class="input" id="email" type="email" placeholder="agent@exemple.com" data-i18n-ph="maintenance.emailPh">
+    <label data-i18n="maintenance.password">Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
+    <button class="btn" id="loginBtn" data-i18n="maintenance.loginBtn">Se connecter</button>
   </div>
 
   <div id="appView" class="hidden">
     <div class="tabs" id="mainTabs">
-      <button class="tab active" data-v="parc">🗂️ Parc</button>
-      <button class="tab" data-v="tasks">🧽 Missions</button>
-      <button class="tab" data-v="tickets">🛠️ Tickets</button>
+      <button class="tab active" data-v="parc" data-i18n="maintenance.tabParc">🗂️ Parc</button>
+      <button class="tab" data-v="tasks" data-i18n="maintenance.tabTasks">🧽 Missions</button>
+      <button class="tab" data-v="tickets" data-i18n="maintenance.tabTickets">🛠️ Tickets</button>
     </div>
 
     <div id="tabParc"><div id="parcList" class="stagger-in"></div></div>
 
     <div id="tabTasks" class="hidden">
       <div class="filter" id="taskFilter">
-        <button class="chip" data-f="">Toutes</button>
-        <button class="chip" data-f="PENDING">À faire</button>
-        <button class="chip" data-f="IN_PROGRESS">En cours</button>
-        <button class="chip" data-f="COMPLETED">Terminées</button>
+        <button class="chip" data-f="" data-i18n="maintenance.fAll">Toutes</button>
+        <button class="chip" data-f="PENDING" data-i18n="maintenance.fPending">À faire</button>
+        <button class="chip" data-f="IN_PROGRESS" data-i18n="maintenance.fInProgress">En cours</button>
+        <button class="chip" data-f="COMPLETED" data-i18n="maintenance.fCompleted">Terminées</button>
       </div>
       <div id="taskList" class="stagger-in"></div>
     </div>
 
     <div id="tabTickets" class="hidden">
       <div class="card">
-        <h2>➕ Déclarer un incident</h2>
-        <label>Cabine (numéro de série)</label><input class="input" id="tkSerial" placeholder="CAB-…">
-        <label>Titre</label><input class="input" id="tkTitle" placeholder="Relais défaillant / ampoule grillée…">
-        <label>Priorité</label>
-        <select class="input" id="tkPriority"><option value="MEDIUM">Moyenne</option><option value="LOW">Basse</option><option value="HIGH">Haute</option><option value="URGENT">Urgente</option></select>
-        <label>Description</label><textarea class="input" id="tkDesc" rows="2" placeholder="Détails du problème…"></textarea>
-        <button class="btn" id="tkCreate">Créer le ticket</button>
+        <h2 data-i18n="maintenance.ticketFormTitle">➕ Déclarer un incident</h2>
+        <label data-i18n="maintenance.tkSerial">Cabine (numéro de série)</label><input class="input" id="tkSerial" placeholder="CAB-…" data-i18n-ph="maintenance.tkSerialPh">
+        <label data-i18n="maintenance.tkTitle">Titre</label><input class="input" id="tkTitle" placeholder="Relais défaillant / ampoule grillée…" data-i18n-ph="maintenance.tkTitlePh">
+        <label data-i18n="maintenance.tkPriority">Priorité</label>
+        <select class="input" id="tkPriority"><option value="MEDIUM" data-i18n="maintenance.prMedium">Moyenne</option><option value="LOW" data-i18n="maintenance.prLow">Basse</option><option value="HIGH" data-i18n="maintenance.prHigh">Haute</option><option value="URGENT" data-i18n="maintenance.prUrgent">Urgente</option></select>
+        <label data-i18n="maintenance.tkDesc">Description</label><textarea class="input" id="tkDesc" rows="2" placeholder="Détails du problème…" data-i18n-ph="maintenance.tkDescPh"></textarea>
+        <button class="btn" id="tkCreate" data-i18n="maintenance.tkCreate">Créer le ticket</button>
       </div>
       <div class="filter" id="ticketFilter">
-        <button class="chip" data-f="">Tous</button>
-        <button class="chip" data-f="OPEN">Ouverts</button>
-        <button class="chip" data-f="IN_PROGRESS">En cours</button>
-        <button class="chip" data-f="MAINTENANCE">En maintenance</button>
-        <button class="chip" data-f="RESOLVED">Résolus</button>
+        <button class="chip" data-f="" data-i18n="maintenance.tAll">Tous</button>
+        <button class="chip" data-f="OPEN" data-i18n="maintenance.tOpen">Ouverts</button>
+        <button class="chip" data-f="IN_PROGRESS" data-i18n="maintenance.tInProgress">En cours</button>
+        <button class="chip" data-f="MAINTENANCE" data-i18n="maintenance.tMaintenance">En maintenance</button>
+        <button class="chip" data-f="RESOLVED" data-i18n="maintenance.tResolved">Résolus</button>
       </div>
       <div id="ticketList" class="stagger-in"></div>
     </div>
@@ -119,13 +119,16 @@
   if(window.CabinMotion) CabinMotion.init(document);
   const API=location.origin;
   const $=(id)=>document.getElementById(id);
+  const T=(k,fb,vars)=>{ if(!k) return fb!==undefined?fb:k; try{ if(window.I18N&&window.I18N.t){ const v=window.I18N.t(k,vars); if(v!==undefined&&v!==k) return v; } }catch(e){} let s=fb!==undefined?fb:k; if(vars) s=s.replace(/\{(\w+)\}/g,(m,x)=>vars[x]!==undefined?vars[x]:m); return s; };
   let token=localStorage.getItem('hk_token')||'';
-  const HS={CLEAN:{t:'Propre',c:'ok'},DIRTY:{t:'À nettoyer',c:'warn'},IN_PROGRESS:{t:'En cours',c:'blue'}};
-  const ST={AVAILABLE:'Prête',OCCUPIED_BY_GUEST:'Occupée',OCCUPIED_BY_OWNER:'Usage perso',CLEANING_REQUIRED:'À nettoyer',MAINTENANCE:'Maintenance'};
-  const TW={PENDING:{t:'À faire',c:'warn'},IN_PROGRESS:{t:'En cours',c:'blue'},COMPLETED:{t:'Terminée',c:'ok'}};
-  const KT={OPEN:{t:'Ouvert',c:'warn'},IN_PROGRESS:{t:'En cours',c:'blue'},MAINTENANCE:{t:'En maintenance',c:'red'},RESOLVED:{t:'Résolu',c:'ok'}};
+  const HS={CLEAN:{k:'maintenance.hs.CLEAN',fb:'Propre',c:'ok'},DIRTY:{k:'maintenance.hs.DIRTY',fb:'À nettoyer',c:'warn'},IN_PROGRESS:{k:'maintenance.hs.IN_PROGRESS',fb:'En cours',c:'blue'}};
+  const ST={AVAILABLE:{k:'maintenance.st.AVAILABLE',fb:'Prête'},OCCUPIED_BY_GUEST:{k:'maintenance.st.OCCUPIED_BY_GUEST',fb:'Occupée'},OCCUPIED_BY_OWNER:{k:'maintenance.st.OCCUPIED_BY_OWNER',fb:'Usage perso'},CLEANING_REQUIRED:{k:'maintenance.st.CLEANING_REQUIRED',fb:'À nettoyer'},MAINTENANCE:{k:'maintenance.st.MAINTENANCE',fb:'Maintenance'}};
+  const TW={PENDING:{k:'maintenance.tw.PENDING',fb:'À faire',c:'warn'},IN_PROGRESS:{k:'maintenance.tw.IN_PROGRESS',fb:'En cours',c:'blue'},COMPLETED:{k:'maintenance.tw.COMPLETED',fb:'Terminée',c:'ok'}};
+  const KT={OPEN:{k:'maintenance.kt.OPEN',fb:'Ouvert',c:'warn'},IN_PROGRESS:{k:'maintenance.kt.IN_PROGRESS',fb:'En cours',c:'blue'},MAINTENANCE:{k:'maintenance.kt.MAINTENANCE',fb:'En maintenance',c:'red'},RESOLVED:{k:'maintenance.kt.RESOLVED',fb:'Résolu',c:'ok'}};
+  const S=(m,key,fbtxt)=>{ const e=m[key]; return e?T(e.k,e.fb):(fbtxt!==undefined?fbtxt:key); };
+  const LOC=()=>((window.I18N&&window.I18N.locale)||'fr-FR');
   const auth=(h={})=>({'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{}),...h});
-  async function api(path,opts={}){const res=await fetch(API+path,{...opts,headers:auth(opts.headers)});const json=await res.json().catch(()=>({success:false,message:'Réponse invalide'}));if(!res.ok&&!json.success)throw new Error(json.message||('Erreur '+res.status));return json;}
+  async function api(path,opts={}){const res=await fetch(API+path,{...opts,headers:auth(opts.headers)});const json=await res.json().catch(()=>({success:false,message:T('maintenance.invalidResponse','Réponse invalide')}));if(!res.ok&&!json.success)throw new Error(json.message||(T('maintenance.error','Erreur')+' '+res.status));return json;}
   function toast(m){ if(window.CabinMotion&&CabinMotion.toast) return CabinMotion.toast(m,{duration:3200}); const el=$('toast'); el.textContent=m; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3200); }
   let taskFilter=''; let ticketFilter='';
   function skeleton(n=3,h=100){return Array.from({length:n},()=>`<div class="card skeleton" style="height:${h}px"></div>`).join('');}
@@ -133,7 +136,7 @@
 
   $('loginBtn').onclick=async()=>{
     const email=$('email').value.trim(),password=$('password').value;
-    if(!email||!password) return toast('Email et mot de passe requis');
+    if(!email||!password) return toast(T('maintenance.errCredentials','Email et mot de passe requis'));
     try{const j=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email,password})});token=j.token;localStorage.setItem('hk_token',token);$('authCard').classList.add('hidden');$('appView').classList.remove('hidden');loadAll();}catch(e){toast(e.message);}
   };
 
@@ -153,24 +156,24 @@
     try{
       const j=await api('/api/housekeeping/parc');
       wrap.innerHTML='';
-      if(!j.cabins.length){wrap.innerHTML='<p class="muted">Aucune cabine.</p>';return;}
+      if(!j.cabins.length){wrap.innerHTML='<p class="muted">'+T('maintenance.emptyCabins','Aucune cabine.')+'</p>';return;}
       j.cabins.forEach(c=>{
-        const h=HS[c.housekeepingState]||{t:c.housekeepingState,c:''};
+        const h=HS[c.housekeepingState]||{fb:c.housekeepingState,c:''};
         const el=document.createElement('div'); el.className='item';
         el.innerHTML=`<div class="top">
           <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(155deg,rgba(242,166,90,.32),rgba(242,166,90,.05));border:1px solid rgba(242,166,90,.22);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">🏠</div>
           <div style="flex:1;min-width:0">
             <b>${c.name}</b>
-            <div class="meta">${c.serialNumber} · <span class="badge ${h.c}">${h.t}</span> · <span class="badge ${c.status==='MAINTENANCE'?'red':c.status==='AVAILABLE'?'ok':c.status==='CLEANING_REQUIRED'?'warn':'blue'}">${ST[c.status]||c.status}</span></div>
+            <div class="meta">${c.serialNumber} · <span class="badge ${h.c}">${T(h.k,h.fb)}</span> · <span class="badge ${c.status==='MAINTENANCE'?'red':c.status==='AVAILABLE'?'ok':c.status==='CLEANING_REQUIRED'?'warn':'blue'}">${S(ST,c.status,c.status)}</span></div>
             <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
-              <button class="btn ghost small" data-task="${c._id}">🧽 Mission nettoyage</button>
-              <button class="btn ghost small" data-tick="${c.serialNumber}">🛠️ Déclarer panne</button>
+              <button class="btn ghost small" data-task="${c._id}">${T('maintenance.btnMission','🧽 Mission nettoyage')}</button>
+              <button class="btn ghost small" data-tick="${c.serialNumber}">${T('maintenance.btnReportFault','🛠️ Déclarer panne')}</button>
             </div>
           </div></div>`;
         wrap.appendChild(el);
       });
       wrap.querySelectorAll('[data-task]').forEach(b=>b.onclick=async()=>{
-        try{ const r=await api('/api/housekeeping/tasks',{method:'POST',body:JSON.stringify({cabinId:b.dataset.task})}); toast('Mission créée pour '+r.task.cabinSerial); loadParc(); loadTasks(); }catch(e){ toast(e.message); }
+        try{ const r=await api('/api/housekeeping/tasks',{method:'POST',body:JSON.stringify({cabinId:b.dataset.task})}); toast(T('maintenance.taskCreated','Mission créée pour {serial}',{serial:r.task.cabinSerial})); loadParc(); loadTasks(); }catch(e){ toast(e.message); }
       });
       wrap.querySelectorAll('[data-tick]').forEach(b=>b.onclick=()=>{ $('tkSerial').value=b.dataset.tick; switchTab('tickets'); });
       obs(wrap);
@@ -190,15 +193,15 @@
       const q=taskFilter?('?status='+taskFilter):'';
       const j=await api('/api/housekeeping/tasks'+q);
       wrap.innerHTML='';
-      if(!j.tasks.length){wrap.innerHTML='<p class="muted">Aucune mission.</p>';return;}
+      if(!j.tasks.length){wrap.innerHTML='<p class="muted">'+T('maintenance.emptyTasks','Aucune mission.')+'</p>';return;}
       j.tasks.forEach(t=>{
         const el=document.createElement('div'); el.className='item';
-        const stt=TW[t.status]||{t:t.status,c:''};
+        const stt=TW[t.status]||{fb:t.status,c:''};
         const agent=t.assignedAgent?('<span class="badge blue">👤 '+t.assignedAgent+'</span>'):'';
         el.innerHTML=`<div class="top">
           <div style="flex:1;min-width:0">
-            <b>${t.cabinSerial} <span class="badge ${stt.c}">${stt.t}</span> ${agent}</b>
-            <div class="meta">créée ${new Date(t.createdAt).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+            <b>${t.cabinSerial} <span class="badge ${stt.c}">${T(stt.k,stt.fb)}</span> ${agent}</b>
+            <div class="meta">${T('maintenance.createdAt','créée {date}',{date:new Date(t.createdAt).toLocaleString(LOC(),{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})})}</div>
           </div></div>
           <div id="task-${t._id}-body"></div>`;
         wrap.appendChild(el);
@@ -211,14 +214,14 @@
   function renderTaskBody(t,body){
     body.innerHTML='';
     if(t.status==='PENDING'){
-      const b=document.createElement('button'); b.className='btn'; b.textContent='▶ Démarrer (mode service)';
+      const b=document.createElement('button'); b.className='btn'; b.textContent=T('maintenance.btnStart','▶ Démarrer (mode service)');
       b.onclick=async()=>{
-        try{ const r=await api('/api/housekeeping/tasks/'+t._id+'/start',{method:'POST',body:JSON.stringify({})}); toast('Porte ouverte — éclairage travail'); renderTaskBody(r.task,body); loadTasks(); }catch(e){ toast(e.message); }
+        try{ const r=await api('/api/housekeeping/tasks/'+t._id+'/start',{method:'POST',body:JSON.stringify({})}); toast(T('maintenance.doorOpened','Porte ouverte — éclairage travail')); renderTaskBody(r.task,body); loadTasks(); }catch(e){ toast(e.message); }
       };
       body.appendChild(b);
     } else if(t.status==='IN_PROGRESS'){
       const pin=document.createElement('div'); pin.className='pin'; pin.textContent=t.accessCode;
-      const lbl=document.createElement('div'); lbl.className='meta'; lbl.textContent='Code PIN temporaire — agent service'; lbl.style.textAlign='center'; lbl.style.marginBottom='8px';
+      const lbl=document.createElement('div'); lbl.className='meta'; lbl.textContent=T('maintenance.pinLabel','Code PIN temporaire — agent service'); lbl.style.textAlign='center'; lbl.style.marginBottom='8px';
       body.appendChild(lbl); body.appendChild(pin);
       t.checklist.forEach(c=>{
         const row=document.createElement('label'); row.className='check'+(c.done?' done':'');
@@ -240,12 +243,12 @@
           toast(r.message); loadTasks(); loadParc();
         }catch(e){ toast(e.message); }
       };
-      const phlbl=document.createElement('label'); phlbl.className='meta'; phlbl.textContent='📸 Photos de preuve (2) — requis pour terminer'; body.appendChild(phlbl); body.appendChild(ph);
-      const doneBtn=document.createElement('button'); doneBtn.className='btn ok'; doneBtn.textContent='✔ Terminer la mission';
+      const phlbl=document.createElement('label'); phlbl.className='meta'; phlbl.textContent=T('maintenance.photoLabel','📸 Photos de preuve (2) — requis pour terminer'); body.appendChild(phlbl); body.appendChild(ph);
+      const doneBtn=document.createElement('button'); doneBtn.className='btn ok'; doneBtn.textContent=T('maintenance.btnFinish','✔ Terminer la mission');
       doneBtn.onclick=()=>ph.click();
       body.appendChild(doneBtn);
     } else {
-      const meta=document.createElement('div'); meta.className='meta'; meta.textContent='✅ Terminée le '+new Date(t.completedAt).toLocaleString('fr-FR')+' · '+(t.photos||[]).length+' photo(s) de preuve'+(t.notes?' · '+t.notes:'');
+      const meta=document.createElement('div'); meta.className='meta'; meta.textContent=T('maintenance.taskDone','✅ Terminée le {date} · {n} photo(s) de preuve',{date:new Date(t.completedAt).toLocaleString(LOC()),n:(t.photos||[]).length})+(t.notes?' · '+t.notes:'');
       body.appendChild(meta);
     }
   }
@@ -253,10 +256,10 @@
   // ============ TICKETS ============
   $('tkCreate').onclick=async()=>{
     const serial=$('tkSerial').value.trim(),title=$('tkTitle').value.trim();
-    if(!serial||!title) return toast('Série et titre requis');
+    if(!serial||!title) return toast(T('maintenance.errSerialTitle','Série et titre requis'));
     try{
       const r=await api('/api/tickets',{method:'POST',body:JSON.stringify({serialNumber:serial,title,description:$('tkDesc').value.trim(),priority:$('tkPriority').value})});
-      toast('Ticket créé ('+r.ticket.priority+')');
+      toast(T('maintenance.ticketCreated','Ticket créé ({priority})',{priority:r.ticket.priority}));
       $('tkTitle').value=''; $('tkDesc').value='';
       loadTickets();
     }catch(e){ toast(e.message); }
@@ -267,20 +270,20 @@
       const q=ticketFilter?('?status='+ticketFilter):'';
       const j=await api('/api/tickets'+q);
       wrap.innerHTML='';
-      if(!j.tickets.length){wrap.innerHTML='<p class="muted">Aucun ticket.</p>';return;}
+      if(!j.tickets.length){wrap.innerHTML='<p class="muted">'+T('maintenance.emptyTickets','Aucun ticket.')+'</p>';return;}
       j.tickets.forEach(t=>{
-        const kt=KT[t.status]||{t:t.status,c:''};
-        const pr={LOW:'Basse',MEDIUM:'Moyenne',HIGH:'Haute',URGENT:'Urgente'}[t.priority];
+        const kt=KT[t.status]||{fb:t.status,c:''};
+        const pr={LOW:{k:'maintenance.prLow',fb:'Basse'},MEDIUM:{k:'maintenance.prMedium',fb:'Moyenne'},HIGH:{k:'maintenance.prHigh',fb:'Haute'},URGENT:{k:'maintenance.prUrgent',fb:'Urgente'}}[t.priority]||{fb:t.priority};
         const el=document.createElement('div'); el.className='item';
         el.innerHTML=`<div class="top"><div style="flex:1;min-width:0">
-          <b>${t.title} <span class="badge ${kt.c}">${kt.t}</span> <span class="badge ${t.priority==='URGENT'?'red':t.priority==='HIGH'?'warn':'blue'}">${pr}</span></b>
-          <div class="meta">${t.cabinId?.serialNumber||t.cabinSerial} · signalé par ${t.reportedBy?.name||t.reporterName||'—'} le ${new Date(t.createdAt).toLocaleDateString('fr-FR')}</div>
+          <b>${t.title} <span class="badge ${kt.c}">${T(kt.k,kt.fb)}</span> <span class="badge ${t.priority==='URGENT'?'red':t.priority==='HIGH'?'warn':'blue'}">${T(pr.k,pr.fb)}</span></b>
+          <div class="meta">${t.cabinId?.serialNumber||t.cabinSerial} · ${T('maintenance.reportedBy','signalé par {name} le {date}',{name:t.reportedBy?.name||t.reporterName||'—',date:new Date(t.createdAt).toLocaleDateString(LOC())})}</div>
           ${t.description?`<div class="meta">${t.description}</div>`:''}
-          ${t.resolution?`<div class="meta" style="color:var(--ok)">✔ Résolution : ${t.resolution}</div>`:''}
+          ${t.resolution?`<div class="meta" style="color:var(--ok)">${T('maintenance.resolution','✔ Résolution :')} ${t.resolution}</div>`:''}
           <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
-            ${t.status==='OPEN'?`<button class="btn ghost small" data-patch="${t._id}|IN_PROGRESS">En cours</button><button class="btn danger small" data-patch="${t._id}|MAINTENANCE">Mettre en maintenance</button>`:''}
-            ${t.status==='IN_PROGRESS'?`<button class="btn danger small" data-patch="${t._id}|MAINTENANCE">Mettre en maintenance</button>`:''}
-            ${t.status!=='RESOLVED'?`<button class="btn ok small" data-patch="${t._id}|RESOLVED">Résoudre</button>`:''}
+            ${t.status==='OPEN'?`<button class="btn ghost small" data-patch="${t._id}|IN_PROGRESS">${T('maintenance.btnInProgress','En cours')}</button><button class="btn danger small" data-patch="${t._id}|MAINTENANCE">${T('maintenance.btnToMaintenance','Mettre en maintenance')}</button>`:''}
+            ${t.status==='IN_PROGRESS'?`<button class="btn danger small" data-patch="${t._id}|MAINTENANCE">${T('maintenance.btnToMaintenance','Mettre en maintenance')}</button>`:''}
+            ${t.status!=='RESOLVED'?`<button class="btn ok small" data-patch="${t._id}|RESOLVED">${T('maintenance.btnResolve','Résoudre')}</button>`:''}
           </div></div></div>`;
         wrap.appendChild(el);
       });
@@ -288,9 +291,9 @@
         try{
           const [id,st]=b.dataset.patch.split('|');
           let body={status:st};
-          if(st==='RESOLVED'){ const res=prompt('Note de résolution :',''); if(!res) return; body.resolution=res; }
+          if(st==='RESOLVED'){ const res=prompt(T('maintenance.resolutionPrompt','Note de résolution :'),''); if(!res) return; body.resolution=res; }
           const r=await api('/api/tickets/'+id,{method:'PATCH',body:JSON.stringify(body)});
-          toast(r.message+(r.cabinStatus?' · statut cabine : '+ST[r.cabinStatus]:'')); loadTickets(); loadParc();
+          toast(r.message+(r.cabinStatus?T('maintenance.cabinStatusSuffix',' · statut cabine : {status}',{status:S(ST,r.cabinStatus,r.cabinStatus)}):'')); loadTickets(); loadParc();
         }catch(e){ toast(e.message); }
       });
       obs(wrap);
@@ -298,11 +301,17 @@
   }
 
   function loadAll(){ loadParc(); loadTasks(); loadTickets(); }
+  window.addEventListener('i18n:change',()=>{ if(!$('appView').classList.contains('hidden')) loadAll(); });
   (async()=>{ if(token){ $('authCard').classList.add('hidden'); $('appView').classList.remove('hidden'); loadAll(); } })();
 })();
 </script>
-<footer class="app-footer">&copy; pixelsoftwaredesign 2026 &middot; Management &amp; Housekeeping &mdash; Atlas Cabine
-  <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
+<footer class="app-footer"><span data-i18n="maintenance.foot">&copy; pixelsoftwaredesign 2026 &middot; Management &amp; Housekeeping &mdash; Atlas Cabine</span>
+  <div class="site-links"><a href="/" data-i18n="nav.home">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a><span data-i18n-switcher></span></div>
 </footer>
+
+<script src="/vendor/i18n/translations.js"></script>
+<script src="/vendor/i18n/i18n.js"></script>
+<script src="/vendor/i18n/pages/maintenance.js"></script>
+<script>I18N.init();</script>
 </body>
 </html>

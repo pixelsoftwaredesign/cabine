@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Pixel Software Design — Viewer 3D</title>
+  <title data-i18n="viewer.titleTag">Pixel Software Design — Viewer 3D</title>
   <style>
     :root{--p:#6c5ce7;--a:#00cec9;--bg:#0a0a1a;--card:#12122a;--hover:#1a1a3e;--t:#e0e0ff;--tm:#8888aa;--b:#2a2a4a;--ok:#00b894;--d:#e17055}
     *{margin:0;padding:0;box-sizing:border-box}
@@ -46,36 +46,44 @@
 <body>
 
   <header>
-    <div class="logo">Pixel Software Design <small>VIEWER 3D · LECTURE SEULE</small></div>
+    <div class="logo">Pixel Software Design <small data-i18n="viewer.logoSub">VIEWER 3D · LECTURE SEULE</small></div>
     <nav>
-      <a href="/map.html">🗺️ Carte</a>
-      <a href="/editor.html">📐 Éditeur Indoor</a>
+      <a href="/map.html" data-i18n="viewer.nav.map">🗺️ Carte</a>
+      <a href="/editor.html" data-i18n="viewer.nav.editor">📐 Éditeur Indoor</a>
     </nav>
-    <span class="badge online" id="apiBadge">API · en ligne</span>
+    <span class="badge online" id="apiBadge" data-i18n="viewer.api.online">API · en ligne</span>
+    <span data-i18n-switcher></span>
     <div class="spacer"></div>
     <div class="field">
-      <label>Niveau</label>
+      <label data-i18n="viewer.level">Niveau</label>
       <input type="text" id="inFloor" value="NIVEAU_1_SOUSSE">
-      <button class="hdr-btn" id="loadBtn">⟳ Charger</button>
+      <button class="hdr-btn" id="loadBtn" data-i18n="viewer.btn.load">⟳ Charger</button>
     </div>
     <div class="stats">
-      <span class="stat">Cabines <b id="stCabins">0</b></span>
-      <span class="stat" id="stCollCard">Collisions <b id="stColl">0</b></span>
-      <span class="stat">m² <b id="stSqm">0</b></span>
+      <span class="stat"><span data-i18n="viewer.stat.cabins">Cabines</span> <b id="stCabins">0</b></span>
+      <span class="stat" id="stCollCard"><span data-i18n="viewer.stat.collisions">Collisions</span> <b id="stColl">0</b></span>
+      <span class="stat"><span data-i18n="viewer.stat.sqm">m²</span> <b id="stSqm">0</b></span>
     </div>
   </header>
 
   <div id="wrap">
-    <canvas id="gl"></canvas>
+    <canvas id="gl" aria-label="Zone de rendu 3D du plan" data-i18n-aria="viewer.aria.canvas"></canvas>
     <div id="labels"></div>
   </div>
 
-  <div class="note" id="glNote">⚠️ Viewer 3D indisponible — WebGL est désactivé par votre navigateur.</div>
+  <div class="note" id="glNote" data-i18n="viewer.glNote">⚠️ Viewer 3D indisponible — WebGL est désactivé par votre navigateur.</div>
   <div class="toast" id="toast"></div>
+
+  <script src="/vendor/i18n/translations.js"></script>
+  <script src="/vendor/i18n/i18n.js"></script>
+  <script src="/vendor/i18n/pages/viewer.js"></script>
+  <script>I18N.init();</script>
 
   <script>
   (function () {
     'use strict';
+
+    var T = function (k, v) { return window.I18N ? window.I18N.t(k, v) : k; };
 
     var BOX_H = 2.4, BORNE_H = 1.1, WALL_H = 2.6;
     var STATUS_RGB = { AVAILABLE: hexRgb('#10b981'), DIRTY: hexRgb('#f59e0b'), MAINTENANCE: hexRgb('#ef4444') };
@@ -220,7 +228,7 @@
       } else {
         // Repli logiciel : projection + painter's algorithm sur Canvas 2D
         this.ctx = canvas.getContext('2d');
-        if (!this.ctx) throw new Error('Canvas 2D indisponible');
+        if (!this.ctx) throw new Error(T('viewer.err.canvas2d'));
         this._soft = true;
       }
       this._bindPointer();
@@ -476,12 +484,12 @@
         .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || ('HTTP ' + r.status)); return j; }); })
         .then(function (res) {
           applyLayout(res.layout);
-          toast('Plan chargé : ' + floorId + ' (' + (res.layout.cabins || []).length + ' cabines)');
+          toast(T('viewer.toast.loaded', { floor: floorId, n: (res.layout.cabins || []).length }));
         })
         .catch(function (e) {
           var fallback = localStorage.getItem('psd_editor_' + floorId);
-          if (fallback) { try { applyLayout(JSON.parse(fallback)); toast('Serveur indisponible — plan restauré du navigateur'); return; } catch (err) {} }
-          toast('Échec : ' + e.message, true);
+          if (fallback) { try { applyLayout(JSON.parse(fallback)); toast(T('viewer.toast.fallback')); return; } catch (err) {} }
+          toast(T('viewer.toast.error', { msg: e.message }), true);
         });
     }
 
@@ -500,7 +508,7 @@
       }
       if (viewer._soft) {
         $('glNote').classList.add('show', 'warn');
-        $('glNote').textContent = '🔧 Rendu 3D logiciel actif (WebGL indisponible) — qualité visuelle réduite.';
+        $('glNote').textContent = T('viewer.glNote.soft');
       }
       viewer.start();
       $('loadBtn').addEventListener('click', load);
@@ -511,10 +519,18 @@
     }
 
     init();
+
+    /* Re-rendu des messages dynamiques après changement de langue */
+    window.addEventListener('i18n:change', function () {
+      if (viewer && viewer._soft) {
+        $('glNote').classList.add('show', 'warn');
+        $('glNote').textContent = T('viewer.glNote.soft');
+      }
+    });
   })();
   </script>
-<footer class="app-footer">&copy; pixelsoftwaredesign 2026 &middot; Viewer 3D &mdash; Atlas Cabine
-  <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
+<footer class="app-footer"><span data-i18n="viewer.foot">&copy; pixelsoftwaredesign 2026 &middot; Viewer 3D &mdash; Atlas Cabine</span>
+  <div class="site-links"><a href="/" data-i18n="nav.home">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a><span data-i18n-switcher></span></div>
 </footer>
 </body>
 </html>

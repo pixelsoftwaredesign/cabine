@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#10161a">
 <meta name="author" content="pixelsoftwaredesign">
 <!-- © pixelsoftwaredesign 2026 -->
-<title>Jumeau numérique BIM</title>
+<title data-i18n="bim.titleTag">Jumeau numérique BIM</title>
 <script src="/socket.io/socket.io.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -61,46 +61,50 @@
 </style>
 </head>
 <body>
-<header><h1>🏗️ Jumeau numérique <span>BIM</span></h1><div class="sub">Maquette 3D temps réel · GUID ↔ flux MQTT · états & alarmes des équipements</div></header>
+<header>
+  <div style="position:absolute;top:12px;inset-inline-end:16px"><span data-i18n-switcher></span></div>
+  <h1 data-i18n-html="bim.h1">🏗️ Jumeau numérique <span>BIM</span></h1>
+  <div class="sub" data-i18n="bim.sub">Maquette 3D temps réel · GUID ↔ flux MQTT · états & alarmes des équipements</div>
+</header>
 
 <main>
   <div id="authCard" class="card">
-    <h2>Connexion</h2>
-    <label>Email</label><input class="input" id="email" type="email" placeholder="admin@cabine.com">
-    <label>Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
-    <button class="btn" id="loginBtn">Se connecter</button>
+    <h2 data-i18n="bim.login.title">Connexion</h2>
+    <label data-i18n="bim.email">Email</label><input class="input" id="email" type="email" placeholder="admin@cabine.com">
+    <label data-i18n="bim.password">Mot de passe</label><input class="input" id="password" type="password" placeholder="••••••">
+    <button class="btn" id="loginBtn" data-i18n="bim.login.btn">Se connecter</button>
   </div>
 
   <div id="appView" class="hidden">
     <div class="card">
-      <label>Unité / cabine (jumeau)</label>
+      <label data-i18n="bim.unit">Unité / cabine (jumeau)</label>
       <select class="input" id="unitSel"></select>
       <div class="row">
-        <button class="btn" id="loadTwin">Charger le jumeau</button>
-        <button class="btn ghost" id="seedTwin">🌱 Amorcer les éléments</button>
+        <button class="btn" id="loadTwin" data-i18n="bim.loadTwin">Charger le jumeau</button>
+        <button class="btn ghost" id="seedTwin" data-i18n="bim.seed">🌱 Amorcer les éléments</button>
       </div>
       <div class="kpi" style="margin-top:12px">
-        <div class="cell"><b id="tTotal">0</b><span>Équipements</span></div>
-        <div class="cell"><b id="tOk" style="color:var(--ok)">0</b><span>Nominal</span></div>
-        <div class="cell"><b id="tAlarm" style="color:var(--danger)">0</b><span>Alarmes</span></div>
+        <div class="cell"><b id="tTotal">0</b><span data-i18n="bim.kpi.equip">Équipements</span></div>
+        <div class="cell"><b id="tOk" style="color:var(--ok)">0</b><span data-i18n="bim.kpi.nominal">Nominal</span></div>
+        <div class="cell"><b id="tAlarm" style="color:var(--danger)">0</b><span data-i18n="bim.kpi.alarm">Alarmes</span></div>
       </div>
     </div>
 
     <div class="card">
-      <h2>🎛️ Visuel 3D</h2>
+      <h2 data-i18n="bim.h2.viewer">🎛️ Visuel 3D</h2>
       <div id="viewer"><div id="glNote"></div></div>
       <div class="legend">
-        <span><span class="dot" style="background:#5fb27f"></span>OK / Online</span>
-        <span><span class="dot" style="background:#f2a65a"></span>Actif / On</span>
-        <span><span class="dot" style="background:#7dd3fc"></span>Ouvert</span>
-        <span><span class="dot" style="background:#94a3b8"></span>Fermé / Idle</span>
-        <span><span class="dot" style="background:#fb7185"></span>Alarme</span>
+        <span><span class="dot" style="background:#5fb27f"></span><span data-i18n="bim.legend.ok">OK / Online</span></span>
+        <span><span class="dot" style="background:#f2a65a"></span><span data-i18n="bim.legend.active">Actif / On</span></span>
+        <span><span class="dot" style="background:#7dd3fc"></span><span data-i18n="bim.legend.open">Ouvert</span></span>
+        <span><span class="dot" style="background:#94a3b8"></span><span data-i18n="bim.legend.closed">Fermé / Idle</span></span>
+        <span><span class="dot" style="background:#fb7185"></span><span data-i18n="bim.legend.alarm">Alarme</span></span>
       </div>
     </div>
 
     <div class="card">
       <div class="row">
-        <div><h2>📋 Équipements (GUID)</h2><div id="elList"></div></div>
+        <div><h2 data-i18n="bim.h2.equip">📋 Équipements (GUID)</h2><div id="elList"></div></div>
       </div>
       <div id="elDetail" class="hidden" style="margin-top:10px;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px"></div>
     </div>
@@ -109,9 +113,16 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="/vendor/i18n/translations.js"></script>
+<script src="/vendor/i18n/i18n.js"></script>
+<script src="/vendor/i18n/pages/bim.js"></script>
+<script>I18N.init();</script>
+
 <script type="importmap">{"imports":{"three":"/vendor/three/three.module.js"}}</script>
 <script type="module">
 const API=location.origin;
+const T=(k,v)=>window.I18N?window.I18N.t(k,v):k;
+const LOC=()=>window.I18N?I18N.locale:'fr-FR';
 const $=id=>document.getElementById(id);
 let TOKEN=localStorage.getItem('bim_token')||'';
 let selected=null;
@@ -129,7 +140,7 @@ let currentSerial='';
 const toast=(m)=>{const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2600);};
 async function api(path,opt){
   const r=await fetch(API+path,Object.assign({headers:{'Content-Type':'application/json',Authorization:'Bearer '+TOKEN}},opt||{}));
-  const j=await r.json().catch(()=>({success:false,message:'Erreur'}));
+  const j=await r.json().catch(()=>({success:false,message:T('bim.error')}));
   if(r.status===401){localStorage.removeItem('bim_token');TOKEN='';location.reload();}
   return j;
 }
@@ -166,7 +177,7 @@ function mat4Mul(a,b){
 function SoftViewer(canvas){
   this.cv=canvas;
   this.ctx=canvas.getContext('2d');
-  if(!this.ctx) throw new Error('Canvas 2D indisponible');
+  if(!this.ctx) throw new Error(T('bim.err.canvas2d'));
   this.yaw=-0.7; this.pitch=1.0; this.radius=4.6;
   this.elements=[]; this.drag=null; this.pinch=0;
   const self=this;
@@ -245,7 +256,7 @@ function initViewer(){
     cv.style.touchAction='none';
     vv.appendChild(cv);
     vv.appendChild(note);
-    note.textContent='🔧 Rendu 3D logiciel actif (WebGL indisponible) — qualité visuelle réduite.';
+    note.textContent=T('bim.glNote.soft');
     note.classList.add('show','warn');
     soft=new SoftViewer(cv);
     soft.start();
@@ -320,23 +331,23 @@ function renderDetail(){
   const hist=el.history||[];
   $('elDetail').innerHTML=`
     <h3>${TYPE_ICON[el.type]||''} ${esc(el.name)} <span class="badge ${el.status==='ALARM'?'red':'ok'}">${esc(el.status)}</span></h3>
-    <div class="meta">GUID : <code style="color:var(--accent)">${esc(el.guid)}</code></div>
-    <div class="meta">Type ${esc(el.type)} · zone ${esc(el.zone||'—')} · étage ${esc(el.floor||'—')} · flux <code>${esc(el.topic||'—')}</code></div>
-    <div class="meta">Valeur : ${esc(JSON.stringify(el.value||{}))}</div>
-    <h3>Historique</h3>
-    <div style="max-height:140px;overflow-y:auto">${hist.length?hist.slice().reverse().slice(0,12).map(h=>`<div style="font-family:monospace;font-size:.72rem;color:var(--muted)">${new Date(h.ts).toLocaleTimeString('fr-FR')} — <b>${esc(h.status)}</b> ${h.value?esc(JSON.stringify(h.value)):''}</div>`).join(''):'<div class="meta">Aucun événement</div>'}</div>
+    <div class="meta">${T('bim.detail.guid')} : <code style="color:var(--accent)">${esc(el.guid)}</code></div>
+    <div class="meta">${T('bim.detail.type')} ${esc(el.type)} · ${T('bim.detail.zone')} ${esc(el.zone||'—')} · ${T('bim.detail.floor')} ${esc(el.floor||'—')} · ${T('bim.detail.flow')} <code>${esc(el.topic||'—')}</code></div>
+    <div class="meta">${T('bim.detail.value')} : ${esc(JSON.stringify(el.value||{}))}</div>
+    <h3>${T('bim.detail.history')}</h3>
+    <div style="max-height:140px;overflow-y:auto">${hist.length?hist.slice().reverse().slice(0,12).map(h=>`<div style="font-family:monospace;font-size:.72rem;color:var(--muted)">${new Date(h.ts).toLocaleTimeString(LOC())} — <b>${esc(h.status)}</b> ${h.value?esc(JSON.stringify(h.value)):''}</div>`).join(''):'<div class="meta">'+T('bim.detail.noEvent')+'</div>'}</div>
     <div class="row" style="margin-top:10px">
-      ${el.status!=='ALARM'?`<button class="btn danger small" data-alarm="${el._id}">🚨 Simuler une alarme</button>`:''}
-      ${el.status==='ALARM'?`<button class="btn ok small" data-resolve="${el._id}">🟢 Résoudre</button>`:''}
-      <button class="btn ghost small" data-pulse="${el._id}">📍 Repérer en 3D</button>
+      ${el.status!=='ALARM'?`<button class="btn danger small" data-alarm="${el._id}">${T('bim.detail.simulate')}</button>`:''}
+      ${el.status==='ALARM'?`<button class="btn ok small" data-resolve="${el._id}">${T('bim.detail.resolve')}</button>`:''}
+      <button class="btn ghost small" data-pulse="${el._id}">${T('bim.detail.pulse')}</button>
     </div>`;
   document.querySelectorAll('[data-alarm]').forEach(b=>b.onclick=async()=>{
     const j=await api('/api/twin/elements/'+b.dataset.alarm,{method:'PATCH',body:JSON.stringify({status:'ALARM',value:{warning:'alarme simulée'}})});
-    toast(j.success?'Alarme active — GUID '+j.element.guid:j.message); reload();
+    toast(j.success?T('bim.toast.alarmActive',{guid:j.element.guid}):j.message); reload();
   });
   document.querySelectorAll('[data-resolve]').forEach(b=>b.onclick=async()=>{
     const j=await api('/api/twin/alarms/'+b.dataset.resolve+'/resolve',{method:'POST',body:JSON.stringify({})});
-    toast(j.success?'Alarme résolue':j.message); reload();
+    toast(j.success?T('bim.toast.alarmResolved'):j.message); reload();
   });
   document.querySelectorAll('[data-pulse]').forEach(b=>b.onclick=()=>{});
 }
@@ -360,19 +371,19 @@ async function reload(){
 async function loadUnits(){
   const j=await api('/api/twin/units');
   if(!j.success)return;
-  $('unitSel').innerHTML=j.units.map(u=>`<option value="${u.serialNumber}">${u.serialNumber} — ${esc(u.name)} <span class="muted">· ${u.twin.total} équip.</span></option>`).join('')||'<option value="">Aucune cabine</option>';
+  $('unitSel').innerHTML=j.units.map(u=>`<option value="${u.serialNumber}">${u.serialNumber} — ${esc(u.name)} <span class="muted">· ${T('bim.equipCount',{n:u.twin.total})}</span></option>`).join('')||'<option value="">'+T('bim.noCabin')+'</option>';
 }
 $('loadTwin').onclick=reload;
 $('seedTwin').onclick=async()=>{
   const serial=$('unitSel').value;
-  if(!serial)return toast('Choisissez une cabine');
+  if(!serial)return toast(T('bim.toast.chooseCabin'));
   const j=await api('/api/twin/seed',{method:'POST',body:JSON.stringify({cabinSerial:serial})});
   toast(j.message||j.message); reload();
 };
 $('loginBtn').onclick=async()=>{
   const j=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email:$('email').value,password:$('password').value})}).catch(()=>({success:false}));
-  if(!j.success){toast('Identifiants invalides');return;}
-  if(!['ADMIN','MANAGER','PARTNER','TECHNICIAN','MAINTENANCE_CONTROLLER','DEVELOPER','IOT_AGENT'].includes(j.user.role)){toast('Accès réservé');return;}
+  if(!j.success){toast(T('bim.toast.badCreds'));return;}
+  if(!['ADMIN','MANAGER','PARTNER','TECHNICIAN','MAINTENANCE_CONTROLLER','DEVELOPER','IOT_AGENT'].includes(j.user.role)){toast(T('bim.toast.restricted'));return;}
   TOKEN=j.token;localStorage.setItem('bim_token',TOKEN);
   $('authCard').classList.add('hidden');$('appView').classList.remove('hidden');
   const role=j.user.role;
@@ -386,9 +397,16 @@ $('loginBtn').onclick=async()=>{
   if(!me.success||!ALLOWED.includes(r)){ localStorage.removeItem('bim_token'); TOKEN=''; location.reload(); return; }
   $('seedTwin').style.display=(['ADMIN','MANAGER','PARTNER','IOT_AGENT'].includes(r)?'':'none');
   await loadUnits(); reload(); } })();
+
+/* Re-rendu après changement de langue */
+window.addEventListener('i18n:change',()=>{
+  renderElements();
+  renderDetail();
+  if(soft){ const note=$('glNote'); if(note){ note.textContent=T('bim.glNote.soft'); note.classList.add('show','warn'); } }
+});
 </script>
-<footer class="app-footer">&copy; pixelsoftwaredesign 2026 &middot; BIM &mdash; Atlas Cabine
-  <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
+<footer class="app-footer"><span data-i18n="bim.foot">&copy; pixelsoftwaredesign 2026 &middot; BIM &mdash; Atlas Cabine</span>
+  <div class="site-links"><a href="/" data-i18n="nav.home">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a><span data-i18n-switcher></span></div>
 </footer>
 </body>
 </html>

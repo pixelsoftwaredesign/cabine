@@ -8,7 +8,7 @@
 <!-- © pixelsoftwaredesign 2026 -->
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Cabine Partner</title>
+<title data-i18n="partner.titleTag">Cabine Partner</title>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/biometrics.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -109,10 +109,11 @@
 </head>
 <body>
 
-<header id="authHeader" class="hidden"><h1>Cabine Partner</h1><div class="sub">Plateforme investisseurs & hôtes</div></header>
+<header id="authHeader" class="hidden"><h1 data-i18n="partner.headerAuthTitle">Cabine Partner</h1><div class="sub" data-i18n="partner.headerAuthSub">Plateforme investisseurs & hôtes</div><div style="display:flex;justify-content:flex-end;margin-top:6px"><span data-i18n-switcher></span></div></header>
 <header id="appHeader" class="hidden">
-  <h1>Espace Partenaire</h1>
+  <h1 data-i18n="partner.headerAppTitle">Espace Partenaire</h1>
   <div class="sub" id="headerSub"></div>
+  <div style="display:flex;justify-content:flex-end;margin-top:6px"><span data-i18n-switcher></span></div>
 </header>
 
 <main>
@@ -120,10 +121,10 @@
   <div id="authView">
     <div class="card">
       <h2 id="authTitle">Connexion</h2>
-      <label>Email</label><input class="input" id="authEmail" type="email" placeholder="vous@exemple.com">
-      <label>Mot de passe</label><input class="input" id="authPassword" type="password" placeholder="••••••">
+      <label data-i18n="partner.email">Email</label><input class="input" id="authEmail" type="email" placeholder="vous@exemple.com" data-i18n-ph="partner.emailPh">
+      <label data-i18n="partner.password">Mot de passe</label><input class="input" id="authPassword" type="password" placeholder="••••••">
       <button class="btn" id="authSubmit">Se connecter</button>
-      <button class="btn ghost" id="authToggle">Créer un compte partenaire</button>
+      <button class="btn ghost" id="authToggle" data-i18n="partner.createAccountBtn">Créer un compte partenaire</button>
     </div>
   </div>
 
@@ -131,42 +132,42 @@
   <div id="appView" class="hidden">
     <div id="viewHome">
       <div class="tabs" id="homeTabs">
-        <button class="tab active" data-v="overview">Vue d'ensemble</button>
-        <button class="tab" data-v="cabins">Mes cabines</button>
-        <button class="tab" data-v="bookings">Réservations</button>
+        <button class="tab active" data-v="overview" data-i18n="partner.tabOverview">Vue d'ensemble</button>
+        <button class="tab" data-v="cabins" data-i18n="partner.tabCabins">Mes cabines</button>
+        <button class="tab" data-v="bookings" data-i18n="partner.tabBookings">Réservations</button>
       </div>
       <div id="tabOverview">
-        <div class="card card-hero"><h2>Finances</h2>
+        <div class="card card-hero"><h2 data-i18n="partner.finTitle">Finances</h2>
           <div class="row">
-            <div class="kpi"><b id="kGross">--</b><span>Chiffre d'affaires</span></div>
-            <div class="kpi"><b id="kNet">--</b><span>Net partenaire</span></div>
-            <div class="kpi"><b id="kBook">--</b><span>Réservations</span></div>
+            <div class="kpi"><b id="kGross">--</b><span data-i18n="partner.finGross">Chiffre d'affaires</span></div>
+            <div class="kpi"><b id="kNet">--</b><span data-i18n="partner.finNet">Net partenaire</span></div>
+            <div class="kpi"><b id="kBook">--</b><span data-i18n="partner.finBookings">Réservations</span></div>
           </div>
           <div class="row" style="margin-top:12px">
-            <div class="kpi"><b id="kOcc">--</b><span>Occupation</span></div>
-            <div class="kpi"><b id="kCabins">--</b><span>Cabines</span></div>
-            <div class="kpi"><b id="kHours">--</b><span>Heures louées</span></div>
+            <div class="kpi"><b id="kOcc">--</b><span data-i18n="partner.finOcc">Occupation</span></div>
+            <div class="kpi"><b id="kCabins">--</b><span data-i18n="partner.finCabins">Cabines</span></div>
+            <div class="kpi"><b id="kHours">--</b><span data-i18n="partner.finHours">Heures louées</span></div>
           </div>
         </div>
         <div class="card"><h2>Stripe Connect</h2>
-          <p class="meta" id="stripeStatus">Vérification du compte de paiement...</p>
-          <button class="btn ghost" id="btnOnboard">Configurer les paiements (Stripe)</button>
+          <p class="meta" id="stripeStatus" data-i18n="partner.stripeChecking">Vérification du compte de paiement...</p>
+          <button class="btn ghost" id="btnOnboard" data-i18n="partner.onboardBtn">Configurer les paiements (Stripe)</button>
         </div>
-        <div class="card"><h2>Réseau — mode location &amp; connectivité</h2>
+        <div class="card"><h2 data-i18n="partner.netTitle">Réseau — mode location &amp; connectivité</h2>
           <div class="row">
-            <div class="kpi"><b id="kLoc">--</b><span>En location</span></div>
-            <div class="kpi"><b id="kConn">--</b><span>Connectées</span></div>
-            <div class="kpi"><b id="kOff">--</b><span>Hors ligne</span></div>
+            <div class="kpi"><b id="kLoc">--</b><span data-i18n="partner.netRental">En location</span></div>
+            <div class="kpi"><b id="kConn">--</b><span data-i18n="partner.netConnected">Connectées</span></div>
+            <div class="kpi"><b id="kOff">--</b><span data-i18n="partner.netOffline">Hors ligne</span></div>
           </div>
-          <p class="meta" style="margin-top:10px">Cabines publiées en mode location (réservation à la séance) et cabines connectées au réseau IoT. Répartition par séance : 65 % exploitant · 15 % app · 12 % Atlas Cabine · 8 % pixelsoftwaredesign.</p>
+          <p class="meta" style="margin-top:10px" data-i18n="partner.netDesc">Cabines publiées en mode location (réservation à la séance) et cabines connectées au réseau IoT. Répartition par séance : 65 % exploitant · 15 % app · 12 % Atlas Cabine · 8 % pixelsoftwaredesign.</p>
         </div>
       </div>
       <div id="tabCabins" class="hidden">
-        <button class="btn" id="btnAddCabin">+ Associer une cabine (numéro de série)</button>
+        <button class="btn" id="btnAddCabin" data-i18n="partner.addCabinBtn">+ Associer une cabine (numéro de série)</button>
         <div class="chips" id="cabinFilters">
-          <button class="chip active" data-f="all">Toutes</button>
-          <button class="chip" data-f="rental">💼 En location</button>
-          <button class="chip" data-f="online">📡 Connectées</button>
+          <button class="chip active" data-f="all" data-i18n="partner.cabFilterAll">Toutes</button>
+          <button class="chip" data-f="rental" data-i18n="partner.cabFilterRental">💼 En location</button>
+          <button class="chip" data-f="online" data-i18n="partner.cabFilterOnline">📡 Connectées</button>
         </div>
         <div id="cabinList" class="stagger-in"></div>
       </div>
@@ -174,35 +175,35 @@
     </div>
 
     <div id="viewCabin" class="hidden">
-      <button class="btn ghost" id="btnBack">← Retour</button>
+      <button class="btn ghost" id="btnBack" data-i18n="partner.back">← Retour</button>
       <div id="cabinDetail"></div>
     </div>
 
     <div id="viewShop">
-      <div class="card"><h2>Boutique & Partnership</h2>
-        <p class="meta">Achetez une cabine ou maison intelligente. Elle sera livrée pré-appairée à votre compte, utilisable en personnel ou à louer pour générer des revenus.</p>
+      <div class="card"><h2 data-i18n="partner.shopTitle">Boutique & Partnership</h2>
+        <p class="meta" data-i18n="partner.shopDesc">Achetez une cabine ou maison intelligente. Elle sera livrée pré-appairée à votre compte, utilisable en personnel ou à louer pour générer des revenus.</p>
       </div>
       <div id="shopList" class="stagger-in"></div>
     </div>
   <div id="viewProfile">
       <div class="card">
-        <h2>Compte</h2>
+        <h2 data-i18n="partner.profileTitle">Compte</h2>
         <p class="meta" id="profileInfo"></p>
         <div class="divider"></div>
-        <button class="btn ghost" id="btnOnboardProfile">Configurer les paiements (Stripe Connect)</button>
-        <button class="btn danger" id="btnLogout">Déconnexion</button>
+        <button class="btn ghost" id="btnOnboardProfile" data-i18n="partner.onboardProfileBtn">Configurer les paiements (Stripe Connect)</button>
+        <button class="btn danger" id="btnLogout" data-i18n="partner.logoutBtn">Déconnexion</button>
       </div>
-      <div class="card"><h2>Historique des achats</h2><div id="ordersList" class="meta"></div></div>
+      <div class="card"><h2 data-i18n="partner.ordersTitle">Historique des achats</h2><div id="ordersList" class="meta"></div></div>
     </div>
   </div>
 </main>
 
 <div class="nav" id="appNav" class="hidden">
-  <button data-tab="home" class="active"><span class="ico">🏠</span>Accueil</button>
-  <button data-tab="shop"><span class="ico">🛒</span>Boutique</button>
-  <button data-tab="profile"><span class="ico">👤</span>Profil</button>
-  <a href="/map.html" style="text-decoration:none"><button type="button"><span class="ico">🗺️</span>Carte</button></a>
-  <a href="/usine.html" style="text-decoration:none"><button type="button"><span class="ico">🏭</span>Usine</button></a>
+  <button data-tab="home" class="active"><span class="ico">🏠</span><span data-i18n="nav.home">Accueil</span></button>
+  <button data-tab="shop"><span class="ico">🛒</span><span data-i18n="partner.navShop">Boutique</span></button>
+  <button data-tab="profile"><span class="ico">👤</span><span data-i18n="partner.navProfile">Profil</span></button>
+  <a href="/map.html" style="text-decoration:none"><button type="button"><span class="ico">🗺️</span><span data-i18n="partner.navMap">Carte</span></button></a>
+  <a href="/usine.html" style="text-decoration:none"><button type="button"><span class="ico">🏭</span><span data-i18n="partner.navFactory">Usine</span></button></a>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -212,6 +213,8 @@
   if (window.CabinMotion) CabinMotion.init(document);
   const API = location.origin;
   const $ = (id) => document.getElementById(id);
+  const T=(k,fb,vars)=>{ if(!k) return fb!==undefined?fb:k; try{ if(window.I18N&&window.I18N.t){ const v=window.I18N.t(k,vars); if(v!==undefined&&v!==k) return v; } }catch(e){} let s=fb!==undefined?fb:k; if(vars) s=s.replace(/\{(\w+)\}/g,(m,x)=>vars[x]!==undefined?vars[x]:m); return s; };
+  const LOC=()=>((window.I18N&&window.I18N.locale)||'fr-FR');
   let token = localStorage.getItem('token') || '';
   let user = JSON.parse(localStorage.getItem('user') || 'null');
   let socket = null;
@@ -233,7 +236,7 @@
   const roomInfo = (code) => roomCatalog.find(r => r.code === code) || { code, label: code, icon: '🚪' };
   const roomTags = (codes) => (codes || []).length
     ? codes.map(c => { const r = roomInfo(c); return '<span>' + r.icon + ' ' + r.label + '</span>'; }).join('')
-    : '<span class="muted">Aucune pièce définie</span>';
+    : '<span class="muted">' + T('partner.noRooms','Aucune pièce définie') + '</span>';
 
   let roomPicksWrapId = null;
   function renderRoomPicks() {
@@ -267,8 +270,8 @@
 
   async function api(path, opts = {}) {
     const res = await fetch(API + path, { ...opts, headers: auth(opts.headers) });
-    const json = await res.json().catch(() => ({ success: false, message: 'Réponse invalide' }));
-    if (!res.ok && !json.success) throw new Error(json.message || ('Erreur ' + res.status));
+    const json = await res.json().catch(() => ({ success: false, message: T('partner.invalidResponse','Réponse invalide') }));
+    if (!res.ok && !json.success) throw new Error(json.message || (T('partner.error','Erreur') + ' ' + res.status));
     return json;
   }
 
@@ -280,8 +283,8 @@
     setTimeout(() => el.classList.remove('show'), 3200);
   }
 
-  const fmt = (n, cur='€') => new Intl.NumberFormat('fr-FR', { style:'currency', currency: cur === '€' ? 'EUR' : cur }).format(n);
-  const fmtDate = (d) => new Date(d).toLocaleString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+  const fmt = (n, cur='€') => new Intl.NumberFormat(LOC(), { style:'currency', currency: cur === '€' ? 'EUR' : cur }).format(n);
+  const fmtDate = (d) => new Date(d).toLocaleString(LOC(), { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
 
   function skeletonRows(n = 3, height = 76) {
     return Array.from({ length: n }, () => `<div class="card skeleton" style="height:${height}px"></div>`).join('');
@@ -302,15 +305,19 @@
   // ---------- Auth ----------
   function setAuth(tok, usr) { token = tok; user = usr; localStorage.setItem('token', tok); localStorage.setItem('user', JSON.stringify(usr)); }
   let loginMode = true;
+  function applyAuthMode() {
+    $('authTitle').textContent = loginMode ? T('partner.authTitle','Connexion') : T('partner.createAccountTitle','Créer un compte partenaire');
+    $('authSubmit').textContent = loginMode ? T('partner.loginBtn','Se connecter') : T('partner.signupBtn',"S'inscrire");
+  }
+  applyAuthMode();
   $('authToggle').onclick = () => {
     loginMode = !loginMode;
-    $('authTitle').textContent = loginMode ? 'Connexion' : 'Créer un compte partenaire';
-    $('authSubmit').textContent = loginMode ? 'Se connecter' : 'S\'inscrire';
+    applyAuthMode();
   };
   $('authSubmit').onclick = async () => {
     const email = $('authEmail').value.trim();
     const password = $('authPassword').value;
-    if (!email || !password) return toast('Email et mot de passe requis');
+    if (!email || !password) return toast(T('partner.errCredentials','Email et mot de passe requis'));
     try {
       const json = await api('/api/auth/' + (loginMode ? 'login' : 'register'), {
         method: 'POST',
@@ -405,20 +412,20 @@
     } catch (e) {}
     try {
       const st = await api('/api/payments/partner/status');
-      $('stripeStatus').textContent = st.payoutsEnabled ? 'Paiements actifs ✓ Pour recevoir vos revenus.' : st.accountStatus === 'PENDING' ? 'Compte Stripe en cours de configuration.' : 'Compte de paiement non configuré.';
+      $('stripeStatus').textContent = st.payoutsEnabled ? T('partner.stripeActive','Paiements actifs ✓ Pour recevoir vos revenus.') : st.accountStatus === 'PENDING' ? T('partner.stripePending','Compte Stripe en cours de configuration.') : T('partner.stripeNotConfigured','Compte de paiement non configuré.');
       $('btnOnboard').classList.toggle('hidden', st.payoutsEnabled);
-    } catch (e) { $('stripeStatus').textContent = 'Compte de paiement non configuré.'; }
+    } catch (e) { $('stripeStatus').textContent = T('partner.stripeNotConfigured','Compte de paiement non configuré.'); }
   }
 
   $('btnOnboard').onclick = async () => {
     try {
       const json = await api('/api/payments/partner/onboard', { method: 'POST', body: JSON.stringify({}) });
       if (json.onboardingUrl) location.href = json.onboardingUrl;
-      else toast('Compte en cours de configuration');
+      else toast(T('partner.accountConfiguring','Compte en cours de configuration'));
     } catch (e) { toast(e.message); }
   };
 
-  $('btnAddCabin').onclick = () => {
+  function openAddCabin() {
     $('cabinDetail').innerHTML = renderAddCabinForm();
     $('viewHome').classList.add('hidden');
     $('viewCabin').classList.remove('hidden');
@@ -427,7 +434,8 @@
       const snBtn = $('snSubmit');
       if (snBtn) snBtn.onclick = submitAddCabin;
     });
-  };
+  }
+  $('btnAddCabin').onclick = openAddCabin;
 
   async function submitAddCabin() {
     try {
@@ -440,10 +448,10 @@
           rooms: [...addSelectedRooms]
         })
       });
-      toast('Cabine appairée ✓');
+      toast(T('partner.pairedToast','Cabine appairée ✓'));
       currentCabin.action = 'add';
       const doneCard = $('snSubmit').closest('.card');
-      doneCard.innerHTML = '<h2>Cabine appairée</h2><p class="meta">' + r.cabin.serialNumber + ' · ' + (r.cabin.rooms || []).length + ' pièce(s)</p><div class="room-tags">' + roomTags(r.cabin.rooms || []) + '</div>';
+      doneCard.innerHTML = '<h2>'+T('partner.pairedTitle','Cabine appairée')+'</h2><p class="meta">' + r.cabin.serialNumber + ' · ' + T('partner.roomsCount','{n} pièce(s)',{n:(r.cabin.rooms || []).length}) + '</p><div class="room-tags">' + roomTags(r.cabin.rooms || []) + '</div>';
       doneCard.classList.add('pop-in', 'glow-wash');
     } catch (e) { toast(e.message); }
   }
@@ -458,15 +466,15 @@
       if (cabinFilter === 'rental') list = list.filter((c) => c.operatingMode === 'HOST_RENTAL');
       if (cabinFilter === 'online') list = list.filter((c) => c.connected);
       if (!list.length) {
-        wrap.innerHTML = '<p class="muted">' + (cabinFilter === 'all' ? 'Aucune cabine. Passez en mode "Boutique" pour en acheter une.' : 'Aucune cabine ne correspond à ce filtre.') + '</p>';
+        wrap.innerHTML = '<p class="muted">' + (cabinFilter === 'all' ? T('partner.emptyCabins','Aucune cabine. Passez en mode "Boutique" pour en acheter une.') : T('partner.emptyCabinsFilter','Aucune cabine ne correspond à ce filtre.')) + '</p>';
         return;
       }
       for (const c of list) {
         const el = document.createElement('div');
         el.className = 'card cabin clickable';
         const statusBadge = statusOf(c.status);
-        const modeBadge = c.operatingMode === 'HOST_RENTAL' ? '<span class="badge blue">💼 Mode location</span>' : '<span class="badge">Mode personnel</span>';
-        const connBadge = c.connected ? '<span class="badge ok">● Connectée</span>' : '<span class="badge off">○ Hors ligne</span>';
+        const modeBadge = c.operatingMode === 'HOST_RENTAL' ? '<span class="badge blue">' + T('partner.badgeRental','💼 Mode location') + '</span>' : '<span class="badge">' + T('partner.badgePersonal','Mode personnel') + '</span>';
+        const connBadge = c.connected ? '<span class="badge ok">' + T('partner.badgeConnected','● Connectée') + '</span>' : '<span class="badge off">' + T('partner.badgeOffline','○ Hors ligne') + '</span>';
         el.innerHTML = `
           <div class="cabin">
             <div class="dot">🏠</div>
@@ -482,8 +490,10 @@
     } catch (e) { wrap.innerHTML = '<p class="muted">' + e.message + '</p>'; }
   }
 
+  const SO={ 'AVAILABLE':{k:'partner.status.AVAILABLE',fb:'Prête',cls:'ok'}, 'OCCUPIED_BY_GUEST':{k:'partner.status.OCCUPIED_BY_GUEST',fb:'Occupée',cls:'red'}, 'OCCUPIED_BY_OWNER':{k:'partner.status.OCCUPIED_BY_OWNER',fb:'Usage perso',cls:'blue'}, 'CLEANING_REQUIRED':{k:'partner.status.CLEANING_REQUIRED',fb:'À nettoyer',cls:'warn'}, 'MAINTENANCE':{k:'partner.status.MAINTENANCE',fb:'Maintenance',cls:'warn'} };
   function statusOf(s) {
-    return { 'AVAILABLE': {txt:'Prête',cls:'ok'}, 'OCCUPIED_BY_GUEST':{txt:'Occupée',cls:'red'}, 'OCCUPIED_BY_OWNER':{txt:'Usage perso',cls:'blue'}, 'CLEANING_REQUIRED':{txt:'À nettoyer',cls:'warn'}, 'MAINTENANCE':{txt:'Maintenance',cls:'warn'} }[s] || {txt:s,cls:''};
+    const e=SO[s]||{fb:s,cls:''};
+    return { txt: e.k?T(e.k,e.fb):e.fb, cls: e.cls };
   }
 
   async function renderBookings() {
@@ -492,15 +502,16 @@
     try {
       const json = await api('/api/partner/dashboard/bookings');
       wrap.innerHTML = '';
-      if (!json.bookings.length) { wrap.innerHTML = '<p class="muted">Aucune réservation pour vos cabines.</p>'; return; }
+      if (!json.bookings.length) { wrap.innerHTML = '<p class="muted">' + T('partner.emptyBookings','Aucune réservation pour vos cabines.') + '</p>'; return; }
       json.bookings.forEach((b) => {
         const el = document.createElement('div');
         el.className = 'card';
-        const st = { 'CONFIRMED':'Confirmée','IN_PROGRESS':'En cours','COMPLETED':'Terminée','CANCELLED':'Annulée','PENDING_PAYMENT':'En attente de paiement' }[b.status] || b.status;
+        const bk={ 'CONFIRMED':'partner.bookings.CONFIRMED','IN_PROGRESS':'partner.bookings.IN_PROGRESS','COMPLETED':'partner.bookings.COMPLETED','CANCELLED':'partner.bookings.CANCELLED','PENDING_PAYMENT':'partner.bookings.PENDING_PAYMENT' };
+        const stK=bk[b.status]||''; const stFB={'CONFIRMED':'Confirmée','IN_PROGRESS':'En cours','COMPLETED':'Terminée','CANCELLED':'Annulée','PENDING_PAYMENT':'En attente de paiement'}[b.status]||b.status;
         el.innerHTML = `
-          <div class="row"><span class="meta" style="flex:1">${fmtDate(b.startTime)} → ${fmtDate(b.endTime)}</span><span class="badge ok">${st}</span></div>
-          <b>${b.cabinId?.name || 'Cabine'}</b> · <span class="muted">${b.userId?.name || b.userId?.email}</span>
-          <div class="meta">Code PIN : <b class="price">${b.accessCode || '—'}</b> · ${fmt(b.totalPrice)}</div>`;
+          <div class="row"><span class="meta" style="flex:1">${fmtDate(b.startTime)} → ${fmtDate(b.endTime)}</span><span class="badge ok">${stK?T(stK,stFB):stFB}</span></div>
+          <b>${b.cabinId?.name || T('partner.cabinFallback','Cabine')}</b> · <span class="muted">${b.userId?.name || b.userId?.email}</span>
+          <div class="meta">${T('partner.pinLabel','Code PIN :')} <b class="price">${b.accessCode || '—'}</b> · ${fmt(b.totalPrice)}</div>`;
         wrap.appendChild(el);
       });
     } catch (e) { wrap.innerHTML = '<p class="muted">' + e.message + '</p>'; }
@@ -510,16 +521,16 @@
   function renderAddCabinForm() {
     return `
       <div class="card">
-        <h2>Associer une cabine</h2>
-        <label>Numéro de série (QR à la livraison)</label>
-        <input class="input" id="snInput" placeholder="CBN-XXXX">
-        <label>Nom</label>
-        <input class="input" id="nameInput" placeholder="Ma cabine">
-        <label>Adresse (optionnel)</label>
-        <input class="input" id="addrInput" placeholder="Adresse">
-        <h2 style="margin-top:14px">🏠 Pièces de la cabine</h2>
+        <h2>${T('partner.addFormTitle','Associer une cabine')}</h2>
+        <label>${T('partner.addFormSerial','Numéro de série (QR à la livraison)')}</label>
+        <input class="input" id="snInput" placeholder="${T('partner.addFormSerialPh','CBN-XXXX')}">
+        <label>${T('partner.addFormName','Nom')}</label>
+        <input class="input" id="nameInput" placeholder="${T('partner.addFormNamePh','Ma cabine')}">
+        <label>${T('partner.addFormAddress','Adresse (optionnel)')}</label>
+        <input class="input" id="addrInput" placeholder="${T('partner.addFormAddressPh','Adresse')}">
+        <h2 style="margin-top:14px">${T('partner.addFormRoomsTitle','🏠 Pièces de la cabine')}</h2>
         <div class="room-grid" id="addRoomGrid"></div>
-        <button class="btn" id="snSubmit">Appairer la cabine</button>
+        <button class="btn" id="snSubmit">${T('partner.addFormSubmit','Appairer la cabine')}</button>
       </div>`;
   }
 
@@ -546,58 +557,60 @@
       const c = json.cabin;
       const isPersonal = c.operatingMode === 'PERSONAL';
       const st = statusOf(c.status);
+      const DEV={lighting:'partner.devLighting',climate:'partner.devClimate',heater:'partner.devHeater',waterHeater:'partner.devWaterHeater',ventilation:'partner.devVentilation',lock:'partner.devLock',speaker:'partner.devSpeaker'};
+      const DEVF={lighting:'💡 Éclairage',climate:'🌡️ Climatisation',heater:'🔥 Chauffage',waterHeater:'♨️ Chauffe-eau',ventilation:'🌀 Ventilation',lock:'🔒 Serrure',speaker:'🔊 Audio'};
       wrap.innerHTML = `
         <div class="card">
           <h2>${c.name}</h2>
-          <p class="meta">${c.serialNumber} · <span class="badge ${st.cls}">${st.txt}</span> · <span class="badge ${c.connected ? 'ok' : 'off'}">${c.connected ? '● Connectée' : '○ Hors ligne'}</span></p>
+          <p class="meta">${c.serialNumber} · <span class="badge ${st.cls}">${st.txt}</span> · <span class="badge ${c.connected ? 'ok' : 'off'}">${c.connected ? T('partner.badgeConnected','● Connectée') : T('partner.badgeOffline','○ Hors ligne')}</span></p>
           <div class="room-tags" style="margin-top:8px">${roomTags(c.rooms)}</div>
           <div class="toggle-row" style="margin-top:8px">
-            <div><b>Mode Location</b><div class="meta">Publier la cabine sur la plateforme de réservation</div></div>
+            <div><b>${T('partner.modeRentalLabel','Mode Location')}</b><div class="meta">${T('partner.modeRentalDesc','Publier la cabine sur la plateforme de réservation')}</div></div>
             <label class="switch"><input type="checkbox" id="modeToggle" ${isPersonal ? '' : 'checked'}><span class="slider"></span></label>
           </div>
           <div id="rentalFields" class="${isPersonal ? 'hidden' : ''}">
-            <label>Prix par heure (€)</label>
+            <label>${T('partner.priceLabel','Prix par heure (€)')}</label>
             <input class="input" id="priceInput" type="number" min="0" value="${c.rentalSettings.pricePerHour}">
-            <label class="toggle-row" style="border:none"><span style="flex:1">Visible sur le portail public</span>
+            <label class="toggle-row" style="border:none"><span style="flex:1">${T('partner.visiblePublic','Visible sur le portail public')}</span>
               <span class="switch"><input type="checkbox" id="listedToggle" ${c.rentalSettings.isListed ? 'checked' : ''}><span class="slider"></span></span>
             </label>
-            <button class="btn" id="saveRental">Enregistrer les paramètres</button>
+            <button class="btn" id="saveRental">${T('partner.saveRental','Enregistrer les paramètres')}</button>
           </div>
         </div>
         <div class="card">
-          <h2>État en temps réel</h2>
+          <h2>${T('partner.realtimeTitle','État en temps réel')}</h2>
           <div class="row">
-            <div class="kpi"><b id="cTemp">${c.telemetry.temperature ?? '--'}°</b><span>Température</span></div>
-            <div class="kpi"><b id="cHum">${c.telemetry.humidity ?? '--'}%</b><span>Humidité</span></div>
-            <div class="kpi"><b id="cPres">${c.telemetry.presence ? 'Oui' : 'Non'}</b><span>Présence</span></div>
+            <div class="kpi"><b id="cTemp">${c.telemetry.temperature ?? '--'}°</b><span>${T('partner.temp','Température')}</span></div>
+            <div class="kpi"><b id="cHum">${c.telemetry.humidity ?? '--'}%</b><span>${T('partner.hum','Humidité')}</span></div>
+            <div class="kpi"><b id="cPres">${c.telemetry.presence ? T('partner.yes','Oui') : T('partner.no','Non')}</b><span>${T('partner.presence','Présence')}</span></div>
           </div>
           ${isPersonal ? `
-          <h2 style="margin-top:14px">Contrôle à distance</h2>
+          <h2 style="margin-top:14px">${T('partner.remoteTitle','Contrôle à distance')}</h2>
           <div class="device-list">
-            <div class="device" data-d="lighting">💡 Éclairage</div>
-            <div class="device" data-d="climate">🌡️ Climatisation</div>
-            <div class="device" data-d="heater">🔥 Chauffage</div>
-            <div class="device" data-d="waterHeater">♨️ Chauffe-eau</div>
-            <div class="device" data-d="ventilation">🌀 Ventilation</div>
-            <div class="device" data-d="lock">🔒 Serrure</div>
-            <div class="device" data-d="speaker">🔊 Audio</div>
+            <div class="device" data-d="lighting">${T(DEV.lighting,DEVF.lighting)}</div>
+            <div class="device" data-d="climate">${T(DEV.climate,DEVF.climate)}</div>
+            <div class="device" data-d="heater">${T(DEV.heater,DEVF.heater)}</div>
+            <div class="device" data-d="waterHeater">${T(DEV.waterHeater,DEVF.waterHeater)}</div>
+            <div class="device" data-d="ventilation">${T(DEV.ventilation,DEVF.ventilation)}</div>
+            <div class="device" data-d="lock">${T(DEV.lock,DEVF.lock)}</div>
+            <div class="device" data-d="speaker">${T(DEV.speaker,DEVF.speaker)}</div>
           </div>
-          <h2 style="margin-top:16px">Biométrie</h2>
-          <p class="meta">Enregistrez votre visage / empreinte pour ouvrir kiosk sans PIN (iOS : Touch ID · Face ID).</p>
+          <h2 style="margin-top:16px">${T('partner.bioTitle','Biométrie')}</h2>
+          <p class="meta">${T('partner.bioDesc','Enregistrez votre visage / empreinte pour ouvrir kiosk sans PIN (iOS : Touch ID · Face ID).')}</p>
           <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap">
-            <button class="btn ghost" id="bioEnrollFace">👤 Enregistrer visage</button>
-            <button class="btn ghost" id="bioEnrollFinger">🫆 Enregistrer empreinte</button>
+            <button class="btn ghost" id="bioEnrollFace">${T('partner.bioFace','👤 Enregistrer visage')}</button>
+            <button class="btn ghost" id="bioEnrollFinger">${T('partner.bioFinger','🫆 Enregistrer empreinte')}</button>
           </div>
           <p class="meta" id="bioStatus" style="margin-top:8px"></p>` : ''}
         </div>
-        <div class="card"><h2>Automatisations</h2>
-          <p class="meta">« Règle : si température > 25°C alors ventilation ON » est active pour vos cabines.</p>
-          <button class="btn ghost" id="btnRules">Gérer les règles (API /automation)</button>
+        <div class="card"><h2>${T('partner.autoTitle','Automatisations')}</h2>
+          <p class="meta">${T('partner.autoDesc','« Règle : si température > 25°C alors ventilation ON » est active pour vos cabines.')}</p>
+          <button class="btn ghost" id="btnRules">${T('partner.autoBtn','Gérer les règles (API /automation)')}</button>
         </div>`;
 
       $('modeToggle').onchange = () => {
         const becoming = isPersonal ? 'HOST_RENTAL' : 'PERSONAL';
-        if (c.status === 'OCCUPIED_BY_GUEST') { toast('Cabine occupée : changement impossible'); $('modeToggle').checked = isPersonal; return; }
+        if (c.status === 'OCCUPIED_BY_GUEST') { toast(T('partner.errCabinOccupied','Cabine occupée : changement impossible')); $('modeToggle').checked = isPersonal; return; }
         api('/api/partner/cabins/' + id + '/mode', { method: 'PATCH', body: JSON.stringify({ targetMode: becoming }) })
           .then((r) => { toast(r.message); cabinsCache = null; renderCabin(id); })
           .catch((e) => { toast(e.message); $('modeToggle').checked = isPersonal; });
@@ -607,7 +620,7 @@
       if (saveBtn) saveBtn.onclick = async () => {
         try {
           await api('/api/partner/cabins/' + id + '/mode', { method: 'PATCH', body: JSON.stringify({ targetMode: 'HOST_RENTAL', pricePerHour: Number($('priceInput').value), isListed: $('listedToggle').checked }) });
-          toast('Paramètres enregistrés');
+          toast(T('partner.settingsSaved','Paramètres enregistrés'));
           cabinsCache = null;
           renderCabin(id);
         } catch (e) { toast(e.message); }
@@ -623,15 +636,15 @@
         };
       });
 
-      if ($('btnRules')) $('btnRules').onclick = () => toast('CRUD règles dispo sur POST/GET/PATCH/DELETE /api/automation');
+      if ($('btnRules')) $('btnRules').onclick = () => toast(T('partner.rulesToast','CRUD règles dispo sur POST/GET/PATCH/DELETE /api/automation'));
 
       const bioStatus = $('bioStatus');
       const bioEnroll = async (kind) => {
-        if (!window.BioAuth) { toast('biometrics.js non chargé'); return; }
-        bioStatus.textContent = 'Enregistrement en cours…';
+        if (!window.BioAuth) { toast(T('partner.bioNotLoaded','biometrics.js non chargé')); return; }
+        bioStatus.textContent = T('partner.bioEnrolling','Enregistrement en cours…');
         try {
           const r = await window.BioAuth.enroll(kind, () => token);
-          bioStatus.textContent = r.message || (r.success ? 'OK' : 'Erreur');
+          bioStatus.textContent = r.message || (r.success ? T('partner.ok','OK') : T('partner.error','Erreur'));
           if (r.success) toast('✅ ' + r.message);
         } catch (e) { bioStatus.textContent = e.message; toast(e.message); }
       };
@@ -658,14 +671,14 @@
           <div class="info">
             <b>${p.title}</b>
             <div class="price">${fmt(p.price)}</div>
-            <small class="meta">${p.specs?.surfaceM2 || '—'} m² · ${p.specs?.capacity || 2} pers · ${p.defaultRentalPricePerHour}€/h en location</small>
+            <small class="meta">${p.specs?.surfaceM2 || '—'} m² · ${p.specs?.capacity || 2} ${T('partner.pers','pers')} · ${p.defaultRentalPricePerHour}€/h ${T('partner.inRental','en location')}</small>
             <div class="room-tags">${roomTags(p.specs?.rooms)}</div>
-            <button class="btn ghost" data-id="${p._id}" style="margin-top:8px">Acheter</button>
+            <button class="btn ghost" data-id="${p._id}" style="margin-top:8px">${T('partner.buy','Acheter')}</button>
           </div>`;
         el.querySelector('button').onclick = async () => {
           try {
             const r = await api('/api/shop/orders', { method: 'POST', body: JSON.stringify({ productId: p._id }) });
-            toast('Cabine livrée : ' + r.cabin.serialNumber);
+            toast(T('partner.cabinDelivered','Cabine livrée : {serial}',{serial:r.cabin.serialNumber}));
             setAuth(token, { ...user, role: 'PARTNER' });
             navTo('home');
             switchHomeTab('cabins');
@@ -673,7 +686,7 @@
         };
         wrap.appendChild(el);
       }
-      if (!json.products.length) wrap.innerHTML = '<p class="muted">Boutique vide.</p>';
+      if (!json.products.length) wrap.innerHTML = '<p class="muted">' + T('partner.shopEmpty','Boutique vide.') + '</p>';
     } catch (e) { wrap.innerHTML = '<p class="muted">' + e.message + '</p>'; }
   }
 
@@ -682,18 +695,18 @@
     $('profileInfo').innerHTML =
       '<b>' + (user?.name || '') + '</b><br>' +
       (user?.email || '') + '<br>' +
-      'Rôle : <b>' + (user?.role || 'GUEST') + '</b>';
+      T('partner.roleLabel','Rôle :') + ' <b>' + (user?.role || 'GUEST') + '</b>';
 
     api('/api/shop/orders').then((json) => {
       const wrap = $('ordersList');
       wrap.innerHTML = '';
-      if (!json.orders.length) { wrap.innerHTML = '<p class="muted">Aucun achat.</p>'; return; }
+      if (!json.orders.length) { wrap.innerHTML = '<p class="muted">' + T('partner.noOrders','Aucun achat.') + '</p>'; return; }
       json.orders.forEach((o) => {
         const el = document.createElement('div');
-        el.innerHTML = '<b>' + (o.productId?.title || 'Cabine') + '</b> · ' + o.serialNumber + ' · ' + fmt(o.price);
+        el.innerHTML = '<b>' + (o.productId?.title || T('partner.cabinFallback','Cabine')) + '</b> · ' + o.serialNumber + ' · ' + fmt(o.price);
         wrap.appendChild(el);
       });
-    }).catch(() => { $('ordersList').textContent = 'Impossible de charger les achats.'; });
+    }).catch(() => { $('ordersList').textContent = T('partner.ordersLoadFail','Impossible de charger les achats.'); });
   }
 
   $('btnLogout')?.addEventListener('click', logout);
@@ -701,7 +714,7 @@
     try {
       const json = await api('/api/payments/partner/onboard', { method: 'POST', body: JSON.stringify({}) });
       if (json.onboardingUrl) location.href = json.onboardingUrl;
-      else toast('Compte en cours de configuration');
+      else toast(T('partner.accountConfiguring','Compte en cours de configuration'));
     } catch (e) { toast(e.message); }
   });
 
@@ -729,14 +742,33 @@
   // directement le formulaire d'inscription en tant que partenaire.
   if (!token && new URLSearchParams(location.search).get('mode') === 'register') {
     loginMode = false;
-    $('authTitle').textContent = 'Créer un compte partenaire';
-    $('authSubmit').textContent = 'S\'inscrire';
+    applyAuthMode();
   }
+  window.addEventListener('i18n:change', () => {
+    if ($('appView').classList.contains('hidden')) { applyAuthMode(); return; }
+    if (currentView === 'home') {
+      if (selectedCabinTab === 'cabins') renderCabins();
+      else if (selectedCabinTab === 'bookings') renderBookings();
+      else renderHome();
+      return;
+    }
+    if (currentView === 'cabin') {
+      if (currentCabin && currentCabin.id) renderCabin(currentCabin.id);
+      else openAddCabin();
+      return;
+    }
+    navTo(currentView);
+  });
   bootstrap();
 })();
 </script>
-<footer class="app-footer">&copy; pixelsoftwaredesign 2026 &middot; Partenaire &mdash; Atlas Cabine
-  <div class="site-links"><a href="/">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a></div>
+<footer class="app-footer"><span data-i18n="partner.foot">&copy; pixelsoftwaredesign 2026 &middot; Partenaire &mdash; Atlas Cabine</span>
+  <div class="site-links"><a href="/" data-i18n="nav.home">Accueil</a><a href="https://atlascabine.pages.dev/home" target="_blank" rel="noopener">Atlas cabine</a><span data-i18n-switcher></span></div>
 </footer>
+
+<script src="/vendor/i18n/translations.js"></script>
+<script src="/vendor/i18n/i18n.js"></script>
+<script src="/vendor/i18n/pages/partner.js"></script>
+<script>I18N.init();</script>
 </body>
 </html>

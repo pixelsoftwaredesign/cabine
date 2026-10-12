@@ -115,6 +115,8 @@ router.get('/search', async (req, res) => {
         telemetry: cabin.telemetry,
         status: cabin.status,
         guestState: cabin.guestState,
+        mode: cabin.operatingMode,
+        bookable: cabin.rentalSettings.isListed,
         isOnline: isOnline(cabin.telemetry),
         lastUpdate: cabin.telemetry.lastUpdate,
         pricing: {
