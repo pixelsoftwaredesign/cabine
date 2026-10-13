@@ -6,7 +6,15 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "seed": "node seed.js"
+    "seed": "node seed.js",
+    "seo": "node tools/seo/inject.mjs",
+    "seo:check": "node tools/seo/check.mjs",
+    "seo:indexnow": "node tools/seo/indexnow.mjs",
+    "i18n:check": "node tools/i18n-check.mjs",
+    "html:check": "node tools/html-check.mjs",
+    "verify": "npm run seo:check && npm run i18n:check && npm run html:check",
+    "test": "npm run verify",
+    "deploy:pages": "npx wrangler pages deploy public --project-name mycabine"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
