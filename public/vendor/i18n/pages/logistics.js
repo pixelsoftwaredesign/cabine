@@ -1,7 +1,7 @@
 /* Per-page i18n — logistics.html */
 (function () {
   const fr = {
-    'logistics.titleTag': 'Logistique & Cycle de vie — Track & Trace',
+    'logistics.titleTag': 'Logistique & cycle de vie — Atlas Cabine',
     'logistics.h1': '🚚 Logistique & <span>Cycle de vie</span>',
     'logistics.planLink': 'Plan intérieur',
     'logistics.sub': 'Track & Trace · bordereaux · QR colisage · démontage & transfert',
@@ -98,7 +98,7 @@
     'logistics.error': 'Erreur'
   };
   const en = {
-    'logistics.titleTag': 'Logistics & Lifecycle — Track & Trace',
+    'logistics.titleTag': 'Logistics & lifecycle — Atlas Cabine',
     'logistics.h1': '🚚 Logistics & <span>Lifecycle</span>',
     'logistics.planLink': 'Indoor map',
     'logistics.sub': 'Track & Trace · waybills · packing QR · disassembly & transfer',
@@ -195,7 +195,7 @@
     'logistics.error': 'Error'
   };
   const ar = {
-    'logistics.titleTag': 'اللوجستيات ودورة الحياة — التتبع',
+    'logistics.titleTag': 'اللوجستيات ودورة الحياة — Atlas Cabine',
     'logistics.h1': '🚚 اللوجستيات و<span>دورة الحياة</span>',
     'logistics.planLink': 'المخطط الداخلي',
     'logistics.sub': 'التتبع · سندات الشحن · رمز QR للتغليف · التفكيك والنقل',
@@ -292,7 +292,7 @@
     'logistics.error': 'خطأ'
   };
   const it = {
-    'logistics.titleTag': 'Logistica e ciclo di vita — Track & Trace',
+    'logistics.titleTag': 'Logistica e ciclo di vita — Atlas Cabine',
     'logistics.h1': '🚚 Logistica e <span>ciclo di vita</span>',
     'logistics.planLink': 'Pianta interna',
     'logistics.sub': 'Track & Trace · distinte · QR imballo · smontaggio e trasferimento',

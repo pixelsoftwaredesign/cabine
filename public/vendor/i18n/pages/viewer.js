@@ -1,7 +1,7 @@
 /* Per-page i18n — viewer.html */
 (function () {
   const fr = {
-    'viewer.titleTag': 'Pixel Software Design — Viewer 3D',
+    'viewer.titleTag': 'Viewer 3D — Atlas Cabine',
     'viewer.logoSub': 'VIEWER 3D · LECTURE SEULE',
     'viewer.nav.map': '🗺️ Carte',
     'viewer.nav.editor': '📐 Éditeur Indoor',
@@ -21,7 +21,7 @@
     'viewer.foot': '© pixelsoftwaredesign 2026 · Viewer 3D — Atlas Cabine'
   };
   const en = {
-    'viewer.titleTag': 'Pixel Software Design — 3D Viewer',
+    'viewer.titleTag': '3D viewer — Atlas Cabine',
     'viewer.logoSub': '3D VIEWER · READ ONLY',
     'viewer.nav.map': '🗺️ Map',
     'viewer.nav.editor': '📐 Indoor Editor',
@@ -41,7 +41,7 @@
     'viewer.foot': '© pixelsoftwaredesign 2026 · 3D Viewer — Atlas Cabine'
   };
   const ar = {
-    'viewer.titleTag': 'Pixel Software Design — عارض ثلاثي الأبعاد',
+    'viewer.titleTag': 'عارض ثلاثي الأبعاد — Atlas Cabine',
     'viewer.logoSub': 'عارض ثلاثي الأبعاد · قراءة فقط',
     'viewer.nav.map': '🗺️ الخريطة',
     'viewer.nav.editor': '📐 محرر داخلي',
@@ -61,7 +61,7 @@
     'viewer.foot': '© pixelsoftwaredesign 2026 · عارض ثلاثي الأبعاد — Atlas Cabine'
   };
   const it = {
-    'viewer.titleTag': 'Pixel Software Design — Visualizzatore 3D',
+    'viewer.titleTag': 'Visualizzatore 3D — Atlas Cabine',
     'viewer.logoSub': 'VISUALIZZATORE 3D · SOLA LETTURA',
     'viewer.nav.map': '🗺️ Mappa',
     'viewer.nav.editor': '📐 Editor indoor',

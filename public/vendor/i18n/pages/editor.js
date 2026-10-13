@@ -1,7 +1,7 @@
 /* Per-page i18n — editor.html */
 (function () {
   const fr = {
-    'editor.titleTag': 'Pixel Software Design — Éditeur Indoor',
+    'editor.titleTag': 'Éditeur BIM — Atlas Cabine',
     'editor.logoSub': 'EDITOR · AMÉNAGEMENT INDOOR',
     'editor.nav.map': '🗺️ Carte des cabines',
     'editor.nav.map2': '🧭 Carte 2',
@@ -79,7 +79,7 @@
     'editor.err.nonJson': 'Réponse non JSON ({status})'
   };
   const en = {
-    'editor.titleTag': 'Pixel Software Design — Indoor Editor',
+    'editor.titleTag': 'BIM editor — Atlas Cabine',
     'editor.logoSub': 'EDITOR · INDOOR LAYOUT',
     'editor.nav.map': '🗺️ Cabin map',
     'editor.nav.map2': '🧭 Map 2',
@@ -157,7 +157,7 @@
     'editor.err.nonJson': 'Non-JSON response ({status})'
   };
   const ar = {
-    'editor.titleTag': 'Pixel Software Design — محرر داخلي',
+    'editor.titleTag': 'محرر BIM — Atlas Cabine',
     'editor.logoSub': 'محرر · تخطيط داخلي',
     'editor.nav.map': '🗺️ خريطة الكبائن',
     'editor.nav.map2': '🧭 الخريطة 2',
@@ -235,7 +235,7 @@
     'editor.err.nonJson': 'استجابة غير JSON ({status})'
   };
   const it = {
-    'editor.titleTag': 'Pixel Software Design — Editor indoor',
+    'editor.titleTag': 'Editor BIM — Atlas Cabine',
     'editor.logoSub': 'EDITOR · LAYOUT INDOOR',
     'editor.nav.map': '🗺️ Mappa cabine',
     'editor.nav.map2': '🧭 Mappa 2',

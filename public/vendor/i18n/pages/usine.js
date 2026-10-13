@@ -1,7 +1,7 @@
 /* Per-page i18n — usine.html */
 (function () {
   const fr = {
-    'usine.titleTag': 'Usine de Cabines — Portail',
+    'usine.titleTag': 'Usine de cabines — Atlas Cabine',
     'usine.title': '🏭 Usine de <em>Cabines</em>',
     'usine.subtitle': 'Assemblage · Banc de test · QR livraison · FOTA',
     'usine.authTitle': 'Accès fabriquant',
@@ -137,7 +137,7 @@
   };
 
   const en = {
-    'usine.titleTag': 'Cabin Factory — Portal',
+    'usine.titleTag': 'Cabin factory — Atlas Cabine',
     'usine.title': '🏭 Cabin <em>Factory</em>',
     'usine.subtitle': 'Assembly · Test bench · Delivery QR · FOTA',
     'usine.authTitle': 'Manufacturer access',
@@ -273,7 +273,7 @@
   };
 
   const ar = {
-    'usine.titleTag': 'مصنع الكبائن — البوابة',
+    'usine.titleTag': 'مصنع الكبائن — Atlas Cabine',
     'usine.title': '🏭 مصنع <em>الكبائن</em>',
     'usine.subtitle': 'التجميع · منصة الاختبار · رمز QR للتسليم · FOTA',
     'usine.authTitle': 'دخول المُصنّع',
@@ -409,7 +409,7 @@
   };
 
   const it = {
-    'usine.titleTag': 'Fabbrica di Cabine — Portale',
+    'usine.titleTag': 'Fabbrica di cabine — Atlas Cabine',
     'usine.title': '🏭 Fabbrica di <em>Cabine</em>',
     'usine.subtitle': 'Assemblaggio · Banco di test · QR di consegna · FOTA',
     'usine.authTitle': 'Accesso produttore',

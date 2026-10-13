@@ -1,7 +1,7 @@
 /* Per-page i18n — workforce.html */
 (function () {
   const fr = {
-    'workforce.titleTag': 'Workforce & KPI',
+    'workforce.titleTag': 'Workforce & KPI — Atlas Cabine',
     'workforce.h1': '🎯 Workforce <span>& KPI</span>',
     'workforce.planLink': 'Plan intérieur',
     'workforce.sub': 'Supervision des agents, performance & rémunération hebdomadaire',
@@ -92,7 +92,7 @@
     'workforce.error': 'Erreur'
   };
   const en = {
-    'workforce.titleTag': 'Workforce & KPI',
+    'workforce.titleTag': 'Workforce & KPI — Atlas Cabine',
     'workforce.h1': '🎯 Workforce <span>& KPI</span>',
     'workforce.planLink': 'Indoor map',
     'workforce.sub': 'Agent supervision, performance & weekly pay',
@@ -183,7 +183,7 @@
     'workforce.error': 'Error'
   };
   const ar = {
-    'workforce.titleTag': 'القوى العاملة ومؤشرات الأداء',
+    'workforce.titleTag': 'القوى العاملة ومؤشرات الأداء — Atlas Cabine',
     'workforce.h1': '🎯 القوى العاملة <span>و KPI</span>',
     'workforce.planLink': 'المخطط الداخلي',
     'workforce.sub': 'الإشراف على الوكلاء والأداء والأجور الأسبوعية',
@@ -274,7 +274,7 @@
     'workforce.error': 'خطأ'
   };
   const it = {
-    'workforce.titleTag': 'Workforce & KPI',
+    'workforce.titleTag': 'Workforce & KPI — Atlas Cabine',
     'workforce.h1': '🎯 Personale <span>e KPI</span>',
     'workforce.planLink': 'Pianta interna',
     'workforce.sub': 'Supervisione degli agenti, performance e retribuzione settimanale',

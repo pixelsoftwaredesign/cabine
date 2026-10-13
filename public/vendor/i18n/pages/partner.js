@@ -1,7 +1,7 @@
 /* Per-page i18n — partner.html */
 (function () {
   const fr = {
-    'partner.titleTag': 'Cabine Partner',
+    'partner.titleTag': 'Portail partenaire — Atlas Cabine',
     'partner.headerAuthTitle': 'Cabine Partner',
     'partner.headerAuthSub': 'Plateforme investisseurs & hôtes',
     'partner.headerAppTitle': 'Espace Partenaire',
@@ -127,7 +127,7 @@
     'partner.rulesToast': 'CRUD règles dispo sur POST/GET/PATCH/DELETE /api/automation'
   };
   const en = {
-    'partner.titleTag': 'Cabine Partner',
+    'partner.titleTag': 'Partner portal — Atlas Cabine',
     'partner.headerAuthTitle': 'Cabine Partner',
     'partner.headerAuthSub': 'Investor & host platform',
     'partner.headerAppTitle': 'Partner area',
@@ -253,7 +253,7 @@
     'partner.rulesToast': 'Rules CRUD available on POST/GET/PATCH/DELETE /api/automation'
   };
   const ar = {
-    'partner.titleTag': 'كابينة الشريك',
+    'partner.titleTag': 'بوابة الشريك — Atlas Cabine',
     'partner.headerAuthTitle': 'كابينة الشريك',
     'partner.headerAuthSub': 'منصة المستثمرين والمضيفين',
     'partner.headerAppTitle': 'مساحة الشريك',
@@ -379,7 +379,7 @@
     'partner.rulesToast': 'إدارة القواعد متاحة عبر POST/GET/PATCH/DELETE /api/automation'
   };
   const it = {
-    'partner.titleTag': 'Cabina Partner',
+    'partner.titleTag': 'Portale partner — Atlas Cabine',
     'partner.headerAuthTitle': 'Cabina Partner',
     'partner.headerAuthSub': 'Piattaforma investitori e host',
     'partner.headerAppTitle': 'Area partner',

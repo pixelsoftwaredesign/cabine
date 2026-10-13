@@ -1,7 +1,7 @@
 /* Per-page i18n — demo.html */
 (function () {
   const fr = {
-    'demo.titleTag': "Démo — Cycle de vie complet",
+    'demo.titleTag': 'Démo — cycle de vie — Atlas Cabine',
     'demo.title': "🎬 Démo — <span>Cycle de vie complet</span>",
     'demo.subtitle': "Rejeu usine → client → démontage · Track & Trace · bordereau · QR · transfert",
     'demo.authTitle': "Connexion",
@@ -71,7 +71,7 @@
   };
 
   const en = {
-    'demo.titleTag': "Demo — Full lifecycle",
+    'demo.titleTag': 'Demo — lifecycle — Atlas Cabine',
     'demo.title': "🎬 Demo — <span>Full lifecycle</span>",
     'demo.subtitle': "Replay factory → customer → disassembly · Track & Trace · waybill · QR · transfer",
     'demo.authTitle': "Login",
@@ -141,7 +141,7 @@
   };
 
   const ar = {
-    'demo.titleTag': "تجربة — دورة الحياة الكاملة",
+    'demo.titleTag': 'تجربة — دورة الحياة — Atlas Cabine',
     'demo.title': "🎬 تجربة — <span>دورة الحياة الكاملة</span>",
     'demo.subtitle': "إعادة تشغيل المصنع ← العميل ← التفكيك · التتبع · سند الشحن · QR · النقل",
     'demo.authTitle': "تسجيل الدخول",
@@ -211,7 +211,7 @@
   };
 
   const it = {
-    'demo.titleTag': "Demo — Ciclo di vita completo",
+    'demo.titleTag': 'Demo — ciclo di vita — Atlas Cabine',
     'demo.title': "🎬 Demo — <span>Ciclo di vita completo</span>",
     'demo.subtitle': "Replay fabbrica → cliente → smontaggio · Track & Trace · distinta · QR · trasferimento",
     'demo.authTitle': "Accesso",

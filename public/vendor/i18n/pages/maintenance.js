@@ -1,7 +1,7 @@
 /* Per-page i18n — maintenance.html */
 (function () {
   const fr = {
-    'maintenance.titleTag': 'Management & Housekeeping',
+    'maintenance.titleTag': 'Management & housekeeping — Atlas Cabine',
     'maintenance.h1': '🧼 Management & <span>Housekeeping</span>',
     'maintenance.planLink': 'Plan intérieur',
     'maintenance.sub': 'Propreté, maintenance et état de préparation des cabines',
@@ -78,7 +78,7 @@
     'maintenance.doorOpened': 'Porte ouverte — éclairage travail'
   };
   const en = {
-    'maintenance.titleTag': 'Management & Housekeeping',
+    'maintenance.titleTag': 'Management & housekeeping — Atlas Cabine',
     'maintenance.h1': '🧼 Management & <span>Housekeeping</span>',
     'maintenance.planLink': 'Indoor map',
     'maintenance.sub': 'Cabin cleanliness, maintenance and readiness',
@@ -155,7 +155,7 @@
     'maintenance.doorOpened': 'Door open — work light'
   };
   const ar = {
-    'maintenance.titleTag': 'الإدارة والتدبير الفندقي',
+    'maintenance.titleTag': 'الإدارة والتدبير الفندقي — Atlas Cabine',
     'maintenance.h1': '🧼 الإدارة و<span>التدبير الفندقي</span>',
     'maintenance.planLink': 'المخطط الداخلي',
     'maintenance.sub': 'نظافة الكبائن وصيانتها وجهوزيتها',
@@ -232,7 +232,7 @@
     'maintenance.doorOpened': 'الباب مفتوح — إضاءة العمل'
   };
   const it = {
-    'maintenance.titleTag': 'Management & Housekeeping',
+    'maintenance.titleTag': 'Management & housekeeping — Atlas Cabine',
     'maintenance.h1': '🧼 Management & <span>Housekeeping</span>',
     'maintenance.planLink': 'Pianta interna',
     'maintenance.sub': 'Pulizia, manutenzione e stato di preparazione delle cabine',

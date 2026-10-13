@@ -1,7 +1,7 @@
 /* Per-page i18n — bim.html */
 (function () {
   const fr = {
-    'bim.titleTag': 'Jumeau numérique BIM',
+    'bim.titleTag': 'Jumeau numérique BIM — Atlas Cabine',
     'bim.h1': '🏗️ Jumeau numérique <span>BIM</span>',
     'bim.sub': 'Maquette 3D temps réel · GUID ↔ flux MQTT · états & alarmes des équipements',
     'bim.login.title': 'Connexion',
@@ -45,7 +45,7 @@
     'bim.foot': '© pixelsoftwaredesign 2026 · BIM — Atlas Cabine'
   };
   const en = {
-    'bim.titleTag': 'BIM digital twin',
+    'bim.titleTag': 'BIM digital twin — Atlas Cabine',
     'bim.h1': '🏗️ Digital twin <span>BIM</span>',
     'bim.sub': 'Real-time 3D model · GUID ↔ MQTT stream · equipment states & alarms',
     'bim.login.title': 'Sign in',
@@ -89,7 +89,7 @@
     'bim.foot': '© pixelsoftwaredesign 2026 · BIM — Atlas Cabine'
   };
   const ar = {
-    'bim.titleTag': 'التوأم الرقمي BIM',
+    'bim.titleTag': 'التوأم الرقمي BIM — Atlas Cabine',
     'bim.h1': '🏗️ التوأم الرقمي <span>BIM</span>',
     'bim.sub': 'نموذج ثلاثي الأبعاد في الوقت الفعلي · GUID ↔ تدفق MQTT · حالات وإنذارات المعدات',
     'bim.login.title': 'تسجيل الدخول',
@@ -133,7 +133,7 @@
     'bim.foot': '© pixelsoftwaredesign 2026 · BIM — Atlas Cabine'
   };
   const it = {
-    'bim.titleTag': 'Gemello digitale BIM',
+    'bim.titleTag': 'Gemello digitale BIM — Atlas Cabine',
     'bim.h1': '🏗️ Gemello digitale <span>BIM</span>',
     'bim.sub': 'Modello 3D in tempo reale · GUID ↔ flusso MQTT · stati e allarmi delle apparecchiature',
     'bim.login.title': 'Accesso',

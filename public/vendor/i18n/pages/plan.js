@@ -1,7 +1,7 @@
 /* Per-page i18n — plan.html */
 (function () {
   const fr = {
-    'plan.titleTag': 'Plan Intérieur des Cabines',
+    'plan.titleTag': 'Plan intérieur des cabines — Atlas Cabine',
     'plan.h1': '🧭 Plan Intérieur <span>Cabines</span>',
     'plan.placeholder.building': '— Sélectionner un bâtiment —',
     'plan.btn.manage': 'Gérer / Éditer',
@@ -133,7 +133,7 @@
     'plan.errApi': 'Erreur {status}'
   };
   const en = {
-    'plan.titleTag': 'Indoor Cabin Plan',
+    'plan.titleTag': 'Indoor cabin plan — Atlas Cabine',
     'plan.h1': '🧭 Indoor Plan <span>Cabins</span>',
     'plan.placeholder.building': '— Select a building —',
     'plan.btn.manage': 'Manage / Edit',
@@ -265,7 +265,7 @@
     'plan.errApi': 'Error {status}'
   };
   const ar = {
-    'plan.titleTag': 'مخطط الكبائن الداخلي',
+    'plan.titleTag': 'مخطط الكبائن الداخلي — Atlas Cabine',
     'plan.h1': '🧭 المخطط الداخلي <span>للكبائن</span>',
     'plan.placeholder.building': '— اختر مبنى —',
     'plan.btn.manage': 'إدارة / تحرير',
@@ -397,7 +397,7 @@
     'plan.errApi': 'خطأ {status}'
   };
   const it = {
-    'plan.titleTag': 'Pianta interna delle cabine',
+    'plan.titleTag': 'Pianta interna delle cabine — Atlas Cabine',
     'plan.h1': '🧭 Pianta interna <span>cabine</span>',
     'plan.placeholder.building': '— Seleziona un edificio —',
     'plan.btn.manage': 'Gestisci / Modifica',
