@@ -37,8 +37,8 @@ peut être oubliée**. C'est la garantie « SEO automatique sur toutes les pages
 
 - Langue : `fr` est la base, les autres passent par `?lang=en|ar|it` (mécanisme
   du site, repris à l'identique dans `hreflang` et le sitemap).
-- La date `<lastmod>` du sitemap est figée à `2026-10-12` pour rester stable.
-  Pour la mettre à jour : `SEO_LASTMOD=2026-11-01 npm run seo`.
+- La date `<lastmod>` du sitemap est par défaut le jour d'exécution de
+  `npm run seo`. Pour une date reproductible (CI), fixer : `SEO_LASTMOD=2026-11-01 npm run seo`.
 - Autre domaine (préversion) : `SITE_URL=https://xxx.pages.dev npm run seo`.
 - La clé IndexNow est publique par conception ; le fichier `public/<clé>.txt`
   doit être déployé pour la vérification.

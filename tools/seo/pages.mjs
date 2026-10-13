@@ -17,8 +17,19 @@ const SITE_DESCRIPTION =
 export const MARK = '<!-- SEO Atlas Cabine -->';
 export const OG_IMAGE_ALT = 'Atlas Cabine — réseau international de cabines à la séance';
 
-/** Date <lastmod> du sitemap. Surchargée via SEO_LASTMOD=AAAA-MM-JJ. */
-export const LASTMOD = process.env.SEO_LASTMOD || '2026-10-12';
+/** Date locale du jour au format AAAA-MM-JJ (lastmod du sitemap). */
+function today() {
+  const d = new Date();
+  const p = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+/**
+ * Date <lastmod> du sitemap : par défaut le jour d'exécution, pour que le
+ * sitemap reflète réellement la dernière mise à jour du site.
+ * Fixer une date reproductible via SEO_LASTMOD=AAAA-MM-JJ (utile en CI).
+ */
+export const LASTMOD = process.env.SEO_LASTMOD || today();
 
 /**
  * file -> { route, desc, changefreq, priority }
